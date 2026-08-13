@@ -1,9 +1,12 @@
-# TLR Save Editor
+# TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-A save editor for **The Last Remnant**, built from scratch through
-reverse-engineering of the `.sav` file format. Includes a cross-platform
-tkinter GUI (`TLR_Save_Editor.py`, with a built-in Ukrainian/English language
-toggle) and a command-line tool (`save_explorer.py`).
+**Current version: 0.22.0**
+
+A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
+built from scratch through reverse-engineering of the `.sav` file format.
+Includes a cross-platform tkinter GUI (`TLR_Save_Editor.py`, with a built-in
+Ukrainian/English language toggle) and a command-line tool
+(`save_explorer.py`).
 
 ## Compatibility
 
@@ -64,13 +67,26 @@ editing the save file directly, which is what this tool automates.
 
 ## Why this exists
 
-The `.sav` format isn't documented anywhere. Every field in this
-tool — gold, Battle Rank, playtime, Mr. Diggs attempts, monster kills, the
-union/roster structures, equipment tables — was found using a controlled-diff
-method: make one precise, known change in-game, save before and after, diff
-the two files byte-by-byte, and confirm the hypothesis against multiple
-independent saves before trusting it. Every field listed above has been
-verified in real gameplay, not just in theory.
+No save editor for The Last Remnant Remastered existed before this project —
+this started purely out of curiosity, to see what could actually be changed
+in the save file, and what that opens up in the game itself. Some of the
+questions that motivated it:
+
+- What happens if you put **five Rush** in a single union — can you even
+  clear the game that way?
+- Can you fight the **final boss with 45 units on the field at once**,
+  instead of the game's usual party size?
+- Are the "18 units" / "5 unions" numbers shown in the battle stats screen
+  actual hard limits, or just labels? (Turns out: just labels — see
+  [Beyond the game's own UI limits](#beyond-the-games-own-ui-limits).)
+
+None of this is documented anywhere, so every field in this tool — gold,
+Battle Rank, playtime, Mr. Diggs attempts, monster kills, the union/roster
+structures, equipment tables — was found using a controlled-diff method:
+make one precise, known change in-game, save before and after, diff the two
+files byte-by-byte, and confirm the hypothesis against multiple independent
+saves before trusting it. Every field listed above has been verified in real
+gameplay, not just in theory.
 
 ## How the save format works
 
