@@ -1,0 +1,1706 @@
+Offset;English;German;Type
+20484;Cureleaf;Heilblatt;Herb
+20496;Cureroot;Heilwurzel;Herb
+20508;Curebulb;Heilzwiebel;Herb
+20520;Restoleaf;Ruheblatt;Herb
+20532;Restobulb;Ruhezwiebel;Herb
+20544;Frostleaf;Frostblatt;Herb
+20556;Relaxing Herb;Beruhigendes Kraut;Herb
+20568;Refreshing Herb;Erfrischendes Kraut;Herb
+20580;Faerie Herb;Feenkraut;Herb
+20592;Steel Herb;Stahlkraut;Herb
+20604;Fresh Oil;Frischöl;Potion
+20616;Ether Oil;Ätheröl;Potion
+20628;Flame Oil;Flammenöl;Potion
+20640;Aerial Insecta Ale;Luftinsektenbier;Potion
+20652;Mystic Fiend Ale;Mystikbier;Potion
+20664;Beastman Ale;Bestienmannbier;Potion
+20676;Land Dragon Ale;Landdrachenbier;Potion
+20688;Sky Dragon Ale;Himmelsdrachenbier;Potion
+20700;War Dragon Ale;Kriegsdrachenbier;Potion
+20712;Mineral Water;Mineralwasser;Lotion
+20724;Water of Eos;Wasser des Eos;Lotion
+20736;Renewing Tonic;Tonikum der Erfrischung;Lotion
+20748;Abyssal Tonic;Tonikum des Abgrunds;Lotion
+20760;Vitaeroot;Lebenswurzel;Lotion
+20772;Mite Mushroom;Winziger Pilz;Lotion
+20784;Bell Seedlin;Glockensamen;Lotion
+20796;Young Bud;Junge Knospe;Lotion
+20808;Vigorbean;Kraftbohne;Lotion
+20820;Schockberry;Schockbeere;Lotion
+20832;Methone Explosive;Methone-Sprengstoff;Explosive
+20844;Siarnaq Explosive;Siarnaq-Sprengstoff;Explosive
+20856;Tethys Explosive;Tethys-Sprengstoff;Explosive
+20868;Leros Explosive;Leros-Sprengstoff;Explosive
+20880;Titan Explosive;Titan-Sprengstoff;Explosive
+20892;Glowroot;Glühwurzel;Explosive
+20904;Venomweed;Giftkraut;Explosive
+20916;Smokeshrub;Räucherfarn;Explosive
+20928;Dreamvine;Traumrebe;Explosive
+20940;Acidsprout;Säuresprosse;Explosive
+20952;Oort's cursed Charm;Oorts verfluchtes Amulett;Explosive
+20964;Shard of Ages;Scherbe der Altertums;Shard
+20976;Shard of Antiquity;Scherbe der Antike;Shard
+20988;Shard of Arcanum;Scherbe des Arkanen;Shard
+21000;Shard of Chaos;Scherbe des Chaos;Shard
+21012;Sand of Lithos;Sand aus Lithos;Shard
+21024;Dirt of Athenos;Schmutz aus Athenos;Shard
+21036;Loam of Wadsley;Lehm aus Wadsley;Shard
+21048;Mud of Ringwood;Schlamm aus Rundholz;Shard
+21060;Bole of Pelops;Stamm aus Pelops;Shard
+21072;Clay of Marton;Tonerde aus Marton;Shard
+21084;Ranger's Tools;Werkzeuge des Waldläufers;Trap
+21096;Candle;Kerze;Trap
+21108;Ill-Fated Box;Kiste des Unheils;Trap
+21120;Necropest;Todespest;Trap
+21132;Hellbloom;Höllenblüte;Trap
+21144;Paranoiabud;Paranoiaknospe;Trap
+21156;Onyxian Gas;Onyxgas;Trap
+21168;Spiritrose;Seelenrose;Trap
+21180;Divine Elixir;Göttliches Elixier;Other
+21192;Royotian Wine;Royotianischer Wein;Other
+21204;Captured Jhana Fighter;Gefangener Jhana-Kämpfer;Captured Monster
+21216;Captured Jhana Shaman;Gefangener Jhana-Schamane;Captured Monster
+21228;Captured Jhana Magus;Gefangener Jhana-Zauberer;Captured Monster
+21240;Captured Jhana Archfighter;Gefangene Schimäre;Captured Monster
+21252;Captured Jhana Archshaman;Gefangener Jhana-Erzschamane;Captured Monster
+21264;Captured Jhana Archmagus;Gefangener Jhana-Erzzauberer;Captured Monster
+21276;Captured Tsuchigumo;Gefangener Tsuchigumo;Captured Monster
+21288;Captured Yellowcap Vanguard;Gefangene Gelbmützen-Vorhut;Captured Monster
+21300;Captured Bloodypaw;Gefangene Blutpfote;Captured Monster
+21312;Captured Sarutahiko;Gefangener Sarutahiko;Captured Monster
+21324;Captured Yellowcap Soldier;Gefangener Gelbmützen-Soldat;Captured Monster
+21336;Captured Ravenhowl;Gefangener Rabenschrei;Captured Monster
+21348;Captured Malevolence;Gefangene Niedertracht;Captured Monster
+21360;Captured Redcap Champion;Gefangener Rotmützen-Soldat;Captured Monster
+21372;Captured Hypnos;Gefangener Hypnos;Captured Monster
+21384;Captured Raginos;Gefangener Raginos;Captured Monster
+21396;Captured Glagonos;Gefangener Glagonos;Captured Monster
+21408;Captured Pygmalion;Gefangener Pygmäe;Captured Monster
+21420;Captured Jade Golem;Gefangener Jadegolem;Captured Monster
+21432;Captured Suicide;Gefangener Selbstmord;Captured Monster
+21444;Captured Nucadora;Gefangener Nucadora;Captured Monster
+21456;Captured Thanatos;Gefangener Thanatos;Captured Monster
+21468;Captured Prometheus;Gefangener Prometheus;Captured Monster
+21480;Captured Daedalus;Gefangener Daedalus;Captured Monster
+21492;Captured Madman;Gefangener Verrückter;Captured Monster
+21504;Captured Raptor;Gefangener Raptor;Captured Monster
+21516;Captured Wild Raptor;Gefangener Wilder Raptor;Captured Monster
+21528;Captured Bullfighter;Gefangener Stierkämpfer;Captured Monster
+21540;Captured King Raptor;Gefangener Königsraptor;Captured Monster
+21552;Captured Wild Raptor;Gefangener Wilder Raptor;Captured Monster
+21564;Captured Bullfighter;Gefangener Stierkämpfer;Captured Monster
+21576;Captured Bloodthirsty Beast;Gefangene Blutrünstige Bestie;Captured Monster
+21588;Captured Carnotaurus;Gefangener Carnotaurus;Captured Monster
+21600;Captured Jota;Gefangener Jota;Captured Monster
+21612;Captured Miura;Gefangener Miura;Captured Monster
+21624;Captured Islero;Gefangener Islero;Captured Monster
+21636;Captured Urraco;Gefangener Urraco;Captured Monster
+21648;Captured Jarama;Gefangener Jarama;Captured Monster
+21660;Captured Espada;Gefangener Espada;Captured Monster
+21672;Captured Divain;Gefangener Divain;Captured Monster
+21684;Captured Flauros;Gefangener Flauros;Captured Monster
+21696;Captured VÃ¡nargand;Gefangener Vanargand;Captured Monster
+21708;Captured Divain;Gefangener Divain;Captured Monster
+21720;Captured Greater Flauros;Gefangener Riesenflauros;Captured Monster
+21732;Captured VÃ¡nargand;Gefangener Vanargand;Captured Monster
+21744;Captured Fatal Fang;Gefangener Tödlicher Reißzahn;Captured Monster
+21756;Captured Skoll;Gefangener Skoll;Captured Monster
+21768;Captured Swiftmane;Gefangene Flinkmähne;Captured Monster
+21780;Captured Sharpclaw;Gefangene Scharfklaue;Captured Monster
+21792;Captured Ophois;Gefangener Ophois;Captured Monster
+21804;Captured Bloodhorn;Gefangenes Bluthorn;Captured Monster
+21816;Captured Spritbeast Ki;Gefangene Seelenbestie Ki;Captured Monster
+21828;Captured Spritbeast Rin;Gefangene Seelenbestie Rin;Captured Monster
+21840;Captured Chimera;Gefangene Schimäre;Captured Monster
+21852;Captured Misericorde;Gefangene Misericorde;Captured Monster
+21864;Captured Rockgrater;Gefangener Felsschaber;Captured Monster
+21876;Captured King Chimera;Gefangene Königsschimäre;Captured Monster
+21888;Captured Misericorde;Gefangene Misericorde;Captured Monster
+21900;Captured Greater Rockgrater;Gefangener Riesenfelsschaber;Captured Monster
+21912;Captured Ground Cobra;Gefangene Erdkobra;Captured Monster
+21924;Captured Notsuchi;Gefangener Notsuchi;Captured Monster
+21936;Captured Death Puppet;Gefangene Todespuppe;Captured Monster
+21948;Captured Hellbiter;Gefangener Höllenbeißer;Captured Monster
+21960;Captured Obstructor;Gefangener Blockierer;Captured Monster
+21972;Captured Antares;Gefangener Antares;Captured Monster
+21984;Captured Echidna;Gefangene Echidna;Captured Monster
+21996;Captured Rapunzel;Gefangene Rapunzel;Captured Monster
+22008;Captured Hydra;Gefangene Hydra;Captured Monster
+22020;Captured Torpedo;Gefangener Torpedo;Captured Monster
+22032;Captured Bune;Gefangener Bune;Captured Monster
+22044;Captured Hydra;Gefangene Hydra;Captured Monster
+22056;Captured Torpedo;Gefangener Torpedo;Captured Monster
+22068;Captured Bune;Gefangener Bune;Captured Monster
+22080;Captured Bluejaws;Gefangener Blauhai;Captured Monster
+22092;Captured Siren;Gefangene Sirene;Captured Monster
+22104;Captured Orca;Gefangener Killerwal;Captured Monster
+22116;Captured Boina;Gefangener Boina;Captured Monster
+22128;Captured Starfish;Gefangener Seestern;Captured Monster
+22140;Captured Medusa;Gefangene Medusa;Captured Monster
+22152;Captured Stheno;Gefangener Stheno;Captured Monster
+22164;Captured Euryale;Gefangener Euryale;Captured Monster
+22176;Captured Imp;Gefangener Wichtel;Captured Monster
+22188;Captured Quien;Gefangener Quien;Captured Monster
+22200;Captured Donda;Gefangener Donda;Captured Monster
+22212;Captured Imp;Gefangener Wichtel;Captured Monster
+22224;Captured Quien;Gefangener Quien;Captured Monster
+22236;Captured Dondada;Gefangener Dondada;Captured Monster
+22248;Captured Crimson Ape;Gefangener Blutroter Menschenaffe;Captured Monster
+22260;Captured Pan;Gefangener Schimpanse;Captured Monster
+22272;Captured Golden Ape;Gefangener Goldener Menschenaffe;Captured Monster
+22284;Captured Silver Ape;Gefangener Silberner Menschenaffe;Captured Monster
+22296;Captured Satyri;Gefangener Satyri;Captured Monster
+22308;Captured Sugriva;Gefangener Sugriva;Captured Monster
+22320;Captured Vali;Gefangener Vali;Captured Monster
+22332;Captured Hanumann;Gefangener Hanumann;Captured Monster
+22344;Captured Vile Lizard;Gefangene Abscheuliche Echse;Captured Monster
+22356;Captured Basilisk;Gefangener Basilisk;Captured Monster
+22368;Captured Nidhogg;Gefangener Nidhogg;Captured Monster
+22380;Captured Vile Lizard;Gefangene Abscheuliche Echse;Captured Monster
+22392;Captured Basilisk;Gefangener Basilisk;Captured Monster
+22404;Captured Nidhogg;Gefangener Basilisk;Captured Monster
+22416;Captured Vile Lizard;Gefangene Abscheuliche Echse;Captured Monster
+22428;Captured Basilisk;Gefangener Basilisk;Captured Monster
+22440;Captured Nidhogg;Gefangener Nidhogg;Captured Monster
+22452;Captured Rockbiter;Gefangener Felsbeißer;Captured Monster
+22464;Captured Stegosauria King;Gefangener Stegosauruskönig;Captured Monster
+22476;Captured Amethyst Eater;Gefangener Amethystfresser;Captured Monster
+22488;Captured Lil Salamander;Gefangener Kleiner Salamander;Captured Monster
+22500;Captured Cavemaster;Gefangener Höhlenmeister;Captured Monster
+22512;Captured Ore Crunsher;Gefangener Erzknirscher;Captured Monster
+22524;Captured Gleaming Basilisk;Gefangener Glänzender Basilisk;Captured Monster
+22536;Captured Poison Lizard;Gefangene Giftechse;Captured Monster
+22548;Captured Feral Fang;Gefangener Wilder Reißzahn;Captured Monster
+22560;Captured Azhdaha;Gefangener Azhdaha;Captured Monster
+22572;Captured Weredragon;Gefangener Werdrache;Captured Monster
+22584;Captured Feral Fang;Gefangener Wilder Reißzahn;Captured Monster
+22596;Captured Great Azhdaha;Gefangener Riesenazhdaha;Captured Monster
+22608;Captured Weredragon;Gefangener Werdrache;Captured Monster
+22620;Captured Nanotyrannus;Gefangener Nanotyrannus;Captured Monster
+22632;Captured Crazer;Gefangener Crazer;Captured Monster
+22644;Captured Dracos Blood;Gefangenes Drachenblut;Captured Monster
+22656;Captured Roaming Warrior;Gefangener Streunender Krieger;Captured Monster
+22668;Captured Cheiron;Gefangener Cheiron;Captured Monster
+22680;Captured Pholus;Gefangener Pholus;Captured Monster
+22692;Captured Distress;Gefangenes Elend;Captured Monster
+22704;Captured Greentop;Gefangene Grünspitze;Captured Monster
+22716;Captured Demon;Gefangener Dämon;Captured Monster
+22728;Captured Demon King;Gefangener Dämonenkönig;Captured Monster
+22740;Captured Greater Demon;Gefangener Riesendämon;Captured Monster
+22752;Captured Demon;Gefangener Dämon;Captured Monster
+22764;Captured Demon King;Gefangener Dämonenkönig;Captured Monster
+22776;Captured Greater Demon;Gefangener Riesendämon;Captured Monster
+22788;Captured Mad Demon;Gefangener Verrückter Dämon;Captured Monster
+22800;Captured Savage Commander;Gefangener Grausamer Kommandant;Captured Monster
+22812;Captured Fatal Claw;Gefangene Mörderklaue;Captured Monster
+22824;Captured Bloody Death;Gefangener Blutiger Tod;Captured Monster
+22836;Captured Jurupari;Gefangener Walddämon;Captured Monster
+22848;Captured Mictlantecuhtli;Gefangener Totengott;Captured Monster
+22860;Captured Void Intruder;Gefangener Eindringling der Leere;Captured Monster
+22872;Captured Bluetalon;Gefangene Blaukralle;Captured Monster
+22884;Captured Manticore;Gefangener Mantikor;Captured Monster
+22896;Captured Nussknacker;Gefangener Nussknacker;Captured Monster
+22908;Captured Deathclaw;Gefangene Todesklaue;Captured Monster
+22920;Captured Manticore;Gefangener Mantikor;Captured Monster
+22932;Captured Nussknacker;Gefangener Nussknacker;Captured Monster
+22944;Captured Deathclaw;Gefangene Todesklaue;Captured Monster
+22956;Captured Manticore;Gefangener Mantikor;Captured Monster
+22968;Captured Nussknacker;Gefangener Nussknacker;Captured Monster
+22980;Captured Deathclaw;Gefangene Todesklaue;Captured Monster
+22992;Captured Abominable Beast;Gefangene Widerwärtige Bestie;Captured Monster
+23004;Captured Longtail Soldier;Gefangener Langschwanz-Soldat;Captured Monster
+23016;Captured Paraponera;Gefangener Paraponera;Captured Monster
+23028;Captured Ancient Blue;Gefangener Uralter Blauer;Captured Monster
+23040;Captured Yvalmock;Gefangener Yvalmock;Captured Monster
+23052;Captured Nephthys;Gefangener Nephthys;Captured Monster
+23064;Captured BloodyNussknacker;Gefangener Blutiger Nussknacker;Captured Monster
+23076;Captured Yvalock;Gefangener Yvalock;Captured Monster
+23088;Captured Crab;Gefangene Krabbe;Captured Monster
+23100;Captured Rockshell;Gefangener Felspanzer;Captured Monster
+23112;Captured Armorshell;Gefangene Harnischmuschel;Captured Monster
+23124;Captured Giant Crab;Gefangene Riesenkrabbe;Captured Monster
+23136;Captured Rockshell;Gefangener Felspanzer;Captured Monster
+23148;Captured Giant Armorshell;Gefangene Riesenharnischmuschel;Captured Monster
+23160;Captured Ogreface;Gefangenes Ogergesicht;Captured Monster
+23172;Captured Ocypode;Gefangene Geisterkrabbe;Captured Monster
+23184;Captured Hairy Crab;Gefangene Haarige Krabbe;Captured Monster
+23196;Captured Deathcaller;Gefangener Todesrufer;Captured Monster
+23208;Captured Death Tank;Gefangener Todespanzer;Captured Monster
+23220;Captured Blossom;Gefangene Blüte;Captured Monster
+23232;Captured Floridus;Gefangener Floridus;Captured Monster
+23244;Captured Executioner;Gefangener Henker;Captured Monster
+23256;Captured Dpider;Gefangene Spinne;Captured Monster
+23268;Captured Grand Spider;Gefangene Riesenspinne;Captured Monster
+23280;Captured Arachnid;Gefangener Arachnid;Captured Monster
+23292;Captured Giant Spider;Gefangene Gigantula;Captured Monster
+23304;Captured Grand Spider;Gefangene Riesenspinne;Captured Monster
+23316;Captured Arachnid;Gefangener Arachnid;Captured Monster
+23328;Captured Fibroin;Gefangener Fibroi;Captured Monster
+23340;Captured Whitehorn;Gefangenes Weißhorn;Captured Monster
+23352;Captured Scarlet Beetle;Gefangener Scharlachkäfer;Captured Monster
+23364;Captured Axhead;Gefangener Axtkopf;Captured Monster
+23376;Captured Opiliones;Gefangener Weberknecht;Captured Monster
+23388;Captured Jagd Beetle;Gefangener Jagdkäfer;Captured Monster
+23400;Captured Figurehead;Gefangene Galionsfigur;Captured Monster
+23412;Captured Venomspewer;Gefangener Giftspucker;Captured Monster
+23424;Captured Landworm;Gefangener Landwurm;Captured Monster
+23436;Captured Pest;Gefangene Pest;Captured Monster
+23448;Captured Killer Insect;Gefangenes Killerinsekt;Captured Monster
+23460;Captured Landworm;Gefangener Landwurm;Captured Monster
+23472;Captured SS Pest;Gefangene Killerpest;Captured Monster
+23484;Captured Killer Insect;Gefangenes Killerinsekt;Captured Monster
+23496;Captured Violet Leafhopper;Gefangener Violetter Blatthüpfer;Captured Monster
+23508;Captured Prowler;Gefangener Herumtreiber;Captured Monster
+23520;Captured Pale Leafhopper;Gefangener Blasser Blatthüpfer;Captured Monster
+23532;Captured Bruchid;Gefangener Bruchnid;Captured Monster
+23544;Captured 7-Year-Old Larvae;Gefangene 7 Jahre alte Larve;Captured Monster
+23556;Captured Pilifera;Gefangene Pilifera;Captured Monster
+23568;Captured 17-Year-Old Larvae;Gefangene 17 Jahre alte Larve;Captured Monster
+23580;Captured Deadly Pest;Gefangene Tödliche Pest;Captured Monster
+23592;Captured Grand Beetle;Gefangener Riesenkäfer;Captured Monster
+23604;Captured Millilegs;Gefangener Hundertfüßler;Captured Monster
+23616;Captured Terrapest;Gefangene Erdpest;Captured Monster
+23628;Captured Grand Pest;Gefangener Riesenkäfer;Captured Monster
+23640;Captured Millilegs;Gefangener Hundertfüßler;Captured Monster
+23652;Captured Terrapest;Gefangene Erdpest;Captured Monster
+23664;Captured Senton;Gefangener Senton;Captured Monster
+23676;Captured Millipede;Gefangener Tausendfüßler;Captured Monster
+23688;Captured Sandcrawler;Gefangener Sandkriecher;Captured Monster
+23700;Captured Cataphractus;Gefangener Kataphrakt;Captured Monster
+23712;Captured Dora;Gefangene Dora;Captured Monster
+23724;Captured Steamroller;Gefangener Dampfroller;Captured Monster
+23736;Captured Gustav;Gefangener Gustav;Captured Monster
+23748;Captured Gaias;Gefangene Gaias;Captured Monster
+23760;Captured Glutton;Gefangener Vielfraß;Captured Monster
+23772;Captured Leap Frog;Gefangener Springfrosch;Captured Monster
+23784;Captured Abaddon;Gefangener Abaddon;Captured Monster
+23796;Captured Glutton;Gefangener Vielfraß;Captured Monster
+23808;Captured Leap Frog;Gefangener Springfrosch;Captured Monster
+23820;Captured Abaddon;Gefangener Abaddon;Captured Monster
+23832;Captured Glutton;Gefangener Vielfraß;Captured Monster
+23844;Captured Leaf Frog;Gefangener Springfrosch;Captured Monster
+23856;Captured Abaddon;Gefangener Abaddon;Captured Monster
+23868;Captured Seia;Gefangene Seia;Captured Monster
+23880;Captured Huracan Rana;Gefangener Hurrikanfrosch;Captured Monster
+23892;Captured Firtoad;Gefangene Tannenkröte;Captured Monster
+23904;Captured Apep;Gefangener Apep;Captured Monster
+23916;Captured Ciclon Rana;Gefangener Zyklonfrosch;Captured Monster
+23928;Captured Snowtoad;Gefangene Schneekröte;Captured Monster
+23940;Captured Dragon Rana;Gefangener Drachenfrosch;Captured Monster
+23952;Captured Vodianoi;Gefangener Vodianoi;Captured Monster
+23964;Captured Oarfish;Gefangener Ruderfisch;Captured Monster
+23976;Captured Wailing Larva;Gefangene Heulende Larve;Captured Monster
+23988;Captured Apsara;Gefangener Aspara;Captured Monster
+24000;Captured Oarfish;Gefangener Ruderfisch;Captured Monster
+24012;Captured Wailing Larva;Gefangene Heulende Larve;Captured Monster
+24024;Captured Apsara;Gefangener Aspara;Captured Monster
+24036;Captured Clione;Gefangene Clione;Captured Monster
+24048;Captured Malach;Gefangener Malach;Captured Monster
+24060;Captured Maias;Gefangener Maias;Captured Monster
+24072;Captured Malevolencia;Gefangene Malevolenzia;Captured Monster
+24084;Captured Wandering Plague;Gefangener Wandernde Plage;Captured Monster
+24096;Captured Clytie;Gefangene Clytie;Captured Monster
+24108;Captured Lympha;Gefangene Lympha;Captured Monster
+24120;Captured Fallen Angel;Gefangener Gefallener Engel;Captured Monster
+24132;Captured Papillon;Gefangener Falter;Captured Monster
+24144;Captured Nymphalidae;Gefangener Edelfalter;Captured Monster
+24156;Captured Chdinamoth;Gefangene Schlangenmotte;Captured Monster
+24168;Captured Grater Papillon;Gefangener Riesenfalter;Captured Monster
+24180;Captured Greater Nymphalidae;Gefangener Riesenedelfalter;Captured Monster
+24192;Captured Greater Echidnamoth;Gefangene Riesenschlangenmotte;Captured Monster
+24204;Captured Deathmorph;Gefangener Todeswandler;Captured Monster
+24216;Captured Divine Flyer;Gefangener Göttlicher Flieger;Captured Monster
+24228;Captured Skipper;Gefangener Kapitän;Captured Monster
+24240;Captured Swallowtail Devil;Gefangener Frackteufel;Captured Monster
+24252;Captured Yamamai;Gefangener Seidenspinner;Captured Monster
+24264;Captured Dreamwatcher;Gefangener Traumwächter;Captured Monster
+24276;Captured Birdwing;Gefangene Vogelschwinge;Captured Monster
+24288;Captured Artaxa;Gefangener Artaxa;Captured Monster
+24300;Captured Amoeba;Gefangene Amöbe;Captured Monster
+24312;Captured Dagon;Gefangener Seelenlord;Captured Monster
+24324;Captured Charybdis;Gefangene Charibdis;Captured Monster
+24336;Captured Giant Amoeba;Gefangene Riesenamöbe;Captured Monster
+24348;Captured Dagon;Gefangener Dagon;Captured Monster
+24360;Captured Charybdis;Gefangene Charibdis;Captured Monster
+24372;Captured Running Sludge;Gefangener Fließender Schlamm;Captured Monster
+24384;Captured Baroque Pearl;Gefangene Barockperle;Captured Monster
+24396;Captured Liquid Lolly;Gefangener Flüssiger Schleim;Captured Monster
+24408;Captured Octoeyes;Gefangenes Achtauge;Captured Monster
+24420;Captured Ohaguro;Gefangener Ohaguro;Captured Monster
+24432;Captured Nightmare;Gefangener Albtraum;Captured Monster
+24444;Captured Blob;Gefangener Blob;Captured Monster
+24456;Captured Dark;Gefangene Dunkelheit;Captured Monster
+24468;Captured Rosefly;Gefangene Rosenfliege;Captured Monster
+24480;Captured Shellfly;Gefangene Panzerfliege;Captured Monster
+24492;Captured Anthophilum;Gefangene Antophila;Captured Monster
+24504;Captured Rosefly;Gefangene Rosenfliege;Captured Monster
+24516;Captured Giant Shellfly;Gefangene Riesenpanzerfliege;Captured Monster
+24528;Captured Anthophilum;Gefangene Antophila;Captured Monster
+24540;Captured Sesiidae;Gefangener Glaslügler;Captured Monster
+24552;Captured Royal Guard;Gefangene Königswache;Captured Monster
+24564;Captured Chigger;Gefangener Sandfloh;Captured Monster
+24576;Captured Deathstinger;Gefangener Todesstachel;Captured Monster
+24588;Captured Sonicflyer;Gefangener Schallflieger;Captured Monster
+24600;Captured Goldenflyer;Gefangener Goldflieger;Captured Monster
+24612;Captured Forgotten Queen;Gefangene Vergessene Königin;Captured Monster
+24624;Captured Ruler of the Dawn;Gefangener Herrscher der Dämmerung;Captured Monster
+24636;Captured Skull Scavanger;Gefangener Schädel-Aasfresser;Captured Monster
+24648;Captured Vulture;Gefangener Aasgeier;Captured Monster
+24660;Captured Hraesvelg;Gefangener Hraesvelg;Captured Monster
+24672;Captured Guillotine Tail;Gefangener Fallbeilschwanz;Captured Monster
+24684;Captured Tsikali;Gefangener Tsikali;Captured Monster
+24696;Captured Onmoraki;Gefangener Onmoraki;Captured Monster
+24708;Captured Jatayu;Gefangener Jatayu;Captured Monster
+24720;Captured Sempati;Gefangene Sempati;Captured Monster
+24732;Captured Nightingale;Gefangene Nachtigall;Captured Monster
+24744;Captured Tsenahale;Gefangene Tsenahale;Captured Monster
+24756;Captured Wakinyan;Gefangener Wakinyan;Captured Monster
+24768;Captured Wyvern;Gefangener Flügeldrache;Captured Monster
+24780;Captured Aeronite;Gefangener Aerolite;Captured Monster
+24792;Captured Diatryma;Gefangene Diatryma;Captured Monster
+24804;Captured Narwhal;Gefangener Narwal;Captured Monster
+24816;Captured Deadly Swooper;Gefangener Tödlicher Schnapper;Captured Monster
+24828;Captured Longbeak;Gefangener Langschnabel;Captured Monster
+24840;Captured Archaeopteryx;Gefangener Archaeopteryx;Captured Monster
+24852;Captured Lindblum;Gefangenes Lindblum;Captured Monster
+24864;Captured Chua;Gefangener Chua;Captured Monster
+24876;Captured Reaper;Gefangener Sensenmann;Captured Monster
+24888;Captured Wrath;Gefangene Wut;Captured Monster
+24900;Captured Blackwing;Gefangene Dunkelschwinge;Captured Monster
+24912;Captured Spiritlord;Gefangener Seelenlord;Captured Monster
+24924;Captured Glasya Labolas;Gefangene Glasya Labolas;Captured Monster
+24936;Captured Mad Hurricane;Gefangener Wilder Hurrikan;Captured Monster
+24948;Captured Seething Wind;Gefangener Brodelnder Wind;Captured Monster
+24960;Captured Dominator;Gefangener Dominator;Captured Monster
+24972;Captured Ikaros Feather;Gefangene Ikarusfeder;Captured Monster
+24984;Captured Tempest;Gefangenes Gewitter;Captured Monster
+24996;Captured Tornado;Gefangener Tornado;Captured Monster
+25008;Captured Heaven's Lord;Gefangener Himmelherrscher;Captured Monster
+25020;Captured Stymphalian Bird;Gefangener Stymphalidenvogel;Captured Monster
+25032;Captured Vile Plant;Gefangene Abscheuliche Pflanze;Captured Monster
+25044;Captured Anthrovore;Gefangener Fleischfresser;Captured Monster
+25056;Captured Mandragora;Gefangener Mandragora;Captured Monster
+25068;Captured Vile Plant;Gefangene Abscheuliche Pflanze;Captured Monster
+25080;Captured Anthrovore;Gefangener Fleischfresser;Captured Monster
+25092;Captured Mandragora;Gefangener Mandragora;Captured Monster
+25104;Captured Red Tears;Gefangene Rotträne;Captured Monster
+25116;Captured Deadwood;Gefangener Todesbann;Captured Monster
+25128;Captured Rotten Plant;Gefangene Verfaulte Pflanze;Captured Monster
+25140;Captured Rotten Tears;Gefangene Verfaulte Träne;Captured Monster
+25152;Captured Raging Persephone;Gefangene Wütende Persephone;Captured Monster
+25164;Captured Condemner;Gefangene Verdammnis;Captured Monster
+25176;Captured Weeper;Gefangene Trauer;Captured Monster
+25188;Captured Narcissus;Gefangene Narzisse;Captured Monster
+25200;Captured Vicious Plant;Gefangene Bösartige Pflanze;Captured Monster
+25212;Captured Feralwood;Gefangener Wildbaum;Captured Monster
+25224;Captured Spiritwood;Gefangener Seelenbaum;Captured Monster
+25236;Captured Vicious Plant;Gefangene Bösartige Pflanze;Captured Monster
+25248;Captured Feralwood;Gefangener Wildbaum;Captured Monster
+25260;Captured Godwood;Gefangener Götterbaum;Captured Monster
+25272;Captured King Plant;Gefangene Königspflanze;Captured Monster
+25284;Captured Longhorn;Gefangenes Langhorn;Captured Monster
+25296;Captured Deatheater;Gefangener Todesfresser;Captured Monster
+25308;Captured Ruddywood;Gefangener Rotbaum;Captured Monster
+25320;Captured Miasmic Reaper;Gefangener Ansteckender Sensenmann;Captured Monster
+25332;Captured Ashvastha;Gefangener Ashvastha;Captured Monster
+25344;Captured Irminsul;Gefangener Irminsul;Captured Monster
+25356;Captured Devilwood;Gefangener Teufelsbaum;Captured Monster
+25368;Captured Evil Eye;Gefangenes Böses Auge;Captured Monster
+25380;Captured Manhunter;Gefangener Menschenjäger;Captured Monster
+25392;Captured Death;Gefangener Tod;Captured Monster
+25404;Captured Dark Helios;Gefangener Dunkler Helios;Captured Monster
+25416;Captured Blackmoon;Gefangener Schwarzmond;Captured Monster
+25428;Captured Eye of Damnation;Gefangenes Auge der Verdammnis;Captured Monster
+25440;Captured Eye of Doom;Gefangenes Auge des Unheils;Captured Monster
+25452;Captured Eye of Terror;Gefangenes Auge des Terrors;Captured Monster
+25464;Captured Observer;Gefangener Beobachter;Captured Monster
+25476;Captured Monopole;Gefangener Beobachter;Captured Monster
+25488;Captured Eye of Flame;Gefangenes Flammenauge;Captured Monster
+25500;Captured Dragon;Gefangener Drache;Captured Monster
+25512;Captured Abelisk;Gefangener Abelisk;Captured Monster
+25524;Captured Brynhildr;Gefangene Brünnhilde;Captured Monster
+25536;Captured Dread Dragon;Gefangener Furchterregender Drache;Captured Monster
+25548;Captured Noble Abelisk;Gefangener Stattlicher Abelisk;Captured Monster
+25560;Captured Glorious Brynhildr;Gefangene Glorreiche Brünnhilde;Captured Monster
+25572;Captured Goko;Gefangener Goko;Captured Monster
+25584;Captured Gomei;Gefangener Gomei;Captured Monster
+25596;Captured Gojun;Gefangener Gojun;Captured Monster
+25608;Captured Go;Gefangener Go;Captured Monster
+25620;Captured Sirrush;Gefangener Sirrush;Captured Monster
+25632;Captured Falak;Gefangener Falak;Captured Monster
+25644;Captured Bai Ze;Gefangener Bai Ze;Captured Monster
+25656;Captured Holy Servant;Gefangener Heiliger Diener;Captured Monster
+25668;Captured Giant;Gefangener Riese;Captured Monster
+25680;Captured Barbarossa;Gefangener Barbarossa;Captured Monster
+25692;Captured Ancbolder;Gefangener Ancbolder;Captured Monster
+25704;Captured Sledgehammer;Gefangener Vorschlaghammer;Captured Monster
+25716;Captured Caligula;Gefangener Caligula;Captured Monster
+25728;Captured Austri;Gefangener Ostri;Captured Monster
+25740;Captured Vestri;Gefangener Westri;Captured Monster
+25752;Captured Quebradora;Gefangene Quebradora;Captured Monster
+25764;Captured Ymir;Gefangene Ymir;Captured Monster
+25776;Captured Nordri;Gefangener Nordri;Captured Monster
+25788;Captured Sudri;Gefangener Südri;Captured Monster
+25800;Captured Albic Qisti;Gefangener Albik-Qisti;Captured Monster
+25812;Captured Hiruko;Gefangene Hiruko;Captured Monster
+25824;Captured Axolotl;Gefangener Axolotl;Captured Monster
+25836;Captured Hangman;Gefangener Henker;Captured Monster
+25848;Captured Puck;Gefangener Puck;Captured Monster
+25860;Captured Harpylia;Gefangene Harpylia;Captured Monster
+25872;Captured Valkyrie;Gefangene Walküre;Captured Monster
+25884;Captured Oblivion Wing;Gefangene Schwinge des Vergessens;Captured Monster
+25896;Captured Anima;Gefangener Anima;Captured Monster
+25908;Captured Terror Wing;Gefangene Terrorschwinge;Captured Monster
+25920;Captured Mercurius;Gefangener Mercurius;Captured Monster
+25932;Blackrose Nectar;Schwarzrosennektar;Other
+25944;Parasitic Oil;Parasitenöl;Other
+25956;Shadowwood Seed;Schattenbaumsamen;Other
+25968;Cosmosand;Kosmossand;Other
+25980;Nightblossom Seed;Nachtblütensamen;Other
+25992;Empty Aerial Insecta Shell;Leerer Luftinsektenpanzer;Other
+26004;Irised Stone;Regenbogenstein;Other
+26016;Royotian Ore;Royotianisches Erz;Other
+26028;Parfumlily;Parfümlilie;Other
+26040;Weapon Recipe 1;Waffenrezept 1;Other
+26052;Weapon Recipe 2;Waffenrezept 2;Other
+26064;Weapon Recipe 3;Waffenrezept 3;Other
+26076;Weapon Recipe 4;Waffenrezept 4;Other
+26088;Weapon Recipe 5;Waffenrezept 5;Other
+26100;Weapon Recipe 6;Waffenrezept 6;Other
+26112;Weapon Recipe 7;Waffenrezept 7;Other
+26124;Weapon Recipe 8;Waffenrezept 8;Other
+26136;Weapon Recipe 9;Waffenrezept 9;Other
+26148;Weapon Recipe 10;Waffenrezept 10;Other
+26160;Weapon Recipe 11;Waffenrezept 11;Other
+26172;Weapon Recipe 12;Waffenrezept 12;Other
+26184;Weapon Recipe 13;Waffenrezept 13;Other
+26196;Weapon Recipe 14;Waffenrezept 14;Other
+26208;Weapon Recipe 15;Waffenrezept 15;Other
+26220;Weapon Recipe 16;Waffenrezept 16;Other
+26232;Weapon Recipe 17;Waffenrezept 17;Other
+26244;Weapon Recipe 18;Waffenrezept 18;Other
+26256;Weapon Recipe 19;Waffenrezept 19;Other
+26268;Weapon Recipe 20;Waffenrezept 20;Other
+26280;Weapon Recipe 21;Waffenrezept 21;Other
+26292;Weapon Recipe 22;Waffenrezept 22;Other
+26304;Weapon Recipe 23;Waffenrezept 23;Other
+26316;Weapon Recipe 24;Waffenrezept 24;Other
+26328;Weapon Recipe 25;Waffenrezept 25;Other
+26340;Weapon Recipe 26;Waffenrezept 26;Other
+26352;Weapon Recipe 27;Waffenrezept 27;Other
+26364;Weapon Recipe 28;Waffenrezept 28;Other
+26376;Weapon Recipe 29;Waffenrezept 29;Other
+26388;Weapon Recipe 30;Waffenrezept 30;Other
+26400;Weapon Recipe 31;Waffenrezept 31;Other
+26412;Weapon Recipe 32;Waffenrezept 32;Other
+26424;Weapon Recipe 33;Waffenrezept 33;Other
+26436;Weapon Recipe 34;Waffenrezept 34;Other
+26448;Weapon Recipe 35;Waffenrezept 35;Other
+26460;Weapon Recipe 36;Waffenrezept 36;Other
+26472;Weapon Recipe 37;Waffenrezept 37;Other
+26484;Weapon Recipe 38;Waffenrezept 38;Other
+26496;Weapon Recipe 39;Waffenrezept 39;Other
+26508;Weapon Recipe 40;Waffenrezept 40;Other
+26520;Weapon Recipe 41;Waffenrezept 41;Other
+26532;Weapon Recipe 42;Waffenrezept 42;Other
+26544;Weapon Recipe 43;Waffenrezept 43;Other
+26556;Weapon Recipe 44;Waffenrezept 44;Other
+26568;Weapon Recipe 45;Waffenrezept 45;Other
+26580;Weapon Recipe 46;Waffenrezept 46;Other
+26592;Weapon Recipe 47;Waffenrezept 47;Other
+26604;Weapon Recipe 48;Waffenrezept 48;Other
+26616;Weapon Recipe 49;Waffenrezept 49;Other
+26628;Weapon Recipe 50;Waffenrezept 50;Other
+26640;Weapon Recipe 51;Waffenrezept 51;Other
+26652;Weapon Recipe 52;Waffenrezept 52;Other
+26664;Weapon Recipe 53;Waffenrezept 53;Other
+26676;Weapon Recipe 54;Waffenrezept 54;Other
+26688;Weapon Recipe 55;Waffenrezept 55;Other
+26700;Weapon Recipe 56;Waffenrezept 56;Other
+26712;Weapon Recipe 57;Waffenrezept 57;Other
+26724;Weapon Recipe 58;Waffenrezept 58;Other
+26736;Weapon Recipe 59;Waffenrezept 59;Other
+26748;Weapon Recipe 60;Waffenrezept 60;Other
+26760;Weapon Recipe 61;Waffenrezept 61;Other
+26772;Weapon Recipe 62;Waffenrezept 62;Other
+26784;Weapon Recipe 63;Waffenrezept 63;Other
+26796;Weapon Recipe 64;Waffenrezept 64;Other
+26808;Necklace Recipe 1;Halskettenrezept 1;Other
+26820;Necklace Recipe 2;Halskettenrezept 2;Other
+26832;Necklace Recipe 3;Halskettenrezept 3;Other
+26844;Necklace Recipe 4;Halskettenrezept 4;Other
+26856;Necklace Recipe 5;Halskettenrezept 5;Other
+26868;Necklace Recipe 6;Halskettenrezept 6;Other
+26880;Necklace Recipe 7;Halskettenrezept 7;Other
+26892;Necklace Recipe 8;Halskettenrezept 8;Other
+26904;Ring Recipe 1;Ringrezept 1;Other
+26916;Ring Recipe 2;Ringrezept 2;Other
+26928;Ring Recipe 3;Ringrezept 3;Other
+26940;Ring Recipe 4;Ringrezept 4;Other
+26952;Ring Recipe 5;Ringrezept 5;Other
+26964;Ring Recipe 6;Ringrezept 6;Other
+26976;Ring Recipe 7;Ringrezept 7;Other
+26988;Ring Recipe 8;Ringrezept 8;Other
+27000;Armlet Recipe 1;Armreifrezept 1;Other
+27012;Armlet Recipe 2;Armreifrezept 2;Other
+27024;Armlet Recipe 3;Armreifrezept 3;Other
+27036;Armlet Recipe 4;Armreifrezept 4;Other
+27048;Armlet Recipe 5;Armreifrezept 5;Other
+27060;Armlet Recipe 6;Armreifrezept 6;Other
+27072;Armlet Recipe 7;Armreifrezept 7;Other
+27084;Armlet Recipe 8;Armreifrezept 8;Other
+27096;Earring Recipe 1;Ohrringrezept 1;Other
+27108;Earring Recipe 2;Ohrringrezept 2;Other
+27120;Earring Recipe 3;Ohrringrezept 3;Other
+27132;Earring Recipe 4;Ohrringrezept 4;Other
+27144;Earring Recipe 5;Ohrringrezept 5;Other
+27156;Earring Recipe 6;Ohrringrezept 6;Other
+27168;Earring Recipe 7;Ohrringrezept 7;Other
+27180;Earring Recipe 8;Ohrringrezept 8;Other
+27192;Sash Recipe 1;Schärpenrezept 1;Other
+27204;Sash Recipe 2;Schärpenrezept 2;Other
+27216;Sash Recipe 3;Schärpenrezept 3;Other
+27228;Sash Recipe 4;Schärpenrezept 4;Other
+27240;Sash Recipe 5;Schärpenrezept 5;Other
+27252;Sash Recipe 6;Schärpenrezept 6;Other
+27264;Sash Recipe 7;Schärpenrezept 7;Other
+27276;Sash Recipe 8;Schärpenrezept 8;Other
+27288;Anklet Recipe 1;Fußkettenrezept 1;Other
+27300;Anklet Recipe 2;Fußkettenrezept 2;Other
+27312;Anklet Recipe 3;Fußkettenrezept 3;Other
+27324;Anklet Recipe 4;Fußkettenrezept 4;Other
+27336;Anklet Recipe 5;Fußkettenrezept 5;Other
+27348;Anklet Recipe 6;Fußkettenrezept 6;Other
+27360;Anklet Recipe 7;Fußkettenrezept 7;Other
+27372;Anklet Recipe 8;Fußkettenrezept 8;Other
+27384;Charm Recipe 1;Amulettrezept 1;Other
+27396;Charm Recipe 2;Amulettrezept 2;Other
+27408;Charm Recipe 3;Amulettrezept 3;Other
+27420;Charm Recipe 4;Amulettrezept 4;Other
+27432;Charm Recipe 5;Amulettrezept 5;Other
+27444;Charm Recipe 6;Amulettrezept 6;Other
+27456;Charm Recipe 7;Amulettrezept 7;Other
+27468;Charm Recipe 8;Amulettrezept 8;Other
+27480;Gem Recipe 1;Edelsteinrezept 1;Other
+27492;Gem Recipe 2;Edelsteinrezept 2;Other
+27504;Gem Recipe 3;Edelsteinrezept 3;Other
+27516;Gem Recipe 4;Edelsteinrezept 4;Other
+27528;Gem Recipe 5;Edelsteinrezept 5;Other
+27540;Gem Recipe 6;Edelsteinrezept 6;Other
+27552;Gem Recipe 7;Edelsteinrezept 7;Other
+27564;Gem Recipe 8;Edelsteinrezept 8;Other
+27576;Blueprint 1;Plan 1;Other
+27588;Blueprint 2;Plan 2;Other
+27600;Blueprint 3;Plan 3;Other
+27612;Blueprint 4;Plan 4;Other
+27624;Blueprint 5;Plan 5;Other
+27636;Blueprint 6;Plan 6;Other
+27648;Blueprint 7;Plan 7;Other
+27660;Blueprint 8;Plan 8;Other
+27672;Blueprint 9;Plan 9;Other
+27684;Blueprint 10;Plan 10;Other
+27696;Blueprint 11;Plan 11;Other
+27708;Blueprint 12;Plan 12;Other
+27720;Blueprint 13;Plan 13;Other
+27732;Blueprint 14;Plan 14;Other
+27744;Blueprint 15;Plan 15;Other
+27756;Blueprint 16;Plan 16;Other
+27768;Blueprint 17;Plan 17;Other
+27780;Blueprint 18;Plan 18;Other
+27792;Blueprint 19;Plan 19;Other
+27804;Blueprint 20;Plan 20;Other
+27816;Blueprint 21;Plan 21;Other
+27828;Blueprint 22;Plan 22;Other
+27840;Blueprint 23;Plan 23;Other
+27852;Blueprint 24;Plan 24;Other
+27864;Blueprint 25;Plan 25;Other
+27876;Blueprint 26;Plan 26;Other
+27888;Blueprint 27;Plan 27;Other
+27900;Blueprint 28;Plan 28;Other
+27912;Blueprint 29;Plan 29;Other
+27924;Blueprint 30;Plan 30;Other
+27936;Blueprint 31;Plan 31;Other
+27948;Blueprint 32;Plan 32;Other
+27960;Blueprint 33;Plan 33;Other
+27972;Blueprint 34;Plan 34;Other
+27984;Blueprint 35;Plan 35;Other
+27996;Blueprint 36;Plan 36;Other
+28008;Blueprint 37;Plan 37;Other
+28020;Blueprint 38;Plan 38;Other
+28032;Blueprint 39;Plan 39;Other
+28044;Blueprint 40;Plan 40;Other
+28056;Blueprint 41;Plan 41;Other
+28068;Blueprint 42;Plan 42;Other
+28080;Blueprint 43;Plan 43;Other
+28092;Blueprint 44;Plan 44;Other
+28104;Blueprint 45;Plan 45;Other
+28116;Blueprint 46;Plan 46;Other
+28128;Blueprint 47;Plan 47;Other
+28140;Blueprint 48;Plan 48;Other
+28152;Blueprint 49;Plan 49;Other
+28164;Blueprint 50;Plan 50;Other
+28176;Blueprint 51;Plan 51;Other
+28188;Blueprint 52;Plan 52;Other
+28200;Blueprint 53;Plan 53;Other
+28212;Blueprint 54;Plan 54;Other
+28224;Blueprint 55;Plan 55;Other
+28236;Blueprint 56;Plan 56;Other
+28248;Blueprint 57;Plan 57;Other
+28260;Blueprint 58;Plan 58;Other
+28272;Blueprint 59;Plan 59;Other
+28284;Blueprint 60;Plan 60;Other
+28296;Blueprint 61;Plan 61;Other
+28308;Blueprint 62;Plan 62;Other
+28320;Blueprint 63;Plan 63;Other
+28332;Blueprint 64;Plan 64;Other
+28344;Elven Core;Elfenkern;Ore
+28356;Spriggan Core;Dryadenkern;Ore
+28368;SylphCore;Luftgeistkern;Ore
+28380;Alp Core;Alpkern;Ore
+28392;Oberon Core;Oberonkern;Ore
+28404;CÃºchulainn Core;Cuchulainnkern;Ore
+28416;Merman Core;Neptunkern;Ore
+28428;Ondine Core;Nymphenkern;Ore
+28440;Brownie Core;Däumlingskern;Ore
+28452;Pixie Core;Feenkern;Ore
+28464;Goblin Core;Klabauterkern;Ore
+28476;Mermaid Core;Meerjungfrauenkern;Ore
+28488;Leprechaun Core;Gnomenkern;Ore
+28500;Troll Core;Trollkern;Ore
+28512;Boggart Core;Poltergeistkern;Ore
+28524;Siren Core;Sirenenkern;Ore
+28536;Kobold Core;Koboldkern;Ore
+28548;Banshee Core;Todesfeen;Ore
+28560;Dwarven Core;Zwergenkern;Ore
+28572;Lenan SÃ­dhe Core;Musenkern;Ore
+28584;Kelpie Core;Kelpiekern;Ore
+28596;Knocker Core;Schlägerkern;Ore
+28608;Rough Elven Stone;Rauer Elfenstein;Ore
+28620;Rough Spriggan Stone;Rauer Dryadenstein;Ore
+28632;Rough Sylph Stone;Rauer Luftgeiststein;Ore
+28644;Rough Alp Stone;Rauer Alpstein;Ore
+28656;Rough Oberon Stone;Rauer Oberonstein;Ore
+28668;Rough CÃºchulainn Stone;Rauer Cuchulainnstein;Ore
+28680;Rough Merman Stone;Rauer Neptunstein;Ore
+28692;Rough Ondine Stone;Rauer Nymphenstein;Ore
+28704;Rough Brownie Stone;Rauer Däumlingsstein;Ore
+28716;Rough Pixie Stone;Rauer Feenstein;Ore
+28728;Rough Goblin Stone;Rauer Klabauterstein;Ore
+28740;Rough Mermaid Stone;Rauer Meerjungfrauenstein;Ore
+28752;Rough Leprechaun Stone;Rauer Gnomenstein;Ore
+28764;Rough Troll Stone;Rauer Trollstein;Ore
+28776;Rough Boggart Stone;Rauer Poltergeiststein;Ore
+28788;Rough Siren Stone;Rauer Sirenenstein;Ore
+28800;Rough Kobold Stone;Rauer Koboldstein;Ore
+28812;Rough Banshee Stone;Rauer Todesfeenstein;Ore
+28824;Rough Dwarven Stone;Rauer Zwergenstein;Ore
+28836;Rough Lenan SÃ­dhe Stone;Rauer Musenstein;Ore
+28848;Rough Kelpie Stone;Rauer Kelpiestein;Ore
+28860;Rough Knocker Stone;Rauer Schlägerstein;Ore
+28872;Elf's Emerald;Elfensmaragd;Ore
+28884;Spriggan's Step;Dryadendiamant;Ore
+28896;Sylph Marquise;Luftgeistrubin;Ore
+28908;Alp's Briolette;Alptropfen;Ore
+28920;Oberon's Baguette;Oberonjuwel;Ore
+28932;CÃºchulainn's Heart;Cuchulainnherz;Ore
+28944;Merman's French;Neptundiamant;Ore
+28956;Ondine's Pear;Nymphenrubin;Ore
+28968;Brownie's Bead;Däumlingsperle;Ore
+28980;Pixie's Rose;Feenjuwel;Ore
+28992;Goblin's Drop;Klabautertropfen;Ore
+29004;Mermaid's Barrel;Meerjungfrauenrubin;Ore
+29016;Leprechaun's Scissor;Gnomenjuwel;Ore
+29028;Troll's Cushion;Trolldiamant;Ore
+29040;Boggart's Trapeziod;Altes Katana;Ore
+29052;Siren's Square;Sirenenperle;Ore
+29064;Kobold's Halfdutch;Alter Hammer;Ore
+29076;Banshee's Octagon;Todesfeenjuwel;Ore
+29088;Dwarf's Cabochon;Zwergendiamant;Ore
+29100;Lenan SÃ­dhe's Brilliance;Musenbrillant;Ore
+29112;Kalpie's Single;Kalpiejuwel;Ore
+29124;Knocker's Ceylon;Schlägersmaragd;Ore
+29136;Copper Ore;Kupfererz;Ore
+29148;Iron Ore;Eisenerz;Ore
+29160;Steel Ore;Stahlerz;Ore
+29172;Silver Ore;Silbererz;Ore
+29184;Gold Ore;Golderz;Ore
+29196;Divine Dragonyte;Göttliches Dragonit;Ore
+29208;Mystic Skelenyte;Mystisches Skelenit;Ore
+29220;Blacksteel Ore;Schwarzstahlerz;Ore
+29232;Gaslin Copper;Gaslinkupfer;Ore
+29244;Vackel Iron;Vackeleisen;Ore
+29256;Royotian Steel;Royotianischer Stahl;Ore
+29268;Truesilver Ore;Echtsilbererz;Ore
+29280;Platinum Ore;Platinumerz;Ore
+29292;Dragonicle Ore;Drachenerz;Ore
+29304;Meller Crystal;Mellerkristall;Ore
+29316;Damascus Ore;Damaskuserz;Ore
+29328;Stone;Stein;Ore
+29340;Metal Scraps;Metallteile;Ore
+29352;Lead;Blei;Ore
+29364;Fossilized Tree;Versteinerter Baum;Ore
+29376;Meteorite;Meteorstein;Ore
+29388;Reprocessed Metal;Edelmetall;Ore
+29400;Divine Metal;Göttliches Metall;Ore
+29412;Ruby Crystal;Rubinkristall;Ore
+29424;Emerald Crystal;Smaragdkristall;Ore
+29436;Sapphire Crystal;Saphirkristall;Ore
+29448;Snowy Crystal;Schneekristall;Ore
+29460;Voltaic Crystal;Voltakristall;Ore
+29472;Light Metal;Leichtmetall;Metal
+29484;Jhana Alloy;Jhanalegierung;Metal
+29496;Shadow Metal;Schattenmetall;Metal
+29508;Astra Alloy;Astralegierung;Metal
+29520;Royotian Alloy;Royotianische Legierung;Metal
+29532;Heavy Metal;Schwermetall;Metal
+29544;Primordial Alloy;Primitive Legierung;Metal
+29556;Necrotic Metal;Nekrotisches Metall;Metal
+29568;Obsidian Fragment;Obsidianfragment;Metal
+29580;Imperium;Imperium;Metal
+29592;Orichalcum;Orichalcum;Metal
+29604;Crimson Ore;Purpurerz;Metal
+29616;Jewel Steel;Juwelenstahl;Metal
+29628;Aged Sword;Altes Schwert;Other
+29640;Aged Katana;Altes Katana;Other
+29652;Aged Axe;Alte Axt;Other
+29664;Aged Mace;Alter Hammer;Other
+29676;Aged Spear;Alter Speer;Other
+29688;Aged Staff;Alter Stab;Other
+29700;Aged Shield;Alter Schild;Other
+29712;Aged Necklace;Alte Halskette;Other
+29724;Aged Ring;Alter Ring;Other
+29736;Aged Armlet;Alter Armreif;Other
+29748;Aged Earring;Alter Ohrring;Other
+29760;Aged Sash;Alte Schärpe;Other
+29772;Aged Anklet;Alte Fußkette;Other
+29784;Aged Charm;Altes Amulett;Other
+29796;Dull Sword;Stumpfes Schwert;Other
+29808;Battered Katana;Ramponiertes Katana;Other
+29820;Chipped Axe;Stumpfe Axt;Other
+29832;Rusted Mace;Rostiger Hammer;Other
+29844;Crooked Spear;Krummer Speer;Other
+29856;Bent Staff;Verbogener Stab;Other
+29868;Damaged Shield;Beschädigter Schild;Other
+29880;Decayed Necklace;Zerfallene Halskette;Other
+29892;Broken Ring;Zerbrochener Ring;Other
+29904;Crushed Armlet;Zerdrückter Armreif;Other
+29916;Mangled Earring;Zerquetschter Ohrring;Other
+29928;Torn Sash;Zerfetzte Schärpe;Other
+29940;Deteriorating Anklet;Verfallene Fußkette;Other
+29952;Moldy Charm;Schäbiges Amulett;Other
+29964;Vase Fragment;Vasenfragment;Other
+29976;Urn;Urne;Other
+29988;Antique Pot;Antiker Topf;Other
+30000;Magick Lamp;Magische Lampe;Other
+30012;Heirloom Pot;Erbstück-Topf;Other
+30024;Atrocious Pot;Scheußlicher Topf;Other
+30036;Withered Parchment;Zerfallenes Pergament;Other
+30048;Worn Manuscript;Abgenutztes Manuskript;Other
+30060;Torn Scripture;Zerfetztes Dokument;Other
+30072;Reya's Note;Reyas Vermerk;Other
+30084;Platter Fragment;Schalenfragment;Other
+30096;Antique Platter;Antike Schale;Other
+30108;Royal Platter;Königliche Schale;Other
+30120;Legendary Platter;Legendäre Schale;Other
+30132;Commemorative Medal;Erinnerungsmedaille;Other
+30144;Beastman's Coin;Bestienmannmünze;Other
+30156;Medal of Strength;Medaille der Stärke;Other
+30168;Medal of Strength;Medaille der Liebe;Other
+30180;Heroic Medal;Heldenmedaille;Other
+30192;Djin's Coin;Dschinnmünze;Other
+30204;Clamoring Bulb;Schreiende Knolle;Vegetation
+30216;Surgill Bulb;Surgillknolle;Vegetation
+30228;Eternal Bulb;Ewige Knolle;Vegetation
+30240;Wildgrass;Wildgras;Vegetation
+30252;Equisetum;Equisetum;Vegetation
+30264;Viceweed;Lasterkraut;Vegetation
+30276;Vine;Ranke;Vegetation
+30288;Sturdy Vine;Kräftige Ranke;Vegetation
+30300;Televa Vine;Televaranke;Vegetation
+30312;Ancient Vine;Antike Ranke;Vegetation
+30324;Sweet Nectar;Süßer Nektar;Vegetation
+30336;Fruit of Prela;Frucht von Prela;Vegetation
+30348;Fruit of Knowledge;Frucht des Wissens;Vegetation
+30360;Passionbloom;Passionsblüte;Vegetation
+30372;Amourose;Liebesrose;Vegetation
+30384;Netherblossom;Unterblüte;Vegetation
+30396;Timber;Holz;Vegetation
+30408;Quality Timber;Qualitätsholz;Vegetation
+30420;Zale Timber;Zaleholz;Vegetation
+30432;Ailanthus Branch;Ailanthusast;Vegetation
+30444;World Tree Timber;Weltenbaumholz;Vegetation
+30456;Ebru Seed;Ebrusamen;Vegetation
+30468;Kacz Seed;Kaczsamen;Vegetation
+30480;Ur Seed;Ursamen;Vegetation
+30492;Nage Leaf;Nageblatt;Vegetation
+30504;Titicaca Leaf;Titicacablatt;Vegetation
+30516;Waama Leaf;Waamablatt;Vegetation
+30528;Cotton;Baumwolle;Vegetation
+30540;Superior Cotton;Edle Baumwolle;Vegetation
+30552;Superlative Cotton;Perfekte Baumwolle;Vegetation
+30564;Translucent Water;Schimmerndes Wasser;Mineral
+30576;Distilled Water;Destilliertes Wasser;Mineral
+30588;Ether Water;Ätherwasser;Mineral
+30600;Holy Water;Heiliges Wasser;Mineral
+30612;Natural Oil;Natürliches Öl;Mineral
+30624;Greasy Oil;Fettiges Öl;Mineral
+30636;Red Oil;Rotes Öl;Mineral
+30648;Black Oil;Schwarzes Öl;Mineral
+30660;Natural Gas;Natürliches Gas;Mineral
+30672;Putrefactive Gas;Fauliges Gas;Mineral
+30684;Light Gas;Leichtes Gas;Mineral
+30696;Tashlon Shell;Tashlonpanzer;Mineral
+30708;Lobal Shell;Lobalpanzer;Mineral
+30720;Coral;Koralle;Mineral
+30732;Preinca Shell;Preincapanzer;Mineral
+30744;Oilfly;Ölfliege;Mineral
+30756;Glowfly;Glühfliege;Mineral
+30768;Flockfly;Schwarmfliege;Mineral
+30780;Alpacan Cloth;Alpakawollstoff;Mineral
+30792;Angoran Cloth;Angorawollstoff;Mineral
+30804;Linen Cloth;Leinenstoff;Mineral
+30816;Mule Hide Cloth;Eselshautstoff;Mineral
+30828;Beast Carapace;Bestienpanzer;Monster Component
+30840;Old Carapace;Alter Panzer;Monster Component
+30852;Ancient Carapace;Antiker Panzer;Monster Component
+30864;WitheredHusk;Verwitterte Hülle;Monster Component
+30876;Shed Husk;Schuppenhülle;Monster Component
+30888;Iron Husk;Eisenhülle;Monster Component
+30900;Beast Fur;Bestienfell;Monster Component
+30912;Coarse Beast Fur;Raues Bestienfell;Monster Component
+30924;Beast Hide;Bestienhaut;Monster Component
+30936;Thick Beast Hide;Dicke Bestienhaut;Monster Component
+30948;Fur;Fell;Monster Component
+30960;Superior Fur;Edles Fell;Monster Component
+30972;Superlative Fur;Perfektes Fell;Monster Component
+30984;Tanned Hide;Gegerbte Haut;Monster Component
+30996;Superior Tanned Hide;Edle gegerbte Haut;Monster Component
+31008;Superlative Tanned Hide;Perfekte gegerbte Haut;Monster Component
+31020;Beast Scale;Bestienschuppe;Monster Component
+31032;Polished Scale;Glänzende Schuppe;Monster Component
+31044;Dragon Scale;Drachenschuppe;Monster Component
+31056;Horn;Horn;Monster Component
+31068;Large Horn;Großes Horn;Monster Component
+31080;Fang;Reißzahn;Monster Component
+31092;Large Fang;Großer Reißzahn;Monster Component
+31104;Bone Fragment;Knochenfragment;Monster Component
+31116;Large Bone;Großer Knochen;Monster Component
+31128;Beastman Bone;Bestienmannknochen;Monster Component
+31140;Necrodragon Bone;Todesdrachenknochen;Monster Component
+31152;Pangu's Bone;Panguknochen;Monster Component
+31164;Talon;Kralle;Monster Component
+31176;Large Talon;Große Kralle;Monster Component
+31188;Small Feather;Kleine Feder;Monster Component
+31200;Large Feather;Große Feder;Monster Component
+31212;Large Bird Feather;Große Vogelfeder;Monster Component
+31224;Rotten Meat;Verfaultes Fleisch;Monster Component
+31236;Carcass Meat;Kadaverfleisch;Monster Component
+31248;Insecta Juices;Insektensäfte;Monster Component
+31260;Beast Juices;Bestiensäfte;Monster Component
+31272;Sticky Fluid;Klebriges Sekret;Monster Component
+31284;Gooey Fluid;Zähflüssiges Sekret;Monster Component
+31296;Insect Egg Cluster;Insekteneier;Monster Component
+31308;Beast Egg;Bestienei;Monster Component
+31320;Dragon Egg;Drachenei;Monster Component
+31332;Beastman Rawhide;Panzer eines Landinsekts;Monster Component
+31344;Tanned Beastman Hide;Mystikmonsterhülle;Monster Component
+31356;Land Insecta Husk;Landinsektenhülle;Monster Component
+31368;War Dragon Hust;Kriegsdrachenhülle;Monster Component
+31380;Sky Dragon Husk;Himmelsdrachenhülle;Monster Component
+31392;Mystic Fiend Fur;Mystikmonsterfell;Monster Component
+31404;Archfiend Fur;Erzmonsterfell;Monster Component
+31416;Veastman Rawhide;Bestienmannbalg;Monster Component
+31428;Avian Fiend Rawhide;Vogelmonster;Monster Component
+31440;Faerie Rawhide;Feenbalg;Monster Component
+31452;Land Dragon Rawhide;Landdrachenbalg;Monster Component
+31464;War Dragon Rawhide;Kriegsdrachenbalg;Monster Component
+31476;Darkfiend Rawhide;Schattenmonsterbalg;Monster Component
+31488;Archfiend Rawhide;Erzmonsterbalg;Monster Component
+31500;Thick Mystic Fiend Fur;Dickes Mystikmonsterfell;Monster Component
+31512;Tanned Beastman Hide;Gegerbte Bestienmannhaut;Monster Component
+31524;Tanned Mystic Fiend Hide;Gegerbte Mystikmonsterhaut;Monster Component
+31536;Tanned Land Dragon Hide;Gegerbte Landdrachenhaut;Monster Component
+31548;Tanned War Dragon Hide;Gegerbte Kriegsdrachenhaut;Monster Component
+31560;Tanned Archfiend Hide;Gegerbte Erzmonsterhaut;Monster Component
+31572;Mystic Fiend Scale;Mystikmonsterschuppe;Monster Component
+31584;Land Dragon Scale;Landdrachenschuppe;Monster Component
+31596;War Dragon Scale;Kriegsdrachenschuppe;Monster Component
+31608;Mystic Fiend Horn;Mystikmonsterhorn;Monster Component
+31620;Archfiend Horn;Erzmonsterhorn;Monster Component
+31632;Mystic Fiend Fang;Mystikmonsterreißzahn;Monster Component
+31644;Avian Fiend Fang;Vogelmonsterreißzahn;Monster Component
+31656;Faerie Fang;Feenreißzahn;Monster Component
+31668;Land Dragon Fang;Landdrachenreißzahn;Monster Component
+31680;War Dragon Fang;Kriegsdrachenreißzahn;Monster Component
+31692;Sky Dragon Fang;Himmelsdrachenreißzahn;Monster Component
+31704;Archfiend Fang;Erzmonsterreißzahn;Monster Component
+31716;Beastman Bone;Bestienmannknochen;Monster Component
+31728;Mystic Fiend Bone;Mystikmonsterknochen;Monster Component
+31740;Avian Fiend Bone;Vogelmonsterknochen;Monster Component
+31752;Land Dragon Bone;Landdrachenknochen;Monster Component
+31764;War Dragon Bone;Kriegsdrachenknochen;Monster Component
+31776;Sky Dragon Bone;Himmelsdrachenknochen;Monster Component
+31788;Darkfiend Bone;Schattenmonsterknochen;Monster Component
+31800;Archfiend Bone;Erzmonsterknochen;Monster Component
+31812;Beastman Talon;Bestienmannkralle;Monster Component
+31824;Mystic Fiend Talon;Mystikmonsterkralle;Monster Component
+31836;Avian Fiend Talon;Vogelmonsterkralle;Monster Component
+31848;Land Insecta Talon;Landinsektkralle;Monster Component
+31860;Land Dragon Talon;Landdrachenkralle;Monster Component
+31872;War Dragon Talon;Kriegsdrachenkralle;Monster Component
+31884;Sky Dragon Talon;Himmelsdrachenkralle;Monster Component
+31896;Darkfiend Talon;Schattenmonsterkralle;Monster Component
+31908;Archfiend Talon;Erzmonsterkralle;Monster Component
+31920;Avian Fiend Feather;Vogelmonsterfeder;Monster Component
+31932;Aerial Insecta Feather;Luftinsektenfeder;Monster Component
+31944;Winged Insecta Feather;Flügelinsektenfeder;Monster Component
+31956;Avian Fiend Wing;Vogelmonsterschwinge;Monster Component
+31968;Aerial Insecta Wing;Luftinsektenschwinge;Monster Component
+31980;War Dragon Wing;Kriegsdrachenschwinge;Monster Component
+31992;Sky Dragon Wing;Himmelsdrachenschwinge;Monster Component
+32004;Darkfiend Wing;Schattenmonsterschwinge;Monster Component
+32016;Archfiend Wing;Erzmonsterschwinge;Monster Component
+32028;Mystic Fiend Meat;Mystikmonsterfleisch;Monster Component
+32040;Avian Fiend Meat;Vogelmonsterfleisch;Monster Component
+32052;Winged Insecta Meat;Flügelinsektenfleisch;Monster Component
+32064;Faerie Meat;Feenfleisch;Monster Component
+32076;Land Dragon Meat;Landdrachenfleisch;Monster Component
+32088;War Dragon Meat;Kriegsdrachenfleisch;Monster Component
+32100;Sky Dragon Meat;Himmelsdrachenfleisch;Monster Component
+32112;Darkfiend Meat;Struppige Vanargandmähne;Monster Component
+32124;Archfiend Meat;Erzmonsterfleisch;Monster Component
+32136;Land Insecta Fluid;Schimärenhülle;Monster Component
+32148;Aerial Insecta Fluid;Luftinsektensekret;Monster Component
+32160;Winged Insecta Fluid;Flügelinsektensekret;Monster Component
+32172;Faerie Fluid;Feensekret;Monster Component
+32184;Plantae Fluid;Pflanzensekret;Monster Component
+32196;War Dragon Fluid;Kriegsdrachensekret;Monster Component
+32208;Sky Dragon Fluid;Himmelsdrachensekret;Monster Component
+32220;Darkfiend Fluid;Schattenmonstersekret;Monster Component
+32232;Archfiend Fluid;Erzmonstersekret;Monster Component
+32244;Jhana Talon;Jhanakralle;Monster Component
+32256;Jhana Bone;Jhanaknochen;Monster Component
+32268;Jhana Hide;Jhanahaut;Monster Component
+32280;Jhana Rib;Jhanarippe;Monster Component
+32292;Tanned Jhana Hide;Gegerbte Jhanahaut;Monster Component
+32304;Jhana Hipbone;Jhanahüftknochen;Monster Component
+32316;Moldering Jhana Sword;Vermodertes Jhanaschwert;Monster Component
+32328;Moldering Jhana Spear;Vermoderter Jhanaspeer;Monster Component
+32340;Moldering Jhana Staff;Vermoderter Jhanastab;Monster Component
+32352;Moldering Jhana Katana;Vermodertes Jhanakatana;Monster Component
+32364;Moldering Jhana Shield;Vermoderter Jhanaschild;Monster Component
+32376;Moldering Jhana Mace;Vermoderter Jhanahammer;Monster Component
+32388;Homunculus Hide;Homunkulushaut;Monster Component
+32400;Homunculus Talon;Homunkuluskralle;Monster Component
+32412;Homunculus Horn;Homunkulushorn;Monster Component
+32424;Tanned Homunculus Hide;Gegerbte Homunkulushaut;Monster Component
+32436;Sharp Homunculus Horn;Spitzes Homunkulushorn;Monster Component
+32448;Soft Homunculus Hide;Weiche Homunkulushaut;Monster Component
+32460;Hypnos Fragment;Hypnosfragment;Monster Component
+32472;Raginos Fragment;Raginosfragment;Monster Component
+32484;Glagonos Fragment;Glagonosfragment;Monster Component
+32496;Raptor Scale;Raptorschuppe;Monster Component
+32508;Raptor Horn;Raptorhorn;Monster Component
+32520;Raptor Carapace;Raptorpanzer;Monster Component
+32532;Raptor Hide;Raptorhaut;Monster Component
+32544;Inverted Raptor Talon;Verdrehte Raptorkralle;Monster Component
+32556;Bristly Raptor Scale;Borstige Raptorschuppe;Monster Component
+32568;Thick Raptor Carapace;Dicker Raptorpanzer;Monster Component
+32580;Bulky Wild Raptor Hide;Dicke Wilde Raptorhaut;Monster Component
+32592;Coiled Bullfighter Horn;Gewundenes Stierkämpferhorn;Monster Component
+32604;Pointed King Raptor Fang;Scharfer Königsraptorreißzahn;Monster Component
+32616;Fenris Horn;Fenrirhorn;Monster Component
+32628;Fenris Fang;Fenrirreißzahn;Monster Component
+32640;Fenris Mane;Fenrirmähne;Monster Component
+32652;Fenris Rawhide;Fenrirbalg;Monster Component
+32664;Pointed Fenris Tail;Spitzer Fenrirschwanz;Monster Component
+32676;Evil Fenris Eye;Fenrirs Böser Blick;Monster Component
+32688;Purple Divain Rawhide;Purpurner Divainbalg;Monster Component
+32700;Sharo Flauros Talon;Scharfe Flauroskralle;Monster Component
+32712;Bristly VÃ¡nargand Mane;Struppige Vanargandmähne;Monster Component
+32724;Sharp Greater Flauros Fang;Scharfer Riesenflaurosreißzahn;Monster Component
+32736;Chimera Husk;Schimärenhülle;Monster Component
+32748;Chimera Scale;Schimärenschuppe;Monster Component
+32760;Chimera Carapace;Schimärenpanzer;Monster Component
+32772;Large Chimera Scale;Große Schimärenschuppe;Monster Component
+32784;Inverted Chimera Scale;Verdrehte Schimärenschuppe;Monster Component
+32796;Spiky Chimera Tail;Spitzer Schimärenschwanz;Monster Component
+32808;Enormous Chimera Scale;Riesige Schimärenschuppe;Monster Component
+32820;Tough Misericorde Scale;Harte Misericordeschuppe;Monster Component
+32832;Rockgrater Tail;Felsschaberschwanz;Monster Component
+32844;Bristly King Chimera Limb;Borstiger Königsschimärenarm;Monster Component
+32856;Grand Rockgrater Tail;Riesenfelsschaberschwanz;Monster Component
+32868;Hydra Scale;Hydraschuppe;Monster Component
+32880;Hydra Leg;Hydrabein;Monster Component
+32892;Hydra Neck;Hydrahals;Monster Component
+32904;Hydra Bristle;Hydraborsten;Monster Component
+32916;Hydra Fin;Hydraflosse;Monster Component
+32928;Hydra Beak;Hydraschnabel;Monster Component
+32940;Empty Hydra Shell;Leere Hydraschale;Monster Component
+32952;Irregular Torpedo Scale;Unregelmäßige Torpedoschuppe;Monster Component
+32964;Bune Fin;Buneflosse;Monster Component
+32976;Imp Talon;Wichtelkralle;Monster Component
+32988;Imp Fang;Wichtelreißzahn;Monster Component
+33000;Imp Fur;Wichtelfell;Monster Component
+33012;Imp Tail;Wichtelschwanz;Monster Component
+33024;Imp Whiskers;Wichtelschnurrhaar;Monster Component
+33036;Imp Scale Hide;Wichtelschuppenhaut;Monster Component
+33048;Tanned Imp Hide;Gegerbte Wichtelhaut;Monster Component
+33060;Curled Quien Fur;Lockiges Quienfell;Monster Component
+33072;Large Donda Talon;Große Dondakralle;Monster Component
+33084;Large Dondada Talon;Große Dondadakralle;Monster Component
+33096;Vile Lizard Scale;Abscheuliche Echsenschuppe;Monster Component
+33108;Vile Lizard Talon;Abscheuliche Echsenkralle;Monster Component
+33120;Vile Lizard tail;Abscheuliche Echsenschwanz;Monster Component
+33132;Vile Lizard Pouch;Abscheuliche Echsenbackentasche;Monster Component
+33144;Coiled Vile Lizard Scale;Gewundene Abscheuliche Echsenschuppe;Monster Component
+33156;Vile Lizard Mane;Abscheuliche Echsenmähne;Monster Component
+33168;Inverted Vile Lizard Scale;Verdrehte Abscheuliche Echsenschuppe;Monster Component
+33180;Soft Basilisk Hide;Weiche Basiliskenhaut;Monster Component
+33192;Nidhogg Femur;Nidhoggoberschenkel;Monster Component
+33204;Azhdaha Scale;Azhdaha schuppe;Monster Component
+33216;Azhdaha Fang;Azhdahareißzahn;Monster Component
+33228;Tanned Azhdaha Hide;Gegerbte Azhdahahaut;Monster Component
+33240;Azhdaha Talon;Azhdahakralle;Monster Component
+33252;Azhdaha Tail;Azhdahaschwanz;Monster Component
+33264;Azhdaha Patagium;Azhdahaflughaut;Monster Component
+33276;Retral Feral Fang Scale;Wilde Reißzahnrückenschuppe;Monster Component
+33288;Shapr Azhdaha Fang;Scharfer Azhdahareißzahn;Monster Component
+33300;Large Weredragon Talon;Große Werdrachenkralle;Monster Component
+33312;Scaly Great Azhdaha Hide;Schuppige Riesenazhdahahaut;Monster Component
+33324;Demon Scale;Dämonenschuppe;Monster Component
+33336;Demon Fang;Dämonenreißzahn;Monster Component
+33348;Tanned Demon Hide;Gegerbte Dämonenhaut;Monster Component
+33360;Demon Patagium;Dämonenflughaut;Monster Component
+33372;Demon Bone;Dämonenknochen;Monster Component
+33384;Demon Mane;Dämonenmähne;Monster Component
+33396;Thick Demon Mane;Dicke Dämonenmähne;Monster Component
+33408;Demon King Eye;Dämonenkönigsauge;Monster Component
+33420;Greater Demon Tail;Riesendämonenschwanz;Monster Component
+33432;Manticore Husk;Mantikorhülle;Monster Component
+33444;Manticore Talon;Mantikorkralle;Monster Component
+33456;Manticore Carapace;Mantikorpanzer;Monster Component
+33468;Manticore Head;Mantikorkopf;Monster Component
+33480;Thin Manticore Mane;Dünne Mantikormähne;Monster Component
+33492;Manticore Sharp Manticore Leg;Scharfes Mantikorbein;Monster Component
+33504;Tough Manticore Husk;Harte Mantikorhülle;Monster Component
+33516;Poison Nussknacker Needle;Giftige Nussknackernadel;Monster Component
+33528;Poison Deathclaw Talon;Giftige Todesklauenkralle;Monster Component
+33540;Crab Husk;Krabbenhülle;Monster Component
+33552;Crab Talon;Krabbenkralle;Monster Component
+33564;Crab Carapace;Krabbenpanzer;Monster Component
+33576;Crab Leg;Krabbenbein;Monster Component
+33588;Crab Fluid;Krabbensekret;Monster Component
+33600;Striped Crab Shell;Gestreifte Krabbenschale;Monster Component
+33612;Tough Crab Claw;Harte Krabbenschere;Monster Component
+33624;Tough Rockshell Shell;Harte Felspanzerschale;Monster Component
+33636;Armorshell Foam Sac;Harnischmuschelschaumbeutel;Monster Component
+33648;Sharp Giant Crab Claw;Scharfe Riesenkrabbenschere;Monster Component
+33660;Sharp Giant Armorshell Claw;Scharfe Riesenharnischmuschelschere;Monster Component
+33672;Grand Spider Husk;Riesenspinnenhülle;Monster Component
+33684;Grand Spider Horn;Riesenspinnenhorn;Monster Component
+33696;Grand Spider Carapace;Riesenspinnenpanzer;Monster Component
+33708;Sharp Grand Spider Talon;Scharfe Riesenspinnenkralle;Monster Component
+33720;Grand Spider Scalp;Riesenspinnenkopfhaut;Monster Component
+33732;Grand Spider Fluid;Riesenspinnensekret;Monster Component
+33744;Spider Silk;Spinnenseide;Monster Component
+33756;Grand Spider Eyes;Riesenspinnenaugen;Monster Component
+33768;Arachnid Silk;Arachnidenseide;Monster Component
+33780;Large Giant Spider Talon;Große Gigantulakralle;Monster Component
+33792;Landworm Husk;Landwurmhülle;Monster Component
+33804;Landworm Talojn;Landwurmkralle;Monster Component
+33816;Landworm Carapace;Landwurmpanzer;Monster Component
+33828;Spiny Landworm Leg;Stacheliges Landwurmbein;Monster Component
+33840;Retral Landworm Husk;Landwurmrückenhülle;Monster Component
+33852;Sharp Landworm Fang;Scharfer Landwurmreißzahn;Monster Component
+33864;Landworm Fluid;Landwurmsekret;Monster Component
+33876;Pest Toxin;Pestgift;Monster Component
+33888;Tough Killer Insect Husk;Harte Killerinsektenhülle;Monster Component
+33900;Deadly SS Pest Bacteria;Tödliche Killerpestbakterien;Monster Component
+33912;Grand Beetle Husk;Riesenkäferhülle;Monster Component
+33924;Grand Beetle Talon;Riesenkäferkralle;Monster Component
+33936;Grand Beetle Barb;Riesenkäferstachel;Monster Component
+33948;Large Grand Beetle Talon;Große Riesenkäferkralle;Monster Component
+33960;Retral Grand Beetle Husk;Riesenkäferrückenhülle;Monster Component
+33972;Large Grand Beetle Barb;Großer Riesenkäferstachel;Monster Component
+33984;Grand Beetle Fluid;Riesenkäfersekret;Monster Component
+33996;Millilegs Fluid;Hundertfüßlersekret;Monster Component
+34008;Inverted Terrapest Barb;Verdrehter Erdpeststachel;Monster Component
+34020;Leap Frog Talon;Springfroschkralle;Monster Component
+34032;Leap Frog Rawhide;Springfroschbalg;Monster Component
+34044;Leap Frog Fluid;Springfroschsekret;Monster Component
+34056;Leap Frog Membrane;Springfroschmembran;Monster Component
+34068;Leap Frog Oil;Springfroschöl;Monster Component
+34080;Leap Frog Fin;Springfroschflosse;Monster Component
+34092;Glutton Pouch;Vielfraßmagen;Monster Component
+34104;Leap Frog Blood;Springfroschblut;Monster Component
+34116;Abaddon Egg;Abaddonei;Monster Component
+34128;Oarfish Rawhide;Ruderfischbalg;Monster Component
+34140;Oarfish Oil;Ruderfischöl;Monster Component
+34152;Oarfish Tentacle;Ruderfischtentakel;Monster Component
+34164;Oarfish Feather;Ruderfischfeder;Monster Component
+34176;Thin Oarfish Wing;Dünner Ruderfischflügel;Monster Component
+34188;Oarfish Fin;Ruderfischflosse;Monster Component
+34200;Concealed Oarfish Limb;Verborgene Ruderfischgliedmaße;Monster Component
+34212;Retral Larva Scale;Lavarückenschuppe;Monster Component
+34224;Thin Aspara Wing;Dünner Apsaraflügel;Monster Component
+34236;Butterfly Wing;Schmetterlingsflügel;Monster Component
+34248;Butterfly Rawhide;Schmetterlingsbalg;Monster Component
+34260;Butterfly Dust;Schmetterlingsstaub;Monster Component
+34272;Butterfly Antennae;Schmetterlingsfühler;Monster Component
+34284;Butterfly Eyes;Schmetterlingsaugen;Monster Component
+34296;Butterfly Liver;Schmetterlingsleber;Monster Component
+34308;Sharp Papillon Talon;Scharfe Falterkralle;Monster Component
+34320;Sharp Nymphalidae Quill;Spitzer Edelfalterstachel;Monster Component
+34332;Moth Eyes;Mottenaugen;Monster Component
+34344;Coarse Papillon Hide;Raue Falterhaut;Monster Component
+34356;Thin Nympalidae Wing;Dünner Edelfalterflügel;Monster Component
+34368;Echidnamoth Scalp;Schlangenmottenkopfhaut;Monster Component
+34380;Amoeba Rawhide;Amöbenbalg;Monster Component
+34392;Amoeba Fang;Amöbenreißzahn;Monster Component
+34404;Amoeba Eyes;Amöbenaugen;Monster Component
+34416;Amoeba Antennae;Amöbenfühler;Monster Component
+34428;Amoeba Fluid;Amöbensekret;Monster Component
+34440;Amoeba Membrane;Amöbenmembran;Monster Component
+34452;Thin Amoeba Hide;Dünne Amöbenhaut;Monster Component
+34464;Dagon Antennae;Dagonfühler;Monster Component
+34476;Evil Charybdis Eye;Charybdis' Böser Blick;Monster Component
+34488;large Giant Amoeba Fang;Großer Riesenamöbenreißzahn;Monster Component
+34500;Fly Needle;Fliegenstachel;Monster Component
+34512;Fly Husk;Fliegenhülle;Monster Component
+34524;Thin Fly Wing;Dünner Fliegenflügel;Monster Component
+34536;Fly Feather;Fliegenfeder;Monster Component
+34548;Fly Fluid;Fliegensekret;Monster Component
+34560;Fly Scale Hide;Fliegenschuppenhaut;Monster Component
+34572;Poison Rosefly Needle;Vergifteter Rosenfliegenstachel;Monster Component
+34584;Shellfly Scalp;Panzerfliegenkopfhaut;Monster Component
+34596;Anthophilum Needle;Anthophilastachel;Monster Component
+34608;Giant Shellfly Scalp;Riesenpanzerfliegenkopfhaut;Monster Component
+34620;Vulture Fur;Aasgeierfell;Monster Component
+34632;Vulture Rawhide;Aasgeierbalg;Monster Component
+34644;Vulture Wing;Aasgeierflügel;Monster Component
+34656;Tanned Vulture Hide;Gegerbte Aasgeierhaut;Monster Component
+34668;Vulture Underbelly Fur;Gegerbtes Aasgeierunterbauchfell;Monster Component
+34680;Sharp Vulture Beak;Scharfer Aasgeierschanbel;Monster Component
+34692;Skull Scavanger Cranium;Schädel-Aasfresserhirnkapsel;Monster Component
+34704;Retral Vulture Fur;Aasgeierrückenfell;Monster Component
+34716;Sharp Hraesvelg Fang;Scharfer Hraesvelgreißzahn;Monster Component
+34728;Wyvern Scale;Lindwurmschuppe;Monster Component
+34740;Wyvern Talon;Lindwurmkralle;Monster Component
+34752;Wyvern Wing;Lindwurmflügel;Monster Component
+34764;Wyvern Bone;Lindwurmknochen;Monster Component
+34776;Wyvern Beak;Lindwurmschnabel;Monster Component
+34788;Aerodynamic Wyvern Wing;Aerodynamischer Lindwurmflügel;Monster Component
+34800;Wyvern Eye;Lindwurmauge;Monster Component
+34812;Soft Aeroniten Wing;Weicher Aeronitenflügel;Monster Component
+34824;Diatryma Skull;Diatrymaschädel;Monster Component
+34836;Spiritlord Scale;Seelenlordschuppe;Monster Component
+34848;Spiritlord Fur;Seelenlordfell;Monster Component
+34860;Spiritlord Beak;Seelenlordschnabel;Monster Component
+34872;Spiritlord Wing;Seelenlordflügel;Monster Component
+34884;Large Spiritlord Beak;Großer Seelenlordschnabel;Monster Component
+34896;Sharp Spiritlord Tail;Spitzer Seelenlordschwanz;Monster Component
+34908;Blackwing Wing;Dunkelschwingenflügel;Monster Component
+34920;Concealed Spiritlord Horn;Verborgenes Seelenlordhorn;Monster Component
+34932;Glasya Labolas Larynx;Glasya Labolas-Kehlkopf;Monster Component
+34944;Anthrovore Fragment;Fleischfresserfragment;Monster Component
+34956;Anthrovore Branch;Fleischfresserast;Monster Component
+34968;Anthrovore Moss;Fleischfressermoos;Monster Component
+34980;Large Anthrovore Arm;Großer Fleischfresserarm;Monster Component
+34992;Anthrovore Mane;Fleischfressermähne;Monster Component
+35004;Anthrovore Trunk;Fleischfresserstamm;Monster Component
+35016;Vile Plant Timber;Holz einer Abscheulichen Pflanze;Monster Component
+35028;Anthrovore Bulb;Fleischfresserknolle;Monster Component
+35040;Medicinal Mandragora Seedling;Heilender Mandragorasamen;Monster Component
+35052;Treant Fragment;Treantfragment;Monster Component
+35064;Treant Branch;Treantast;Monster Component
+35076;Treant Moss;Treantmoos;Monster Component
+35088;Treant Leg;Treantbein;Monster Component
+35100;Thick Treant Branch;Dicker Treantast;Monster Component
+35112;Large Treant Splinter;Großer Treantsplitter;Monster Component
+35124;Vicious Plant Timber;Bösartige Pflanzenholz;Monster Component
+35136;Feralwood Timber;Wildbaumholz;Monster Component
+35148;Spiritwood Timber;Seelenbaumholz;Monster Component
+35160;Godwood Timber;Götterbaumholz;Monster Component
+35172;Oculus Bristle;Augapfelborste;Monster Component
+35184;Oculus Tissue;Götzenfragment;Monster Component
+35196;Oculus Membrane;Augapfelmembran;Monster Component
+35208;Oculus Tooth;Götzenfragment;Monster Component
+35220;Evil Eye Cornea;Böse Augenhornhaut;Monster Component
+35232;Manhunter Cornea;Menschenjägerhornhaut;Monster Component
+35244;Death Cornea;Todeshornhaut;Monster Component
+35256;Dragon Scale;Drachenschuppe;Monster Component
+35268;Dragon Talon;Drachenkralle;Monster Component
+35280;Large Dragon Bone;Großer Drachenknochen;Monster Component
+35292;Large Dragon Wing;Großer Drachenflügel;Monster Component
+35304;Inverted Dragon Scale;Verdrehte Drachenschuppe;Monster Component
+35316;Bristly Dragon Mane;Struppige Drachenmähne;Monster Component
+35328;Dragon Liver;Drachenleber;Monster Component
+35340;Abelisk Talon;Abeliskenkralle;Monster Component
+35352;Tough Brynhidlr Husk;Harte Brünnhildehülle;Monster Component
+35364;Large Dragon Scale;Große Drachenschuppe;Monster Component
+35376;Abelisk Sternum;Abeliskenbrustbein;Monster Component
+35388;Divine Brynhildr Wing;Göttlicher Glorreicher Brünnhildeflügel;Monster Component
+35400;Colossus Bone;Kolossusknochen;Monster Component
+35412;Colossus Rawhide;Kolossusbalg;Monster Component
+35424;Retral Colossus Shell;Kolossusrückenschale;Monster Component
+35436;Tanned Colossus Hide;Gegerbte Kolossushaut;Monster Component
+35448;Colossus Skull;Kolossusschädel;Monster Component
+35460;Large Colossus Bristle;Große Kolossusborste;Monster Component
+35472;Ruined Colossus Axe;Kaputte Kolossusaxt;Monster Component
+35484;Rotting Colossus Armor;Verrottete Kolossusrüstung;Monster Component
+35496;Battered Colossus Helm;Ramponierter Kolossushelm;Monster Component
+35508;Ablic Hide;Albikhaut;Monster Component
+35520;Tanned Ablic Hide;Gegerbte Albikhaut;Monster Component
+35532;Circular Ablic Hide;Runde Albikhaut;Monster Component
+35544;Large Ablic Ear;Großes Albikohr;Monster Component
+35556;Ablic Liver;Albikleber;Monster Component
+35568;Phantom Talon;Phantomkralle;Monster Component
+35580;Phantom Wing;Phantomschwinge;Monster Component
+35592;Phantom Tail;Phantomschwanz;Monster Component
+35604;Phantom Husk;Phantomhülle;Monster Component
+35616;Thin Phantom Wing;Dünne Phantomschwinge;Monster Component
+35628;Tough Phantom Husk;Harte Phantomhülle;Monster Component
+35640;Harpylia's Hide;Harpyliahaut;Monster Component
+35652;Anima's Skin;Animahaut;Monster Component
+35664;Remnant Fragment;Artefaktfragment;Other
+35676;Clay Dinosaur Idol;Tonsauriergötze;Other
+35688;Remnant Fragment;Artefaktfragment;Other
+35700;Stone Orb;Steinkugel;Other
+35712;Remnant Fragment;Artefaktfragment;Other
+35724;Crystal Skull;Kristallschädel;Other
+35736;Nether Splinter;Höllensplitter;Other
+35748;Nether Scroll;Höllenspruchrolle;Other
+35760;Idol Fragment;Götzenfragment;Other
+35772;Evil Charm of Fire;Böses Feueramulett;Other
+35784;Idol Fragment;Unknown 8BC8;Other
+35796;Evil Charm of Water;Böses Wasseramulett;Other
+35808;Idol Fragment;Unknown 8BE0;Other
+35820;Evil Charm of Lightning;Böses Blitzamulett;Other
+35832;Twilight of the Gods;Götterdämmerung;Other
+35844;Heart of Loyalty;Herz der Treue;Other
+35856;Heart of Loyalty;Herz der Treue;Other
+35868;Heart of Loyalty;Herz der Treue;Other
+35880;Heart of Loyalty;Herz der Treue;Other
+35892;Heart of Loyalty;Herz der Treue;Other
+35904;Heart of Loyalty;Herz der Treue;Other
+35916;Heart of Loyalty;Herz der Treue;Other
+35928;Slayer Stone;Mörderstein;Special Item
+35940;Stone of Marshall;Gebrochener Kelch;Special Item
+35952;Godstone of Love;Götterstein der Liebe;Special Item
+35964;Moss-Covered Key;Traumgrenze;Special Item
+35976;Melphina Certificate of Gratitude;Melphina-Zertifikat der Dankbarkeit;Special Item
+35988;Plateau Key;Plateau-Schlüssel;Special Item
+36000;Breath of the Omnipotent;Atem des Allmächtigen;Special Item
+36012;Sword of Remembrance;Schwert der Erinnerung;Special Item
+36024;Staff of Remembrance;Stab der Erinnerung;Special Item
+36036;Bandana of Remembrance;Bandana der Erinnerung;Special Item
+36048;Book of Remembrance;Buch der Erinnerung;Special Item
+36060;Letter of Remembrance;Brief der Erinnerung;Special Item
+36072;Belt of Remembrance;Gürtel der Erinnerung;Special Item
+36084;Boots of Remembrance;Stiefel der Erinnerung;Special Item
+36096;Shield of Remembrance;Schild der Erinnerung;Special Item
+36108;Visuminsumos;Visusblüten;Special Item
+36120;Robelia Ruins Key;Schlüssel zu den Robelia-Ruinen;Special Item
+36132;Shend Salia;Shend Salia;Special Item
+36144;White Flower Seed;Weißblumensamen;Special Item
+36156;Aen Salia;Aen Salia;Special Item
+36168;First Treasure;Erster Schatz;Special Item
+36180;Second Treasure;Zweiter Schatz;Special Item
+36192;Third Treasure;Dritter Schatz;Special Item
+36204;Fourth Treasure;Vierter Schatz;Special Item
+36216;Fifth Treasure;Fünfter Schatz;Special Item
+36228;Sixth Treasure;Sechster Schatz;Special Item
+36240;Picture of the Second Brigade;Bild der Zweiten Brigade;Special Item
+36252;Aes Salia;Aes Salia;Special Item
+36264;Snowflake;Schneeflocke;Special Item
+36276;Tarnished Earring;Angelaufener Ohrring;Special Item
+36288;Mojcado Key;Mojcado-Schlüssel;Special Item
+36300;Ves Salia;Ves Salia;Special Item
+36312;Bloodsoaked Sword;Blutgetränktes Schwert;Special Item
+36324;Vys Salia;Vys Salia;Special Item
+36336;Mano Salia;Mano Salia;Special Item
+36348;Manryn Salia;Manryn Salia;Special Item
+36360;Tak Salia;Tak Salia;Special Item
+36372;Tablet;Tafel;Special Item
+36384;Opheila's Sword;Opheilas Schwert;Special Item
+36396;Blazing Key;Flammen-Schlüssel;Special Item
+36408;Manoryll Salia;Manoryll Salia;Special Item
+36420;Pivasalia;Pvasalia;Special Item
+36432;Scribbled Note;Gekritzelte Nachricht;Special Item
+36444;Godstone of Souls;Götterstein der Seelen;Special Item
+36456;Royotian Wine;Royotianischer Wein;Special Item
+36468;Godstone of Wisdom;Götterstein der Weisheit;Special Item
+36480;Ancient Scabbard;Uralte Schwertscheide;Special Item
+36492;Ring of Morning Calm;Ring der Morgenruhe;Special Item
+36504;Map of Memories;Karte der Erinnerungen;Special Item
+36516;Irised Stone;Regenbogenstein;Special Item
+36528;Animaquies;Animaquien;Special Item
+36540;Cracked Chalice;Gebrochener Kelch;Special Item
+36552;Letter from Home;Brief aus der Heimat;Special Item
+36564;Dreams' Edge;Traumgrenze;Special Item
+36576;Secret Letter;Geheimer Brief;Special Item
+36588;Honor of Oath;Ehrenwort;Special Item
+36600;Spear of Origin;Speer der Herkunft;Special Item
+36612;Unknown 8F04;Unknown 8F04;Special Item
+36624;Unknown 8F10;Unknown 8F10;Special Item
+36636;Honor of Determination;Ehre der Entscheidung;Special Item
+36648;Unknown 8F28;Unknown 8F28;Special Item
+36660;Academy Visistone 1;Akademie-Visistein 1;Special Item
+36672;Academy Visistone 2;Akademie-Visistein 2;Special Item
+36684;Academy Visistone 3;Akademie-Visistein 3;Special Item
+36696;Academy Visistone 4;Akademie-Visistein 4;Special Item
+36708;Academy Visistone 5;Akademie-Visistein 5;Special Item
+36720;Academy Visistone 6;Akademie-Visistein 6;Special Item
+36732;Academy Visistone 7;Akademie-Visistein 7;Special Item
+36744;Academy Visistone 8;Akademie-Visistein 8;Special Item
+36756;Academy Visistone 9;Akademie-Visistein 9;Special Item
+36768;Academy Visistone 10;Akademie-Visistein 10;Special Item
+36780;Academy Visistone 11;Akademie-Visistein 11;Special Item
+36792;Academy Visistone 12;Akademie-Visistein 12;Special Item
+36804;Academy Visistone 13;Akademie-Visistein 13;Special Item
+36816;Academy Visistone 14;Akademie-Visistein 14;Special Item
+36828;Academy Visistone 15;Akademie-Visistein 15;Special Item
+36840;Academy Visistone 16;Akademie-Visistein 16;Special Item
+36852;Academy Visistone 17;Akademie-Visistein 17;Special Item
+36864;Academy Visistone 18;Akademie-Visistein 18;Special Item
+36876;Academy Visistone 19;Akademie-Visistein 19;Special Item
+36888;Academy Visistone 20;Akademie-Visistein 20;Special Item
+36900;Academy Visistone 21;Akademie-Visistein 21;Special Item
+36912;Academy Visistone 22;Akademie-Visistein 22;Special Item
+36924;Academy Visistone 23;Akademie-Visistein 23;Special Item
+36936;Academy Visistone 24;Akademie-Visistein 24;Special Item
+36948;Academy Visistone 25;Akademie-Visistein 25;Special Item
+36960;Academy Visistone 26;Akademie-Visistein 26;Special Item
+36972;Academy Visistone 27;Akademie-Visistein 27;Special Item
+36984;Academy Visistone 28;Akademie-Visistein 28;Special Item
+36996;Academy Visistone 29;Akademie-Visistein 29;Special Item
+37008;Academy Visistone 30;Akademie-Visistein 30;Special Item
+37020;Academy Visistone 31;Akademie-Visistein 31;Special Item
+37032;Academy Visistone 32;Akademie-Visistein 32;Special Item
+37044;Academy Visistone 33;Akademie-Visistein 33;Special Item
+37056;Academy Visistone 34;Akademie-Visistein 34;Special Item
+37068;Academy Visistone 35;Akademie-Visistein 35;Special Item
+37080;Academy Visistone 36;Akademie-Visistein 36;Special Item
+37092;Academy Visistone 37;Akademie-Visistein 37;Special Item
+37104;Academy Visistone 38;Akademie-Visistein 38;Special Item
+37116;Academy Visistone 39;Akademie-Visistein 39;Special Item
+37128;Academy Visistone 40;Akademie-Visistein 40;Special Item
+37140;Academy Visistone 41;Akademie-Visistein 41;Special Item
+37152;Academy Visistone 42;Akademie-Visistein 42;Special Item
+37164;Academy Visistone 43;Akademie-Visistein 43;Special Item
+37176;Academy Visistone 44;Akademie-Visistein 44;Special Item
+37188;Academy Visistone 45;Akademie-Visistein 45;Special Item
+37200;Academy Visistone 46;Akademie-Visistein 46;Special Item
+37212;Academy Visistone 47;Akademie-Visistein 47;Special Item
+37224;Academy Visistone 48;Akademie-Visistein 48;Special Item
+37236;Academy Visistone 49;Akademie-Visistein 49;Special Item
+37248;Academy Visistone 50;Akademie-Visistein 50;Special Item
+37260;Dilmoor Map;Dilmoor Map;Map
+37272;Darken Forest Map 1;Darken Forest Map 1;Map
+37284;Darken Forest Map 2;Darken Forest Map 2;Map
+37296;Fornstrand Map;Fornstrand Map;Map
+37308;Heroic Ramparts Map;Heroic Ramparts Map;Map
+37320;Ivory Peaks Map;Ivory Peaks Map;Map
+37332;Mt Vackel Map;Mt Vackel Map;Map
+37344;Crookfen Map;Crookfen Map;Map
+37356;Berechevaltelle Map;Berechevaltelle Map;Map
+37368;Southwestern Road Map;Southwestern Road Map;Map
+37380;Great Sand Sea Map;Great Sand Sea Map;Map
+37392;Lavafender Map 1;Lavafender Map 1;Map
+37404;Lavafender Map 2;Lavafender Map 2;Map
+37416;Vale of the Gods Map;Vale of the Gods Map;Map
+37428;Cherry Pavillion Map;Cherry Pavillion Map;Map
+37440;Robelia Ruins Map 1;Robelia Ruins Map 1;Map
+37452;Robelia Ruins Map 2;Robelia Ruins Map 2;Map
+37464;Robelia Ruins Map 3;Robelia Ruins Map 3;Map
+37476;Gaslin Caves Map 1;Gaslin Caves Map 1;Map
+37488;Gaslin Caves Map 2;Gaslin Caves Map 2;Map
+37500;Gaslin Caves Map 3;Gaslin Caves Map 3;Map
+37512;Aveclyff Map 1;Aveclyff Map 1;Map
+37524;Aveclyff Map 2;Aveclyff Map 2;Map
+37536;Blackdale Map 1;Blackdale Map 1;Map
+37548;Blackdale Map 2;Blackdale Map 2;Map
+37560;Blackdale Map 3;Blackdale Map 3;Map
+37572;The Aqueducts Map 1;The Aqueducts Map 1;Map
+37584;The Aqueducts Map 2;The Aqueducts Map 2;Map
+37596;The Catacombs Map 1;The Catacombs Map 1;Map
+37608;The Catacombs Map 2;The Catacombs Map 2;Map
+37620;Numor Mines Map 1;Numor Mines Map 1;Map
+37632;Numor Mines Map 2;Numor Mines Map 2;Map
+37644;Numor Mines Map 3;Numor Mines Map 3;Map
+37656;Great Subterrane Map;Great Subterrane Map;Map
+37668;Yvalock's Nest Map 1;Yvalock's Nest Map 1;Map
+37680;Yvalock's Nest Map 2;Yvalock's Nest Map 2;Map
+37692;Yvalock's Nest Map 3;Yvalock's Nest Map 3;Map
+37704;First Path Map;First Path Map;Map
+37716;Second Path Map;Second Path Map;Map
+37728;Third Path Map;Third Path Map;Map
+37740;Fourth Path Map;Fourth Path Map;Map
+37752;Fifth Path Map;Fifth Path Map;Map
+37764;Sixth Path Map;Sixth Path Map;Map
+37776;Flaumello Tower Map 1;Flaumello Tower Map 1;Map
+37788;Flaumello Tower Map 2;Flaumello Tower Map 2;Map
+37800;Flaumello Tower Map 3;Flaumello Tower Map 3;Map
+37812;Mojcado Castle Map 1;Mojcado Castle Map 1;Map
+37824;Mojcado Castle Map 2;Mojcado Castle Map 2;Map
+37836;Ancient Ruins Map 1;Ancient Ruins Map 1;Map
+37848;Ancient Ruins Map 2;Ancient Ruins Map 2;Map
+37860;Ancient Ruins Map 3;Ancient Ruins Map 3;Map
+37872;Ancient Ruins Map 4;Ancient Ruins Map 4;Map
+37884;Ancient Ruins Map 5;Ancient Ruins Map 5;Map
+37896;Seventh Path Map;Seventh Path Map;Map
+37908;Divine Statue;Göttliche Statue;Special Item
+37920;Stone of Antimageia;Stein der Antimagie;Special Item
+37932;Stone of the Imperator;Stein des Imperators;Special Item
+37944;Grammi Key;Grammi-Schlüssel;Special Item
+37956;Metopon Key;Metopon-Schlüssel;Special Item
+37968;Choros Key;Choros-Schlüssel;Special Item
+37980;Treasure of Divinity;Göttlicher Schatz;Special Item
+37992;Eye of the Dragon;Auge des Drachen;Special Item
+38004;Eye of the King;Auge des Königs;Special Item
+38016;Eye of the Demon;Auge des Dämons;Special Item
+38028;Eye of Oath;Auge des Eids;Special Item
+38040;Eye of Evil;Auge des Bösen;Special Item
+38052;Eye of the Gods;Auge der Götter;Special Item
+38064;Eye of Promise;Auge des Versprechens;Special Item
+38076;Eye of Life;Auge des Lebens;Special Item
+38088;Sage's Stone;Stein des Weisen;Special Item
+38100;Witch's Signet;Hexensiegel;Special Item
+38112;Zane's Ring;Zanes Ring;Special Item
+38124;Kephale Morsel;Kephale Morsel;Morsel
+38136;Stethos Morsel;Stethos Morsel;Morsel
+38148;Gaster Morsel;Gaster Morsel;Morsel
+38160;Ischion Morsel;Ischion Morsel;Morsel
+38172;Omos Morsel;Omos Morsel;Morsel
+38184;Brachion Morsel;Brachion Morsel;Morsel
+38196;Kalli Morsel;Kalli Morsel;Morsel
+38208;Skelos Morsel;Skelos Morsel;Morsel
+38220;Pous Morsel;Pous Morsel;Morsel
+38232;Opsis Morsel;Opsis Morsel;Morsel
+38244;Ous Morsel;Ous Morsel;Morsel
+38256;Rhis Morsel;Rhis Morsel;Morsel
+38268;Stoma Morsel;Stoma Morsel;Morsel
+38280;Kardia Morsel;Kardia Morsel;Morsel
+38292;Dakruon Morsel;Dakruon Morsel;Morsel
+38304;Osteon Morsel;Osteon Morsel;Morsel
+38316;Soma Morsel;Soma Morsel;Morsel
+38328;Auchen Morsel;Auchen Morsel;Morsel
+38340;Ankon Morsel;Ankon Morsel;Morsel
+38352;Gonu Morsel;Gonu Morsel;Morsel
+38364;Alizarin Orb;Alizarinkugel;Special Item
+38376;Azure Orb;Azurkugel;Special Item
+38388;Amber Orb;Bernsteinkugel;Special Item
+38400;Jade Orb;Jadekugel;Special Item
+38412;Amethyst Orb;Amethystkugel;Special Item
+38424;Alabaster Orb;Alabasterkugel;Special Item
+38436;Argent Orb;Silberne Kugel;Special Item
+38448;Herb Formula;Kräuter-Formel;Special Item
+38460;Potion Formula;Heiltrank-Formel;Special Item
+38472;Lotion Formula;Lotion-Formel;Special Item
+38484;Explosive Formula;Explosive Formel;Special Item
+38496;Shard Formula;Scherbenformel;Special Item
+38508;Trap Formula;Fallen-Formel;Special Item
+38520;Talisman;Talisman;Special Item
+38532;Talisman;Talisman;Special Item
+38544;Kellendros;Kellendros;Special Item
+38556;Namul Niram;Namul Niram;Special Item
+38568;Lob Omen;Lob Omen;Special Item
+38580;Brionac;Brionac;Special Item
+38592;Tao Tie;Tao Tie;Special Item
+38604;Brimuslabus;Brimuslabus;Special Item
+38616;Blue Elf;Blauelf;Special Item
+38628;Emeth Tag;Emeth Tag;Special Item
+38640;Jhana Weekly;Jhana-Magazin;Special Item
+38652;Homunculus Weekly;Homunkulus-Magazin;Special Item
+38664;Raptor Weekly;Raptor-Magazin;Special Item
+38676;Fenris Weekly;Fenrir-Magazin;Special Item
+38688;Chimera Weekly;Schimären-Magazin;Special Item
+38700;Hydra Weekly;Hydra-Magazin;Special Item
+38712;Imp Weekly;Wichtel-Magazin;Special Item
+38724;Vile Lizard Weekly;Echsen-Magazin;Special Item
+38736;Azhdaha Weekly;Azhdaha-Magazin;Special Item
+38748;Demon Weekly;Dämonen-Magazin;Special Item
+38760;Manticore Weekly;Mantikor-Magazin;Special Item
+38772;Crab Weekly;Krabben-Magazin;Special Item
+38784;Grand Spider Weekly;Spinnen-Magazin;Special Item
+38796;Landworm Weekly;Landwurm-Magazin;Special Item
+38808;Grand Beetle Weekly;Käfer-Magazin;Special Item
+38820;Leap Frog Weekly;Frosch-Magazin;Special Item
+38832;Oarfish Weekly;Fisch-Magazin;Special Item
+38844;Butterfly Weekly;Schmetterling-Magazin;Special Item
+38856;Amoeba Weekly;Amöben-Magazin;Special Item
+38868;Fly Weekly;Fliegen-Magazin;Special Item
+38880;Vulture Weekly;Aasgeier-Magazin;Special Item
+38892;Wyvern Weekly;Lindwurm-Magazin;Special Item
+38904;Spiritlord Weekly;Seelenlord-Magazin;Special Item
+38916;Anthrovore;Fleischfresser-Magazin;Special Item
+38928;Treant Weekly;Treant-Magazin;Special Item
+38940;Oculus Weekly;Augapfel-Magazin;Special Item
+38952;Dragon Weekly;Drachen-Magazin;Special Item
+38964;Colossus Weekly;Kolossus-Magazin;Special Item
+38976;Albic Qisti Weekly;Albik-Magazin;Special Item
+38988;Phantom Weekly;Phantom-Magazin;Special Item
+39000;The Daily Jhana;Jhana-Kurier;Special Item
+39012;The Daily Homunculus;Homunkulus-Kurier;Special Item
+39024;The Daily Raptor;Raptor-Kurier;Special Item
+39036;The Daily Fenris;Gestaffelter Angriff;Special Item
+39048;The Daily Chimera;Schimären-Kurier;Special Item
+39060;The Daily Hydra;Hydra-Kurier;Special Item
+39072;The Daily Imp;Wichtel-Kurier;Special Item
+39084;The Daily Vile Lizard;Echsen-Kurier;Special Item
+39096;The Daily Azhdaha;Azhdaha-Kurier;Special Item
+39108;The Daily Demon;Dämonen-Kurier;Special Item
+39120;The Daily Manticore;Mantikor-Kurier;Special Item
+39132;The Daily Crab;Krabben-Kurier;Special Item
+39144;The Daily Grand Spider;Spinnen-Kurier;Special Item
+39156;The Daily Landworm;Landwurm-Kurier;Special Item
+39168;The Daily Grand Beetle;Käfer-Kurier;Special Item
+39180;The Daily Leap Frog;Frosch-Kurier;Special Item
+39192;The Daily Oarfish;Fisch-Kurier;Special Item
+39204;The Daily Butterfly;Schmetterling-Kurier;Special Item
+39216;The Daily Amoeba;Amöben-Kurier;Special Item
+39228;The Daily Fly;Fliegen-Kurier;Special Item
+39240;The Daily Vulture;Aasgeier-Kurier;Special Item
+39252;The Daily Wyvern;Lindwurm-Kurier;Special Item
+39264;The Daily Spiritlord;Seelenlord-Kurier;Special Item
+39276;The Daily Anthrovore;Fleichfresser-Kurier;Special Item
+39288;The Daily Treant;Treant-Kurier;Special Item
+39300;The Daily Oculus;Augapfel-Kurier;Special Item
+39312;The Daily Dragon;Drachen-Kurier;Special Item
+39324;The Daily Colossus;Kolossus-Kurier;Special Item
+39336;The Daily Albic Qisti;Albik-Kurier;Special Item
+39348;The Daily Phantom;Phantom-Kurier;Special Item
+39360;Basic Customization;Einfache Modifikation;Special Item
+39372;Intermediate Customization;Mittlere Modifikation;Special Item
+39384;Advaced Customization;Fortgeschrittene Modifikation;Special Item
+39396;Professional Customization;Professionelle Modifikation;Special Item
+39408;Legendary Customization;Legendäre Modifikation;Special Item
+39420;Sword of the Three Realms Rank 1;Schwert der Drei Welten - Rang 1;Special Item
+39432;Sword of the Three Realms Rank 2;Schwert der Drei Welten - Rang 2;Special Item
+39444;Sword of the Three Realms Rank 3;Schwert der Drei Welten - Rang 3;Special Item
+39456;Sword of the Three Realms Rank 4;Schwert der Drei Welten - Rang 4;Special Item
+39468;Sword of the Three Realms Rank 5;Schwert der Drei Welten - Rang 5;Special Item
+39480;Union of the Golden Chalice Rank 1;Verband des Goldenen Helms - Rang 1;Special Item
+39492;Union of the Golden Chalice Rank 2;Verband des Goldenen Helms - Rang 2;Special Item
+39504;Union of the Golden Chalice Rank 3;Verband des Goldenen Helms - Rang 3;Special Item
+39516;Union of the Golden Chalice Rank 4;Verband des Goldenen Helms - Rang 4;Special Item
+39528;Union of the Golden Chalice Rank 5;Verband des Goldenen Helms - Rang 5;Special Item
+39540;Ring of Labyrinth Rank 1;Ring des Labyrinths - Rang 1;Special Item
+39552;Ring of Labyrinth Rank 2;Ring des Labyrinths - Rang 2;Special Item
+39564;Ring of Labyrinth Rank 3;Ring des Labyrinths - Rang 3;Special Item
+39576;Ring of Labyrinth Rank 4;Ring des Labyrinths - Rang 4;Special Item
+39588;Ring of Labyrinth Rank 5;Ring des Labyrinths - Rang 5;Special Item
+39600;Melee Stance;Nahkampfhaltung;Special Item
+39612;Cup of Celapaleis;Becher von Celapaleis;Special Item
+39624;Counteroffensive;Gegenangriff;Special Item
+39636;Stacked Attack;Gestaffelter Angriff;Special Item
+39648;Raiders' Fork;Räubergabel;Special Item
+39660;Marauders' Glaive;Plünderglefe;Special Item
+39672;Scatterswarm;Streuschwarm;Special Item
+39684;Leapfrog;Springfrosch;Special Item
+39696;Chariot;Streitwagen;Special Item
+39708;Whirlpool;Whirlpool;Special Item
+39720;Maelstrom;Wirbelsturm;Special Item
+39732;Hurricane;Hurrikan;Special Item
+39744;Hangman's Noose;Henkerstrick;Special Item
+39756;Hourglass;Sanduhr;Special Item
+39768;Vanguard;Vorhut;Special Item
+39780;Arch;Bogen;Special Item
+39792;Arrow of Athlum;Pfeil von Athlum;Special Item
+39804;Wings of Nagapur;Flügel von Nagapur;Special Item
+39816;Pricers' Grip;Zangengriff;Special Item
+39828;Talons' Clutch;Krallengriff;Special Item
+39840;Claws' Grasp;Klauenklammer;Special Item
+39852;Goblet;Becher;Special Item
+39864;Chalice;Kelch;Special Item
+39876;Wedge;Keil;Special Item
+39888;Chisel;Meißel;Special Item
+39900;Mattock;Hacke;Special Item
+39912;Wave Crest;Wellenkamm;Special Item
+39924;Riptide;Springflut;Special Item
+39936;Leash;Leine;Special Item
+39948;Lariat;Lasso;Special Item
+39960;Hill and Vale;Berg und Tal;Special Item
+39972;Skirmish Cross;Fehdekreuz;Special Item
+39984;Scorpion;Skorpion;Special Item
+39996;Needle;Nadel;Special Item
+40008;Spike;Dorn;Special Item
+40020;Rattail;Rattenschwanz;Special Item
+40032;Foxtail;Fuchsschwanz;Special Item
+40044;Dragontail;Drachenschwanz;Special Item
+40056;Trident;Dreizack;Special Item
+40068;Battle Crown;Kampfkrone;Special Item
+40080;Mystic Mountain;Mystikberg;Special Item
+40092;Wroth Volcano;Sturmvulkan;Special Item
+40104;Catapult;Katapult;Special Item
+40116;Ballista;Ballista;Special Item
+40128;Pentacle;Pentagramm;Special Item
+40140;Cascade;Kaskade;Special Item
+40152;Avalanche;Lawine;Special Item
+40164;Tiger's Den;Höhle des Tigers;Special Item
+40176;Lion's Den;Höhle des Löwen;Special Item
+40188;Orb;Kugel;Special Item
+40200;Box;Box;Special Item
+40212;Cage;Käfig;Special Item
+40224;Crossbow;Armbrust;Special Item
+40236;Warhorse;Haudegen;Special Item
+40248;Destrier;Schlachtross;Special Item
+40260;Prism;Prisma;Special Item
+40272;Obelisk;Obelisk;Special Item
+40284;Pyramid;Pyramide;Special Item
+40296;Flame;Flamme;Special Item
+40308;Candle;Kerze;Special Item
+40320;Comet;Komet;Special Item
+40332;Horns of Undelwalt;Hörner von Undelwalt;Special Item
+40344;Hawk-eye;Falkenauge;Special Item
+40356;Bullseye;Volltreffer;Special Item
+40368;Picket Fence;Palisadenzaun;Special Item
+40380;Barbed Wall;Stachelmauer;Special Item
+40392;Terrapin;Sumpfschildkröte;Special Item
+40404;Turtle;Schildkröte;Special Item
+40416;Tortoise;Landschildkröte;Special Item
+40428;Blizzard;Blizzard;Special Item
+40440;Slingshot;Steinschleuder;Special Item
+40452;Anchor of Celapaleis;Anker von Celapaleis;Special Item
+40464;Vampire;Vampir;Special Item
+40476;Mystic Shield;Mystikschild;Special Item
+40488;Spell Wall;Zauberwall;Special Item
+40500;Force Field;Kraftfeld;Special Item
+40512;Glove;Handschuh;Special Item
+40524;Gauntlet;Panzerhandschuh;Special Item
+40536;Drawbridge;Zugbrücke;Special Item
+40548;Pendant;Anhänger;Special Item
+40560;Mystic Henge;Mystik-Steinkreis;Special Item
+40572;Rune Ring;Runenring;Special Item
+40584;Pendulum;Pendel;Special Item
+40596;Mast of Nagapur;Mast von Nagapur;Special Item
+40608;Belt;Gürtel;Special Item
+40620;Unicorn;Einhorn;Special Item
+40632;Pegasus;Pegasus;Special Item
+40644;Whip;Peitsche;Special Item
+40656;Lash;Ochsehnziemer;Special Item
+40668;Flail;Dreschflegel;Special Item
+40680;Bait and Hook;Haken und Köder;Special Item
+40692;Lure and Trap;Falle und Köder;Special Item
+40704;Juggernaut;Kraftprotz;Special Item
+40716;Snakebite;Schlangenbiss;Special Item
+40728;Jewel of Undelwalt;Juwel von Undelwalt;Special Item
+40740;Church Bell;Kirchenglocke;Special Item
+40752;Casket;Schatulle;Special Item
+40764;Sickbed;Krankenbett;Special Item
+40776;Basket;Korb;Special Item
+40788;Satchel;Ranzen;Special Item
+40800;Batwings;Fledermausflügel;Special Item
+40812;Heart of Loyalty;Herz der Treue;Special Item
+40824;Heart of Loyalty;Herz der Treue;Special Item
+40836;Heart of Loyalty;Herz der Treue;Special Item
+40848;Heart of Loyalty;Herz der Treue;Special Item
+40860;Heart of Loyalty;Herz der Treue;Special Item
+40872;Heart of Loyalty;Herz der Treue;Special Item
+40884;Heart of Loyalty;Herz der Treue;Special Item
+40896;Porcelain Chain;Porzellankette;Special Item
+40908;Mystic Seal;Mystisches Siegel;Special Item
+40920;The Slayer;Der Schlächter;Special Item
+40932;Eremurus Rain;Eremurus-Regen;Special Item
