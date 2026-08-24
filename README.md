@@ -1,6 +1,7 @@
 # TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-**Current version: 0.22.0**
+**Current version: 0.30.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
+version history.
 
 A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
 built from scratch through reverse-engineering of the `.sav` file format.
@@ -37,12 +38,23 @@ differently, please open an issue.
   Special Items, including in-place editing of stats on items you already
   own/have equipped (e.g. raising a weapon's attack stat directly, not just
   at grant time).
+- **Character Equipment editor** — edit what any character (not just Rush)
+  is actually wearing (weapon + shield/secondary slot), including granting
+  unique personal weapons.
 - **Save info panel** — a consolidated view of gold, Battle Rank, playtime,
   Mr. Diggs attempts, monster kills, per-union stats, and inventory counts.
 - **Checksum handling** — every save is automatically re-signed with the
   correct SHA1 checksum, so edited saves load without errors.
-- **Search & diff tools** (CLI) — search for a value anywhere in a save, or
-  diff two saves to find what changed between them.
+- **Search & diff tools** — search for a value anywhere in a save (CLI), or
+  diff two saves in the GUI with plain-language labels (Gold, Battle Rank,
+  Union N, a character's equipment, etc.) instead of raw bytes.
+- **Live search in dropdowns** — type to filter the (long) item/character
+  pickers on the Inventory, Character Equipment, and Union tabs.
+- **Union equipment profiles** — save/load a full union loadout (roster +
+  each member's weapon + stats) to a JSON file, to re-apply it to other
+  saves without re-entering everything.
+- **Find saves** — scan a remembered folder for `.sav` files instead of
+  always browsing for the exact file by hand.
 
 ### Beyond the game's own UI limits
 
@@ -158,9 +170,27 @@ install your distro's `python3-tk` package).
 python3 TLR_Save_Editor.py
 ```
 
-To turn it into a double-clickable macOS app, use
-[Platypus](https://sveinbjorn.org/platypus) pointed at
-`TLR_Save_Editor.py` with interpreter `/usr/bin/env python3`.
+### Making `.sav` files open the editor on double-click (macOS)
+
+The script accepts a file path as its first argument and auto-loads it on
+startup (`python3 TLR_Save_Editor.py path/to/savegame.sav`), which makes it
+possible to open a save by just double-clicking it, once wrapped as a
+`.app`:
+
+1. Get [Platypus](https://sveinbjorn.org/platypus) (`brew install platypus`
+   or download from the site above).
+2. Open Platypus → script: `TLR_Save_Editor.py`, interpreter:
+   `/usr/bin/env python3`.
+3. Under **Settings**, enable **"Accept dropped items"**, then add a
+   document type: extension `sav`, and check **"Is Droppable"** — this
+   makes the resulting app register itself as an opener for `.sav` files
+   and receive the file path as an argument.
+4. Click **Create App** → you get `TLR Save Editor.app`. Move it to
+   `/Applications` (or anywhere convenient).
+5. In Finder, right-click any `.sav` file → **Get Info** → **Open with** →
+   pick `TLR Save Editor.app` → **Change All…** to make it the default for
+   every `.sav` file. From then on, double-clicking a save opens it
+   directly in the editor.
 
 ### Command-line tool
 
