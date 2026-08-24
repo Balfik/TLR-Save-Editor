@@ -5,6 +5,34 @@ versions before 0.21.0 weren't tracked in a dedicated changelog at the
 time, so the entry for them below is a general summary of what already
 existed by then, not a step-by-step list of changes.
 
+## 0.31.1
+- The union profile library now saves into a `union_profiles` folder next
+  to the program itself (not the user's home folder), so it's easy to find
+  and moves with the app.
+- The "From library..." picker now shows who's actually in each profile
+  (leader + slots 2-5) right next to its name, instead of just the file
+  name.
+
+## 0.31.0
+- Union profile export now suggests a default file name ("Union N") instead
+  of an empty one.
+- New in-app union profile library: "To library..." / "From library..."
+  buttons save/load profiles by name from a small local folder, without a
+  file dialog every time (the existing "Save profile..." / "Load
+  profile..." buttons for arbitrary .json files are unchanged).
+- New opt-in "Warn about duplicate characters across unions" checkbox on
+  the Union tab - if enabled, applying a roster that puts a character in
+  more than one union/slot at once now asks for confirmation first
+  (duplicates themselves are still allowed, same as before).
+- New "Export report..." button next to the Save Info panel - saves the
+  current gold/Battle Rank/playtime/unions/inventory summary to a plain
+  text or CSV file, for sharing progress without handing over the save
+  file itself.
+- Saving now checks gold, Battle Rank, playtime, Mr. Diggs attempts/max,
+  and monster kills against generous plausible ranges, and asks for
+  confirmation before writing if any value looks like a typo (e.g.
+  negative, or far outside the field's normal range).
+
 ## 0.30.0
 - New "Find saves..." button at the top of the window: pick a folder once
   (it's remembered), and the app recursively scans it for `.sav` files and
