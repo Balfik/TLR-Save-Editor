@@ -19,11 +19,11 @@ import json
 import time
 import webbrowser
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, simpledialog, ttk
 
 AUTHOR_LINK_URL = "https://github.com/Balfik"
 
-APP_VERSION = "0.30.0"
+APP_VERSION = "0.31.1"
 
 GOLD_OFFSET = 0x1D978
 GOLD_LIFETIME_OFFSET = 0x25A5A
@@ -768,6 +768,36 @@ def _read_equip_csv_lines():
 
 CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".tlr_save_editor_config.json")
 
+# Small in-app library of saved union equipment profiles - a "union_profiles"
+# folder next to the program itself (same folder the app/CSVs live in, found
+# the same way as EquipItems.csv etc. - see _data_csv_candidate_dirs()), so
+# "Save to library" / "Load from library" work without a file dialog (the
+# existing Save/Load profile... buttons still export or import any arbitrary
+# .json file by hand, unchanged). Falls back to the user's home directory
+# only if the program's own folder can't be determined at all.
+_profiles_base_dirs = _data_csv_candidate_dirs()
+PROFILES_DIR = os.path.join(
+    _profiles_base_dirs[0] if _profiles_base_dirs else os.path.expanduser("~"),
+    "union_profiles",
+)
+
+
+def list_library_profiles():
+    """Returns sorted profile names (without .json) found in PROFILES_DIR.
+    Returns [] if the folder doesn't exist yet (nothing saved so far)."""
+    try:
+        names = [
+            fn[:-5] for fn in os.listdir(PROFILES_DIR)
+            if fn.lower().endswith(".json")
+        ]
+    except OSError:
+        return []
+    return sorted(names)
+
+
+def library_profile_path(name):
+    return os.path.join(PROFILES_DIR, name + ".json")
+
 
 def load_app_config():
     """Small persisted settings file (currently just remembers the last
@@ -1201,6 +1231,10 @@ STRINGS = {
         "cancel_btn": "Скасувати",
         "no_file": "Файл не вибрано",
         "info_frame": "Інформація про сейв",
+        "export_report_btn": "Експортувати звіт...",
+        "export_report_saved_msg": "Звіт збережено: {path}",
+        "export_report_error": "Не вдалося зберегти звіт: {err}",
+        "value_range_warning": "Деякі значення виглядають нетиповими:\n{details}\n\nЗберегти все одно?",
         "char_frame": "Персонаж — Rush",
         "char_toggle_expand": "▶ Раш (розгорнути статы)",
         "char_toggle_collapse": "▼ Раш (згорнути)",
@@ -1396,6 +1430,14 @@ STRINGS = {
         "union_all_max_btn": "Весь юніон: MAX (255)",
         "union_export_profile_btn": "Зберегти профіль...",
         "union_import_profile_btn": "Завантажити профіль...",
+        "union_profile_default_name": "Юніон {n}",
+        "union_library_save_btn": "У бібліотеку...",
+        "union_library_load_btn": "З бібліотеки...",
+        "union_library_name_prompt": "Назва профілю:",
+        "union_library_empty": "У бібліотеці ще немає збережених профілів.",
+        "union_library_pick_title": "Профілі юніону",
+        "union_warn_duplicates_check": "Попереджати про дублікати персонажа в юніонах",
+        "union_duplicate_warning": "Цей персонаж вже є в іншому юніоні/слоті:\n{names}\n\nЗастосувати все одно?",
         "union_profile_saved_msg": "Профіль спорядження збережено: {path}",
         "union_profile_loaded_msg": "Профіль завантажено в поля. Натисни "
                                      "\"Застосувати склад\", щоб записати в сейв.",
@@ -1437,6 +1479,10 @@ STRINGS = {
         "cancel_btn": "Cancel",
         "no_file": "No file selected",
         "info_frame": "Save Info",
+        "export_report_btn": "Export report...",
+        "export_report_saved_msg": "Report saved: {path}",
+        "export_report_error": "Could not save report: {err}",
+        "value_range_warning": "Some values look unusual:\n{details}\n\nSave anyway?",
         "char_frame": "Character — Rush",
         "char_toggle_expand": "▶ Rush (expand stats)",
         "char_toggle_collapse": "▼ Rush (collapse)",
@@ -1630,6 +1676,14 @@ STRINGS = {
         "union_all_max_btn": "Whole union: MAX (255)",
         "union_export_profile_btn": "Save profile...",
         "union_import_profile_btn": "Load profile...",
+        "union_profile_default_name": "Union {n}",
+        "union_library_save_btn": "To library...",
+        "union_library_load_btn": "From library...",
+        "union_library_name_prompt": "Profile name:",
+        "union_library_empty": "No profiles saved in the library yet.",
+        "union_library_pick_title": "Union profiles",
+        "union_warn_duplicates_check": "Warn about duplicate characters across unions",
+        "union_duplicate_warning": "This character is already in another union/slot:\n{names}\n\nApply anyway?",
         "union_profile_saved_msg": "Equipment profile saved: {path}",
         "union_profile_loaded_msg": "Profile loaded into the fields. Click "
                                      "\"Apply roster\" to write it to the save.",
@@ -1915,8 +1969,11 @@ class SaveEditorApp:
         self.info_frame = ttk.LabelFrame(root)
         self.info_frame.pack(fill="x", **pad)
         self.info_text = tk.Text(self.info_frame, height=6, wrap="word")
-        self.info_text.pack(fill="x", padx=6, pady=6)
+        self.info_text.pack(fill="x", padx=6, pady=(6, 0))
         self.info_text.configure(state="disabled")
+        self.export_report_btn = ttk.Button(
+            self.info_frame, command=self._export_save_report)
+        self.export_report_btn.pack(anchor="e", padx=6, pady=6)
 
         # --- Main tabs: Gold/BR (default) -> Union -> Inventory -> Tools ---
         self.notebook = ttk.Notebook(root)
@@ -2173,10 +2230,22 @@ class SaveEditorApp:
         self.union_import_profile_btn = ttk.Button(
             union_bulk_row, command=self._import_union_profile)
         self.union_import_profile_btn.pack(side="left", padx=(6, 0))
+        self.union_library_save_btn = ttk.Button(
+            union_bulk_row, command=self._save_profile_to_library)
+        self.union_library_save_btn.pack(side="left", padx=(18, 0))
+        self.union_library_load_btn = ttk.Button(
+            union_bulk_row, command=self._load_profile_from_library)
+        self.union_library_load_btn.pack(side="left", padx=(6, 0))
 
+        apply_row = ttk.Frame(union_content)
+        apply_row.pack(fill="x", padx=6, pady=(0, 10), anchor="w")
         self.union_roster_apply_btn = ttk.Button(
-            union_content, command=self.apply_union_members)
-        self.union_roster_apply_btn.pack(padx=6, pady=(0, 10), anchor="w")
+            apply_row, command=self.apply_union_members)
+        self.union_roster_apply_btn.pack(side="left")
+        self.union_warn_duplicates_var = tk.BooleanVar(value=False)
+        self.union_warn_duplicates_check = ttk.Checkbutton(
+            apply_row, variable=self.union_warn_duplicates_var)
+        self.union_warn_duplicates_check.pack(side="left", padx=(12, 0))
         ToolTip(self.union_roster_label, lambda: self.t("tip_union_roster"))
 
         self._load_chars_database()
@@ -2702,8 +2771,11 @@ class SaveEditorApp:
         their weapon + weapon stats) to a JSON file, so the same loadout
         can be re-applied to this or another save later without manually
         re-entering everything."""
+        default_name = self.t(
+            "union_profile_default_name", n=self.selected_union_index + 1)
         path = filedialog.asksaveasfilename(
-            defaultextension=".json", filetypes=[("JSON", "*.json")])
+            defaultextension=".json", filetypes=[("JSON", "*.json")],
+            initialfile=default_name)
         if not path:
             return
         profile = {
@@ -2721,21 +2793,13 @@ class SaveEditorApp:
             return
         messagebox.showinfo(self.t("done_title"), self.t("union_profile_saved_msg", path=path))
 
-    def _import_union_profile(self):
-        """Load a JSON profile saved by _export_union_profile() back into
-        the roster fields. Only fills the on-screen fields - Apply roster
-        still has to be clicked to actually write it into the save, same
-        as picking a character/weapon from the dropdowns by hand."""
-        path = filedialog.askopenfilename(filetypes=[("JSON", "*.json")])
-        if not path:
-            return
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                profile = json.load(f)
-        except (OSError, ValueError) as e:
-            messagebox.showerror(self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
-            return
-
+    def _apply_union_profile_dict(self, profile):
+        """Fills the roster fields from an already-parsed profile dict.
+        Shared by _import_union_profile() (arbitrary file) and the
+        in-app profile library. Only fills the on-screen fields - Apply
+        roster still has to be clicked to actually write it into the
+        save, same as picking a character/weapon from the dropdowns by
+        hand."""
         def _apply_row(row_key, char_var, data):
             char_var.set(data.get("char", ""))
             if row_key in self.union_weapon_vars:
@@ -2758,7 +2822,125 @@ class SaveEditorApp:
             if slot_pos in self.union_member_vars:
                 _apply_row(slot_pos, self.union_member_vars[slot_pos], data)
 
+    def _import_union_profile(self):
+        """Load a JSON profile saved by _export_union_profile() back into
+        the roster fields (arbitrary file, via a file dialog)."""
+        path = filedialog.askopenfilename(filetypes=[("JSON", "*.json")])
+        if not path:
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                profile = json.load(f)
+        except (OSError, ValueError) as e:
+            messagebox.showerror(self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
+            return
+        self._apply_union_profile_dict(profile)
         messagebox.showinfo(self.t("done_title"), self.t("union_profile_loaded_msg"))
+
+    # ------------------------------------------------------------------
+    # In-app union profile library: same JSON profile format as
+    # export/import above, but saved into PROFILES_DIR under a name the
+    # user picks, and picked back from a simple in-app list instead of
+    # browsing the filesystem by hand every time.
+    # ------------------------------------------------------------------
+
+    def _save_profile_to_library(self):
+        default_name = self.t(
+            "union_profile_default_name", n=self.selected_union_index + 1)
+        name = simpledialog.askstring(
+            self.t("union_library_save_btn"),
+            self.t("union_library_name_prompt"),
+            initialvalue=default_name,
+            parent=self.root,
+        )
+        if not name:
+            return
+        name = name.strip()
+        if not name:
+            return
+        try:
+            os.makedirs(PROFILES_DIR, exist_ok=True)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
+            return
+        profile = {
+            "leader": self._union_row_to_profile_dict("leader", self.union_leader_var),
+            "members": {
+                str(slot_pos): self._union_row_to_profile_dict(slot_pos, var)
+                for slot_pos, var in self.union_member_vars.items()
+            },
+        }
+        try:
+            with open(library_profile_path(name), "w", encoding="utf-8") as f:
+                json.dump(profile, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
+            return
+        messagebox.showinfo(
+            self.t("done_title"), self.t("union_profile_saved_msg", path=name))
+
+    def _describe_library_profile(self, name):
+        """One-line summary of who's in a saved profile (leader + slots
+        2-5), shown next to its name in the library picker so it's clear
+        what a profile actually contains without having to load it first."""
+        try:
+            with open(library_profile_path(name), "r", encoding="utf-8") as f:
+                profile = json.load(f)
+        except (OSError, ValueError):
+            return name
+
+        empty_label = self.t("union_slot_empty")
+
+        def _char_name(data):
+            if not isinstance(data, dict):
+                return empty_label
+            char = (data.get("char") or "").strip()
+            return char if char else empty_label
+
+        leader = _char_name(profile.get("leader"))
+        members = profile.get("members", {})
+        member_names = [
+            _char_name(members.get(str(i))) for i in range(UNION_MEMBER_SLOT_COUNT)
+        ]
+        return f"{name} — {leader} / " + ", ".join(member_names)
+
+    def _load_profile_from_library(self):
+        names = list_library_profiles()
+        if not names:
+            messagebox.showinfo(self.t("done_title"), self.t("union_library_empty"))
+            return
+
+        win = tk.Toplevel(self.root)
+        win.title(self.t("union_library_pick_title"))
+        win.geometry("560x320")
+
+        listbox = tk.Listbox(win)
+        listbox.pack(fill="both", expand=True, padx=8, pady=8)
+        for n in names:
+            listbox.insert("end", self._describe_library_profile(n))
+        listbox.selection_set(0)
+
+        def _load_selected(event=None):
+            sel = listbox.curselection()
+            if not sel:
+                return
+            name = names[sel[0]]
+            try:
+                with open(library_profile_path(name), "r", encoding="utf-8") as f:
+                    profile = json.load(f)
+            except (OSError, ValueError) as e:
+                messagebox.showerror(
+                    self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
+                return
+            self._apply_union_profile_dict(profile)
+            win.destroy()
+            messagebox.showinfo(self.t("done_title"), self.t("union_profile_loaded_msg"))
+
+        listbox.bind("<Double-Button-1>", _load_selected)
+        btn_row = ttk.Frame(win)
+        btn_row.pack(fill="x", padx=8, pady=(0, 8))
+        ttk.Button(btn_row, text=self.t("find_saves_open_btn"), command=_load_selected).pack(side="left")
+        ttk.Button(btn_row, text=self.t("cancel_btn"), command=win.destroy).pack(side="left", padx=(6, 0))
 
     # ------------------------------------------------------------------
     # Save diff tab: best-effort human labels for byte ranges, layered on
@@ -2989,7 +3171,30 @@ class SaveEditorApp:
         # blocked here defensively, before it was actually tested. The
         # user confirmed live in-game that duplicate assignments (a
         # character appearing in two unions at once) work fine in battle
-        # and recalculate correctly - so that restriction was removed.
+        # and recalculate correctly - so that restriction was no longer
+        # enforced. It's still worth flagging for users who don't want
+        # it, though - see the opt-in "warn about duplicates" checkbox.
+        if self.union_warn_duplicates_var.get():
+            existing = all_union_members(self.dec_buffer)
+            new_char_ids = {cid for cid in new_ids.values() if cid != UNION_MEMBER_EMPTY_ID}
+            if new_leader != UNION_MEMBER_EMPTY_ID:
+                new_char_ids.add(new_leader)
+            dup_names = set()
+            for (u_idx, s_pos), char_id in existing.items():
+                if u_idx == self.selected_union_index:
+                    continue  # slots of the union being edited don't count as "another" union
+                if char_id in new_char_ids:
+                    if 0 <= char_id < len(self.chars_names):
+                        dup_names.add(self.chars_names[char_id])
+                    else:
+                        dup_names.add(str(char_id))
+            if dup_names:
+                proceed = messagebox.askyesno(
+                    self.t("warn_title"),
+                    self.t("union_duplicate_warning", names="\n".join(sorted(dup_names))))
+                if not proceed:
+                    return
+
         buf = bytearray(self.dec_buffer)
         if new_leader == UNION_MEMBER_EMPTY_ID:
             deactivate_union(buf, self.selected_union_index)
@@ -3502,6 +3707,7 @@ class SaveEditorApp:
         self.lang_uk_btn.config(text=self.t("lang_button_uk"))
 
         self.info_frame.config(text=self.t("info_frame"))
+        self.export_report_btn.config(text=self.t("export_report_btn"))
         self.save_btn.config(text=self.t("save_button"))
 
         # --- Main tabs ---
@@ -3538,6 +3744,9 @@ class SaveEditorApp:
         self.union_all_max_btn.config(text=self.t("union_all_max_btn"))
         self.union_export_profile_btn.config(text=self.t("union_export_profile_btn"))
         self.union_import_profile_btn.config(text=self.t("union_import_profile_btn"))
+        self.union_library_save_btn.config(text=self.t("union_library_save_btn"))
+        self.union_library_load_btn.config(text=self.t("union_library_load_btn"))
+        self.union_warn_duplicates_check.config(text=self.t("union_warn_duplicates_check"))
         self.union_roster_apply_btn.config(text=self.t("union_roster_apply_btn"))
         combo_values = [self.t("union_slot_empty")] + list(self.chars_names)
         self.union_leader_combo["values"] = combo_values
@@ -3683,6 +3892,62 @@ class SaveEditorApp:
         self.info_text.insert("1.0", text)
         self.info_text.configure(state="disabled")
 
+    def _export_save_report(self):
+        """Exports the save info panel's contents to a standalone file, so
+        progress can be shared without handing over the actual .sav file.
+        Saves as plain text by default, or as a flat field/value CSV if the
+        user picks a .csv filename."""
+        if self.dec_buffer is None:
+            messagebox.showwarning(self.t("warn_title"), self.t("warn_open_first"))
+            return
+
+        default_name = os.path.splitext(self.current_filename or "save")[0] + "_report"
+        path = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            initialfile=default_name,
+            filetypes=[("Text", "*.txt"), ("CSV", "*.csv")],
+        )
+        if not path:
+            return
+
+        try:
+            if path.lower().endswith(".csv"):
+                import csv
+                info = read_header_info(self.dec_buffer)
+                equip_owned = sum(
+                    1 for _, item_id in read_equipment(self.dec_buffer) if item_id != EQUIP_EMPTY_ID)
+                acc_owned = sum(
+                    1 for _, item_id, _ in read_accessories(self.dec_buffer)
+                    if item_id != ACCESSORY_EMPTY_ID)
+                rows = [
+                    ("file", self.current_filename or ""),
+                    ("gold", info["gold1"]),
+                    ("gold_lifetime", info["gold2"]),
+                    ("battle_rank", info["br"]),
+                    ("playtime_hms", format_hms(info["playtime"])),
+                    ("playtime_seconds", info["playtime"]),
+                    ("mr_diggs_attempts", info["diggs_attempts"]),
+                    ("mr_diggs_max_attempts", info["diggs_max_attempts"]),
+                    ("monster_kills", info["monster_kills"]),
+                    ("equipment_owned", equip_owned),
+                    ("accessories_owned", acc_owned),
+                ]
+                for i, stats in enumerate(info["union_stats"]):
+                    rows.append((f"union_{i + 1}_hp", stats["hp"]))
+                    rows.append((f"union_{i + 1}_ap", stats["ap"]))
+                with open(path, "w", newline="", encoding="utf-8") as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["field", "value"])
+                    writer.writerows(rows)
+            else:
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(self.info_text.get("1.0", "end"))
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("export_report_error", err=str(e)))
+            return
+
+        messagebox.showinfo(self.t("done_title"), self.t("export_report_saved_msg", path=path))
+
     def open_file(self):
         path = filedialog.askopenfilename(
             title=self.t("select_sav_title"),
@@ -3742,6 +4007,38 @@ class SaveEditorApp:
         self._refresh_info_text()
         self._load_char_equip_into_fields()
 
+    # Loose "this looks plausible" bounds - not hard engine limits, just a
+    # sanity net to catch typos or accidental garbage before it gets baked
+    # into the save (the game engine may accept values well outside these,
+    # but a legitimate playthrough never would). Gold/BR ceilings are int32/
+    # int16 storage limits; the rest are generous real-world upper bounds.
+    VALUE_RANGE_CHECKS = [
+        ("gold1", "gold_label", 0, 2_147_483_647),
+        ("gold2", "gold_lifetime_label", 0, 2_147_483_647),
+        ("br", "br_label", 0, 32767),
+        ("playtime", "playtime_label", 0, 315_360_000),  # ~10 years in seconds
+        ("diggs_attempts", "diggs_attempts_label", 0, 999_999),
+        ("diggs_max", "diggs_max_label", 0, 999_999),
+        ("monster_kills", "monster_kills_label", 0, 65535),
+    ]
+
+    def _validate_save_values(self, gold1, gold2, br, playtime, diggs_attempts, diggs_max, monster_kills):
+        """Returns a list of human-readable warning lines for any value
+        that falls outside a generous plausible range. Doesn't block the
+        save - just gives the user a chance to catch an obvious mistake
+        (typo, accidental extra digit) before writing it to disk."""
+        values = {
+            "gold1": gold1, "gold2": gold2, "br": br, "playtime": playtime,
+            "diggs_attempts": diggs_attempts, "diggs_max": diggs_max,
+            "monster_kills": monster_kills,
+        }
+        warnings = []
+        for key, label_key, lo, hi in self.VALUE_RANGE_CHECKS:
+            value = values[key]
+            if value < lo or value > hi:
+                warnings.append(f"{self.t(label_key)}: {value} (expected {lo}-{hi})")
+        return warnings
+
     def save_new_file(self):
         if self.dec_buffer is None:
             messagebox.showwarning(self.t("warn_title"), self.t("warn_open_first"))
@@ -3760,6 +4057,16 @@ class SaveEditorApp:
         except ValueError:
             messagebox.showerror(self.t("err_title"), self.t("err_int"))
             return
+
+        warnings = self._validate_save_values(
+            new_gold1, new_gold2, new_br, new_playtime,
+            new_diggs_attempts, new_diggs_max, new_monster_kills)
+        if warnings:
+            proceed = messagebox.askyesno(
+                self.t("warn_title"),
+                self.t("value_range_warning", details="\n".join(warnings)))
+            if not proceed:
+                return
 
         initial_dir = os.path.dirname(self.current_path) if self.current_path else None
         out_path = filedialog.asksaveasfilename(
