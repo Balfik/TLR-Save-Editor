@@ -1,6 +1,6 @@
 # TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-**Current version: 0.30.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
+**Current version: 0.31.1** — see [CHANGELOG.md](CHANGELOG.md) for the full
 version history.
 
 A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
@@ -55,6 +55,14 @@ differently, please open an issue.
   saves without re-entering everything.
 - **Find saves** — scan a remembered folder for `.sav` files instead of
   always browsing for the exact file by hand.
+- **Union profile library** — save/load union equipment profiles by name
+  from an in-app list (stored in a `union_profiles` folder next to the
+  program), with each profile's roster shown right in the picker, plus an
+  optional warning when a roster edit would put a character in more than
+  one union at once.
+- **Save report export** — export the Save Info summary to a text or CSV
+  file, and get a confirmation prompt if a value you're about to save
+  looks implausible (e.g. negative gold).
 
 ### Beyond the game's own UI limits
 
