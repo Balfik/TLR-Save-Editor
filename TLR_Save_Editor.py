@@ -10,17 +10,20 @@ On macOS tkinter is bundled with the standard installer from python.org.
 Language is switched with the UA / EN toggle in the top-right corner.
 """
 import os
+import sys
 import shutil
 import struct
 import zlib
 import hashlib
+import json
+import time
 import webbrowser
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 AUTHOR_LINK_URL = "https://github.com/Balfik"
 
-APP_VERSION = "0.22.0"
+APP_VERSION = "0.30.0"
 
 GOLD_OFFSET = 0x1D978
 GOLD_LIFETIME_OFFSET = 0x25A5A
@@ -763,6 +766,72 @@ def _read_equip_csv_lines():
     return _read_csv_lines(EQUIP_CSV_FILENAME)
 
 
+CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".tlr_save_editor_config.json")
+
+
+def load_app_config():
+    """Small persisted settings file (currently just remembers the last
+    folder picked for 'Find saves'), stored in the user's home directory
+    so it works the same whether the app is run as a script or wrapped
+    into a double-clickable .app."""
+    try:
+        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def save_app_config(cfg):
+    try:
+        with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, ensure_ascii=False, indent=2)
+    except OSError:
+        pass
+
+
+def scan_for_sav_files(root_dirs, max_depth=6, max_results=300, max_seconds=8):
+    """Recursively look for *.sav files under the given root directories.
+    The exact save location for The Last Remnant Remastered varies by
+    platform/install, so this isn't a guaranteed hit - it's a bounded
+    scan (depth/result/time capped so it can't hang on a huge disk) meant
+    to save the user from having to browse for the file by hand once
+    they've pointed it at roughly the right folder."""
+    start = time.time()
+    found = []
+    seen_dirs = set()
+    for root_dir in root_dirs:
+        if not root_dir or not os.path.isdir(root_dir):
+            continue
+        base_depth = os.path.normpath(root_dir).count(os.sep)
+        for dirpath, dirnames, filenames in os.walk(root_dir):
+            if time.time() - start > max_seconds or len(found) >= max_results:
+                return found
+            depth = os.path.normpath(dirpath).count(os.sep) - base_depth
+            if depth >= max_depth:
+                dirnames[:] = []
+                continue
+            if dirpath in seen_dirs:
+                continue
+            seen_dirs.add(dirpath)
+            for fn in filenames:
+                if fn.lower().endswith(".sav"):
+                    found.append(os.path.join(dirpath, fn))
+                    if len(found) >= max_results:
+                        return found
+    return found
+
+
+def filter_combo_values(all_values, typed):
+    """Pure helper behind the searchable-combobox live filter: given the
+    full list of names and whatever text is currently typed, return the
+    subset whose name contains the typed text (case-insensitive substring
+    match). Empty/whitespace-only input returns the full list unchanged."""
+    typed = (typed or "").strip().lower()
+    if not typed:
+        return list(all_values)
+    return [v for v in all_values if typed in v.lower()]
+
+
 def load_equip_names():
     """Loads {item_id: name} from EquipItems.csv. Returns {} if the file
     isn't found or can't be parsed (equipment editing UI will just show
@@ -921,6 +990,69 @@ def clear_equip_slot(buf, slot_index):
 
 
 # ---------------------------------------------------------------------------
+# Per-character equipped items ("what a character is actually wearing", as
+# opposed to EQUIP_TABLE_BASE above which is the carried/unequipped pool).
+# ---------------------------------------------------------------------------
+# Found via a controlled test: equipped a specific weapon on Rush in-game
+# (Shamshir -> Warrior's Broadsword) and diffed two saves. The changed item
+# ID landed in a record using the exact same layout as the carried-equipment
+# table above (ID at rel +12, 6 stat triples at rel +21 stride 3), but in a
+# completely separate array.
+#
+# The array covers every character in Chars.csv order (same catalog used for
+# the Union roster editor), 2 consecutive slots per character (slot 1 =
+# weapon, slot 2 = shield/secondary - both were confirmed populated on
+# several named characters, e.g. Rush: Shamshir + Superior Targe, David:
+# Durendal + Elite's Buckler). This table is also where each character's
+# personal/unique weapon lives (e.g. "Emma's Longsword") - items that don't
+# show up anywhere in the general carried-equipment pool.
+CHAR_EQUIP_TABLE_BASE = 0x25F00
+CHAR_EQUIP_RECORD_SIZE = 0x78   # 120 bytes, same record layout as EQUIP_RECORD_SIZE
+CHAR_EQUIP_SLOTS_PER_CHAR = 2
+
+
+def char_equip_slot_base(char_id, slot):
+    """slot is 0 (weapon) or 1 (shield/secondary)."""
+    index = char_id * CHAR_EQUIP_SLOTS_PER_CHAR + slot
+    return CHAR_EQUIP_TABLE_BASE + index * CHAR_EQUIP_RECORD_SIZE
+
+
+def read_char_equip_item(dec, char_id, slot):
+    addr = char_equip_slot_base(char_id, slot) + EQUIP_ID_REL_OFFSET
+    return struct.unpack("<I", dec[addr:addr + 4])[0]
+
+
+def read_char_equip_stats(dec, char_id, slot):
+    rec_base = char_equip_slot_base(char_id, slot)
+    stats = []
+    for i in range(EQUIP_STAT_COUNT):
+        s = rec_base + EQUIP_STAT_REL_OFFSET + i * EQUIP_STAT_STRIDE
+        stats.append(dec[s])
+    return stats
+
+
+def write_char_equip_slot(buf, char_id, slot, item_id, stats=None):
+    """Same write pattern as write_equip_slot(), applied to a character's
+    worn-item record instead of the carried-inventory table."""
+    rec_base = char_equip_slot_base(char_id, slot)
+    addr = rec_base + EQUIP_ID_REL_OFFSET
+    buf[addr:addr + 4] = struct.pack("<I", item_id)
+
+    if stats is None:
+        return
+    for i, value in enumerate(stats[:EQUIP_STAT_COUNT]):
+        value = max(0, min(255, int(value)))
+        s = rec_base + EQUIP_STAT_REL_OFFSET + i * EQUIP_STAT_STRIDE
+        buf[s] = value
+        buf[s + 1] = 0
+        buf[s + 2] = value
+
+
+def clear_char_equip_slot(buf, char_id, slot):
+    write_char_equip_slot(buf, char_id, slot, EQUIP_EMPTY_ID, stats=[0] * EQUIP_STAT_COUNT)
+
+
+# ---------------------------------------------------------------------------
 # Save file logic (same as the CLI version)
 # ---------------------------------------------------------------------------
 
@@ -1059,6 +1191,14 @@ STRINGS = {
     "uk": {
         "title": "TLR Save Editor — The Last Remnant Remastered",
         "open_button": "Відкрити .sav файл...",
+        "find_saves_btn": "Знайти сейви...",
+        "find_saves_pick_dir_title": "Обери папку, де шукати сейви гри",
+        "find_saves_win_title": "Знайдені сейви",
+        "find_saves_dir_label": "Папка пошуку: {dir}",
+        "find_saves_none_found": "У цій папці .sav файлів не знайдено.",
+        "find_saves_open_btn": "Відкрити",
+        "find_saves_change_dir_btn": "Інша папка...",
+        "cancel_btn": "Скасувати",
         "no_file": "Файл не вибрано",
         "info_frame": "Інформація про сейв",
         "char_frame": "Персонаж — Rush",
@@ -1115,6 +1255,7 @@ STRINGS = {
         "search_offset_line": "  offset={off}   розмір={size} байт",
         "diff_title": "Різниця: {a}  ->  {b}",
         "diff_found": "Знайдено {n} блоків змін (об'єднано, gap<=8):\n\n",
+        "diff_more_hidden": "... ще {n} блоків не показано.",
         "magic_line": "Magic: {magic}    Версія: {version}\n",
         "size_line": "Розмір розпакований: {size} байт (поле в заголовку: {size_field})\n",
         "checksum_ok_line": "SHA1 чек-сума: OK ✅\n",
@@ -1202,6 +1343,7 @@ STRINGS = {
         "tab_gold": "Основне",
         "tab_union": "Union",
         "tab_inventory": "Inventory",
+        "tab_charequip": "Екіпіровка персонажів",
         "tab_tools": "Інструменти",
         "subtab_equipment": "Equipment",
         "subtab_accessories": "Accessories",
@@ -1209,6 +1351,18 @@ STRINGS = {
         "subtab_components": "Components",
         "subtab_monsters": "Captured Monsters",
         "subtab_special": "Special Items",
+        "charequip_char_label": "Персонаж:",
+        "charequip_slot_weapon": "Зброя:",
+        "charequip_slot_shield": "Щит/друге:",
+        "charequip_apply_btn": "Застосувати екіпіровку",
+        "charequip_applied_msg": "Екіпіровку персонажа {name} оновлено.",
+        "tip_charequip": "Що персонаж РЕАЛЬНО носить на собі (окремо від загального "
+                          "інвентарю). Працює для БУДЬ-ЯКОГО персонажа, включно з тими, "
+                          "кому в грі не можна вручну міняти зброю (вони одягають самі, "
+                          "рандомно) — тут можна поставити конкретний предмет напряму, "
+                          "включно з унікальною особистою зброєю персонажів (напр. "
+                          "Emma's Longsword). Знайдено і підтверджено контрольованим тестом "
+                          "(зміна зброї Раша в грі, звірка сейвів до/після).",
         "equip_db_status_ok": "Базу предметів завантажено: {n} шт.",
         "equip_db_status_missing": "⚠ Базу предметів (EquipItems.csv) не знайдено — назви й список предметів не працюватимуть.",
         "equip_reload_btn": "Перезавантажити базу",
@@ -1238,6 +1392,21 @@ STRINGS = {
         "union_roster_applied_msg": "Склад юніону оновлено. Стати юніону можуть виглядати "
                                      "застарілими, доки не зайдеш у бій чи формейшн-екран — "
                                      "гра сама перерахує їх.",
+        "union_all_250_btn": "Весь юніон: 250",
+        "union_all_max_btn": "Весь юніон: MAX (255)",
+        "union_export_profile_btn": "Зберегти профіль...",
+        "union_import_profile_btn": "Завантажити профіль...",
+        "union_profile_saved_msg": "Профіль спорядження збережено: {path}",
+        "union_profile_loaded_msg": "Профіль завантажено в поля. Натисни "
+                                     "\"Застосувати склад\", щоб записати в сейв.",
+        "union_profile_load_error": "Не вдалося завантажити профіль: {err}",
+        "diff_label_br_exp": "Battle Rank EXP",
+        "diff_label_br_cache": "Battle Rank (кеш екрану завантаження)",
+        "diff_label_acc_slot": "Аксесуари (склад), слот {n}",
+        "diff_label_equip_slot": "Інвентар: зброя/спорядження, слот {n}",
+        "diff_label_item_slot": "Предмети, запис {n} ({name})",
+        "diff_label_union": "Юніон {n} (стати/склад)",
+        "diff_label_charequip": "Спорядження персонажа: {char}, слот {slot}",
         "err_chars_db_missing": "Не знайдено Chars.csv (потрібен для списку персонажів).",
         "err_unknown_char": "Невідомий персонаж: {name}",
         "err_duplicate_char_same_union": "Один і той самий персонаж вибраний у кількох слотах.",
@@ -1258,6 +1427,14 @@ STRINGS = {
     "en": {
         "title": "TLR Save Editor — The Last Remnant Remastered",
         "open_button": "Open .sav file...",
+        "find_saves_btn": "Find saves...",
+        "find_saves_pick_dir_title": "Pick a folder to search for game saves",
+        "find_saves_win_title": "Saves found",
+        "find_saves_dir_label": "Search folder: {dir}",
+        "find_saves_none_found": "No .sav files found in this folder.",
+        "find_saves_open_btn": "Open",
+        "find_saves_change_dir_btn": "Different folder...",
+        "cancel_btn": "Cancel",
         "no_file": "No file selected",
         "info_frame": "Save Info",
         "char_frame": "Character — Rush",
@@ -1315,6 +1492,7 @@ STRINGS = {
         "search_offset_line": "  offset={off}   size={size} bytes",
         "diff_title": "Diff: {a}  ->  {b}",
         "diff_found": "Found {n} changed blocks (merged, gap<=8):\n\n",
+        "diff_more_hidden": "... {n} more blocks not shown.",
         "magic_line": "Magic: {magic}    Version: {version}\n",
         "size_line": "Decompressed size: {size} bytes (header field: {size_field})\n",
         "checksum_ok_line": "SHA1 checksum: OK ✅\n",
@@ -1400,11 +1578,24 @@ STRINGS = {
         "tab_gold": "Main",
         "tab_union": "Union",
         "tab_inventory": "Inventory",
+        "tab_charequip": "Character Equipment",
         "tab_tools": "Tools",
         "subtab_equipment": "Equipment",
         "subtab_accessories": "Accessories",
         "subtab_consumables": "Consumables",
         "subtab_components": "Components",
+        "charequip_char_label": "Character:",
+        "charequip_slot_weapon": "Weapon:",
+        "charequip_slot_shield": "Shield/secondary:",
+        "charequip_apply_btn": "Apply equipment",
+        "charequip_applied_msg": "{name}'s equipment updated.",
+        "tip_charequip": "What a character is ACTUALLY wearing (separate from the general "
+                          "carried inventory). Works for ANY character, including ones the "
+                          "game doesn't let you manually re-equip (they auto-equip randomly "
+                          "on their own) - here you can set a specific item directly, "
+                          "including a character's unique personal weapon (e.g. Emma's "
+                          "Longsword). Found and confirmed via a controlled test (changing "
+                          "Rush's weapon in-game, diffing before/after saves).",
         "subtab_monsters": "Captured Monsters",
         "subtab_special": "Special Items",
         "equip_db_status_ok": "Item database loaded: {n} items",
@@ -1435,6 +1626,21 @@ STRINGS = {
         "union_roster_applied_msg": "Union roster updated. The union's stats may look stale "
                                      "until you enter a battle or the formation screen - the "
                                      "game recalculates them itself.",
+        "union_all_250_btn": "Whole union: 250",
+        "union_all_max_btn": "Whole union: MAX (255)",
+        "union_export_profile_btn": "Save profile...",
+        "union_import_profile_btn": "Load profile...",
+        "union_profile_saved_msg": "Equipment profile saved: {path}",
+        "union_profile_loaded_msg": "Profile loaded into the fields. Click "
+                                     "\"Apply roster\" to write it to the save.",
+        "union_profile_load_error": "Could not load profile: {err}",
+        "diff_label_br_exp": "Battle Rank EXP",
+        "diff_label_br_cache": "Battle Rank (load-screen cache)",
+        "diff_label_acc_slot": "Accessories (carried), slot {n}",
+        "diff_label_equip_slot": "Inventory: weapon/equipment, slot {n}",
+        "diff_label_item_slot": "Items, record {n} ({name})",
+        "diff_label_union": "Union {n} (stats/roster)",
+        "diff_label_charequip": "Character equipment: {char}, slot {slot}",
         "err_chars_db_missing": "Chars.csv not found (needed for the character list).",
         "err_unknown_char": "Unknown character: {name}",
         "err_duplicate_char_same_union": "The same character is selected in more than one slot.",
@@ -1668,7 +1874,7 @@ class SaveEditorApp:
         self.original_gold2 = 0
         self.updating_gold2 = False  # flag to prevent recursion
 
-        self.root.geometry("760x640")
+        self.root.geometry("960x700")
         self.root.minsize(680, 520)
 
         pad = {"padx": 10, "pady": 6}
@@ -1687,6 +1893,8 @@ class SaveEditorApp:
         top.pack(fill="x", **pad)
         self.open_btn = ttk.Button(top, command=self.open_file)
         self.open_btn.pack(side="left")
+        self.find_saves_btn = ttk.Button(top, command=self._find_saves)
+        self.find_saves_btn.pack(side="left", padx=(6, 0))
         self.file_label = ttk.Label(top)
         self.file_label.pack(side="left", padx=10)
 
@@ -1798,8 +2006,45 @@ class SaveEditorApp:
         self.tab_union = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_union, text="")
 
+        # The roster rows (character + weapon + 6 stat fields + 2 quick-fill
+        # buttons) are wide, and there can be many rows, so the tab content
+        # is wrapped in a scrollable canvas (both directions) - this way
+        # nothing gets clipped regardless of window/screen size.
+        union_canvas = tk.Canvas(self.tab_union, highlightthickness=0)
+        union_vscroll = ttk.Scrollbar(
+            self.tab_union, orient="vertical", command=union_canvas.yview)
+        union_hscroll = ttk.Scrollbar(
+            self.tab_union, orient="horizontal", command=union_canvas.xview)
+        union_canvas.configure(
+            yscrollcommand=union_vscroll.set, xscrollcommand=union_hscroll.set)
+        union_vscroll.pack(side="right", fill="y")
+        union_hscroll.pack(side="bottom", fill="x")
+        union_canvas.pack(side="left", fill="both", expand=True)
+
+        union_content = ttk.Frame(union_canvas)
+        union_canvas.create_window((0, 0), window=union_content, anchor="nw")
+
+        def _on_union_content_configure(event):
+            union_canvas.configure(scrollregion=union_canvas.bbox("all"))
+        union_content.bind("<Configure>", _on_union_content_configure)
+
+        def _union_mousewheel(event):
+            if event.state & 0x0001:  # Shift held -> scroll horizontally
+                union_canvas.xview_scroll(int(-1 * (event.delta / 120)), "units")
+            else:
+                union_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        def _union_bind_wheel(event):
+            union_canvas.bind_all("<MouseWheel>", _union_mousewheel)
+
+        def _union_unbind_wheel(event):
+            union_canvas.unbind_all("<MouseWheel>")
+
+        union_canvas.bind("<Enter>", _union_bind_wheel)
+        union_canvas.bind("<Leave>", _union_unbind_wheel)
+
         self.selected_union_index = 0
-        select_row = ttk.Frame(self.tab_union)
+        select_row = ttk.Frame(union_content)
         select_row.pack(fill="x", padx=6, pady=(10, 0), anchor="w")
         self.union_select_label = ttk.Label(select_row, width=12, anchor="w")
         self.union_select_label.pack(side="left")
@@ -1813,7 +2058,7 @@ class SaveEditorApp:
 
         self.rush_stat_labels = {}
         self.rush_stat_vars = {}
-        grid = ttk.Frame(self.tab_union)
+        grid = ttk.Frame(union_content)
         grid.pack(fill="x", padx=6, pady=12)
         cols = 3
         for idx, (key, label_key, rel_off, size) in enumerate(RUSH_STATS):
@@ -1829,18 +2074,18 @@ class SaveEditorApp:
             self.rush_stat_vars[key] = var
 
         self.rush_max_stats_btn = ttk.Button(
-            self.tab_union, command=self._set_rush_stat_fields_max)
+            union_content, command=self._set_rush_stat_fields_max)
         self.rush_max_stats_btn.pack(padx=6, pady=(0, 10), anchor="w")
 
         # --- Union roster (slots 2-5) - EXPERIMENTAL, see comment above
         # union_member_addr() for what's confirmed vs not. ---
         self.chars_names = []
-        self.union_roster_label = ttk.Label(self.tab_union, anchor="w")
+        self.union_roster_label = ttk.Label(union_content, anchor="w")
         self.union_roster_label.pack(padx=6, pady=(4, 0), anchor="w")
         self.union_member_labels = {}
         self.union_member_vars = {}
         self.union_member_combos = {}
-        roster_frame = ttk.Frame(self.tab_union)
+        roster_frame = ttk.Frame(union_content)
         roster_frame.pack(fill="x", padx=6, pady=4)
 
         leader_row = ttk.Frame(roster_frame)
@@ -1848,8 +2093,54 @@ class SaveEditorApp:
         self.union_leader_label = ttk.Label(leader_row, width=10, anchor="w")
         self.union_leader_label.pack(side="left")
         self.union_leader_var = tk.StringVar()
-        self.union_leader_combo = ttk.Combobox(leader_row, textvariable=self.union_leader_var, width=28)
+        self.union_leader_combo = ttk.Combobox(leader_row, textvariable=self.union_leader_var, width=24)
         self.union_leader_combo.pack(side="left", padx=6)
+        self.union_leader_combo.bind(
+            "<<ComboboxSelected>>", lambda e: self._on_union_roster_char_selected("leader"))
+        self._make_combobox_searchable(
+            self.union_leader_combo, lambda: list(self.chars_names))
+
+        # --- Each roster row also shows/edits that member's currently
+        # equipped weapon (CHAR_EQUIP slot 0), with the same 6 stat fields
+        # used on the Inventory tab, so a weapon can be tweaked right where
+        # the union composition is being edited. ---
+        self.union_weapon_vars = {}
+        self.union_weapon_combos = {}
+        self.union_weapon_stat_vars = {}
+        stat_display_labels = {
+            "att": "Att:", "matt": "M-Att:", "def": "Def:",
+            "mdef": "M-Def:", "eva": "Eva:", "meva": "M-Eva:",
+        }
+
+        def _add_weapon_widgets(parent, row_key):
+            wvar = tk.StringVar()
+            wcombo = ttk.Combobox(parent, textvariable=wvar, width=22)
+            wcombo.pack(side="left", padx=(4, 4))
+            self.union_weapon_vars[row_key] = wvar
+            self.union_weapon_combos[row_key] = wcombo
+            stat_vars = {}
+            for stat_key in EQUIP_STAT_NAMES:
+                ttk.Label(parent, text=stat_display_labels[stat_key],
+                          width=6, anchor="e").pack(side="left")
+                svar = tk.StringVar()
+                ttk.Entry(parent, textvariable=svar, width=4).pack(side="left", padx=(2, 4))
+                stat_vars[stat_key] = svar
+            self.union_weapon_stat_vars[row_key] = stat_vars
+            wcombo.bind(
+                "<<ComboboxSelected>>",
+                lambda e, rk=row_key: self._on_union_weapon_selected(rk))
+            self._make_combobox_searchable(
+                wcombo, lambda: sorted(set(self.equip_names.values())))
+            ttk.Button(
+                parent, width=4, text="175",
+                command=lambda rk=row_key: self._set_union_weapon_stats(rk, 175)
+            ).pack(side="left", padx=(4, 0))
+            ttk.Button(
+                parent, width=4, text="250",
+                command=lambda rk=row_key: self._set_union_weapon_stats(rk, 250)
+            ).pack(side="left", padx=(2, 0))
+
+        _add_weapon_widgets(leader_row, "leader")
 
         for slot_pos in range(UNION_MEMBER_SLOT_COUNT):
             row = ttk.Frame(roster_frame)
@@ -1857,13 +2148,34 @@ class SaveEditorApp:
             lbl = ttk.Label(row, width=10, anchor="w")
             lbl.pack(side="left")
             var = tk.StringVar()
-            combo = ttk.Combobox(row, textvariable=var, width=28)
+            combo = ttk.Combobox(row, textvariable=var, width=24)
             combo.pack(side="left", padx=6)
+            combo.bind(
+                "<<ComboboxSelected>>",
+                lambda e, sp=slot_pos: self._on_union_roster_char_selected(sp))
+            self._make_combobox_searchable(combo, lambda: list(self.chars_names))
             self.union_member_labels[slot_pos] = lbl
             self.union_member_vars[slot_pos] = var
             self.union_member_combos[slot_pos] = combo
+            _add_weapon_widgets(row, slot_pos)
+
+        union_bulk_row = ttk.Frame(union_content)
+        union_bulk_row.pack(fill="x", padx=6, pady=(2, 4), anchor="w")
+        self.union_all_250_btn = ttk.Button(
+            union_bulk_row, command=lambda: self._set_all_union_weapon_stats(250))
+        self.union_all_250_btn.pack(side="left")
+        self.union_all_max_btn = ttk.Button(
+            union_bulk_row, command=lambda: self._set_all_union_weapon_stats(255))
+        self.union_all_max_btn.pack(side="left", padx=(6, 0))
+        self.union_export_profile_btn = ttk.Button(
+            union_bulk_row, command=self._export_union_profile)
+        self.union_export_profile_btn.pack(side="left", padx=(18, 0))
+        self.union_import_profile_btn = ttk.Button(
+            union_bulk_row, command=self._import_union_profile)
+        self.union_import_profile_btn.pack(side="left", padx=(6, 0))
+
         self.union_roster_apply_btn = ttk.Button(
-            self.tab_union, command=self.apply_union_members)
+            union_content, command=self.apply_union_members)
         self.union_roster_apply_btn.pack(padx=6, pady=(0, 10), anchor="w")
         ToolTip(self.union_roster_label, lambda: self.t("tip_union_roster"))
 
@@ -1913,6 +2225,8 @@ class SaveEditorApp:
         self.equip_apply_btn = ttk.Button(equip_edit_row, command=self.apply_equip_to_selected)
         self.equip_apply_btn.pack(side="left", padx=(4, 0))
         self.equip_item_combo.bind("<<ComboboxSelected>>", self._on_equip_item_selected)
+        self._make_combobox_searchable(
+            self.equip_item_combo, lambda: sorted(set(self.equip_names.values())))
 
         # --- Item-database status + manual reload (in case EquipItems.csv
         # wasn't found/readable at startup - e.g. a cloud-synced folder
@@ -1990,6 +2304,8 @@ class SaveEditorApp:
         self.accessory_item_combo.pack(side="left", padx=6)
         self.accessory_apply_btn = ttk.Button(acc_edit_row, command=self.apply_accessory_to_selected)
         self.accessory_apply_btn.pack(side="left", padx=(4, 0))
+        self._make_combobox_searchable(
+            self.accessory_item_combo, lambda: sorted(set(self.accessory_names.values())))
 
         acc_db_row = ttk.Frame(self.subtab_accessories)
         acc_db_row.pack(fill="x", padx=6, pady=(0, 4))
@@ -2034,6 +2350,49 @@ class SaveEditorApp:
         self.subtab_special = self._build_items_subtab("special_items")
 
         self._load_items_database(warn_on_empty=True)
+
+        # ===== Tab: Character Equipment (what a character is actually
+        # wearing, as opposed to the carried/unequipped pool above) =====
+        self.tab_charequip = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_charequip, text="")
+
+        charequip_select_row = ttk.Frame(self.tab_charequip)
+        charequip_select_row.pack(fill="x", padx=6, pady=(12, 4), anchor="w")
+        self.charequip_char_label = ttk.Label(charequip_select_row, width=14, anchor="w")
+        self.charequip_char_label.pack(side="left")
+        self.charequip_char_var = tk.StringVar()
+        self.charequip_char_combo = ttk.Combobox(
+            charequip_select_row, textvariable=self.charequip_char_var, width=28)
+        self.charequip_char_combo.pack(side="left", padx=6)
+        self.charequip_char_combo["values"] = list(self.chars_names)
+        self.charequip_char_combo.bind(
+            "<<ComboboxSelected>>", self._on_charequip_char_selected)
+        self._make_combobox_searchable(
+            self.charequip_char_combo, lambda: list(self.chars_names))
+
+        self.charequip_slot_labels = {}
+        self.charequip_slot_vars = {}
+        self.charequip_slot_combos = {}
+        charequip_slot_names = ["weapon", "shield"]
+        for slot in range(CHAR_EQUIP_SLOTS_PER_CHAR):
+            row = ttk.Frame(self.tab_charequip)
+            row.pack(fill="x", padx=6, pady=4, anchor="w")
+            lbl = ttk.Label(row, width=14, anchor="w")
+            lbl.pack(side="left")
+            var = tk.StringVar()
+            combo = ttk.Combobox(row, textvariable=var, width=35)
+            combo.pack(side="left", padx=6)
+            combo["values"] = sorted(set(self.equip_names.values()))
+            self.charequip_slot_labels[slot] = lbl
+            self.charequip_slot_vars[slot] = var
+            self.charequip_slot_combos[slot] = combo
+            self._make_combobox_searchable(
+                combo, lambda: sorted(set(self.equip_names.values())))
+
+        self.charequip_apply_btn = ttk.Button(
+            self.tab_charequip, command=self.apply_char_equip)
+        self.charequip_apply_btn.pack(padx=6, pady=(6, 10), anchor="w")
+        ToolTip(self.charequip_char_label, lambda: self.t("tip_charequip"))
 
         # ===== Tab 4: Tools (number search + save diff) =====
         self.tab_tools = ttk.Frame(self.notebook)
@@ -2121,6 +2480,12 @@ class SaveEditorApp:
 
         sorted_names = sorted(set(self.equip_names.values()))
         self.equip_item_combo["values"] = sorted_names
+        if hasattr(self, "charequip_slot_combos"):
+            for combo in self.charequip_slot_combos.values():
+                combo["values"] = sorted_names
+        if hasattr(self, "union_weapon_combos"):
+            for combo in self.union_weapon_combos.values():
+                combo["values"] = sorted_names
 
         count = len(self.equip_names)
         if count:
@@ -2181,6 +2546,33 @@ class SaveEditorApp:
         for key, val in zip(EQUIP_STAT_NAMES, stats):
             self.equip_stat_vars[key].set(str(val))
 
+    def _make_combobox_searchable(self, combo, get_values):
+        """Turn a ttk.Combobox with a long values list into a live-filter
+        search box: typing narrows the dropdown to names containing the
+        typed text (case-insensitive substring match), and the full list
+        is restored every time the box gains focus so filtering always
+        starts fresh. `get_values` is a zero-arg callable returning the
+        current full list of names (called lazily, so it stays correct
+        even after the underlying database is reloaded)."""
+
+        def _restore_full_list(event=None):
+            combo["values"] = list(get_values())
+
+        def _on_keyrelease(event=None):
+            if event is not None and event.keysym in (
+                    "Up", "Down", "Return", "Escape", "Tab", "Shift_L", "Shift_R"):
+                return
+            filtered = filter_combo_values(list(get_values()), combo.get())
+            combo["values"] = filtered
+            if filtered:
+                try:
+                    combo.event_generate("<Down>")
+                except Exception:
+                    pass
+
+        combo.bind("<FocusIn>", _restore_full_list)
+        combo.bind("<KeyRelease>", _on_keyrelease)
+
     def _on_equip_item_selected(self, event=None):
         """When a name is picked from the dropdown, pre-fill the stat entry
         fields with that item's real stats from EquipItems.csv, so the
@@ -2190,6 +2582,49 @@ class SaveEditorApp:
         stats = self.equip_stats.get(item_id, [0] * EQUIP_STAT_COUNT) if item_id is not None else [0] * EQUIP_STAT_COUNT
         for key, val in zip(EQUIP_STAT_NAMES, stats):
             self.equip_stat_vars[key].set(str(val))
+
+    def _on_charequip_char_selected(self, event=None):
+        self._load_char_equip_into_fields()
+
+    def _load_char_equip_into_fields(self):
+        """Fills the two slot comboboxes with what the selected character
+        is actually wearing right now (from the CHAR_EQUIP table), or
+        blank if nothing is selected/loaded."""
+        if self.dec_buffer is None:
+            return
+        name = self.charequip_char_var.get().strip()
+        if not name or name not in self.chars_names:
+            return
+        char_id = list(self.chars_names).index(name)
+        for slot in range(CHAR_EQUIP_SLOTS_PER_CHAR):
+            item_id = read_char_equip_item(self.dec_buffer, char_id, slot)
+            self.charequip_slot_vars[slot].set(self._equip_display_name(item_id))
+
+    def apply_char_equip(self):
+        if self.dec_buffer is None:
+            messagebox.showwarning(self.t("warn_title"), self.t("warn_open_first"))
+            return
+        name = self.charequip_char_var.get().strip()
+        if not name or name not in self.chars_names:
+            messagebox.showerror(self.t("err_title"), self.t("err_unknown_char", name=name))
+            return
+        char_id = list(self.chars_names).index(name)
+
+        buf = bytearray(self.dec_buffer)
+        for slot in range(CHAR_EQUIP_SLOTS_PER_CHAR):
+            slot_name = self.charequip_slot_vars[slot].get().strip()
+            if not slot_name or slot_name == self.t("equip_empty_slot"):
+                clear_char_equip_slot(buf, char_id, slot)
+                continue
+            item_id = self._equip_id_by_name(slot_name)
+            if item_id is None:
+                messagebox.showerror(self.t("err_title"), self.t("err_unknown_item", name=slot_name))
+                return
+            stats = self.equip_stats.get(item_id, [0] * EQUIP_STAT_COUNT)
+            write_char_equip_slot(buf, char_id, slot, item_id, stats=stats)
+        self.dec_buffer = bytes(buf)
+        self._load_char_equip_into_fields()
+        messagebox.showinfo(self.t("done_title"), self.t("charequip_applied_msg", name=name))
 
     def _fill_diggs_attempts(self):
         try:
@@ -2221,9 +2656,292 @@ class SaveEditorApp:
             return
         leader_id = read_union_leader(self.dec_buffer, self.selected_union_index)
         self.union_leader_var.set(self._char_name(leader_id))
+        self._load_union_weapon_fields_for_row("leader", leader_id)
         members = read_union_members(self.dec_buffer, self.selected_union_index)
         for slot_pos, char_id in enumerate(members):
             self.union_member_vars[slot_pos].set(self._char_name(char_id))
+            self._load_union_weapon_fields_for_row(slot_pos, char_id)
+
+    def _load_union_weapon_fields_for_row(self, row_key, char_id):
+        """Fills a union roster row's weapon combobox + stat fields with
+        what that character is actually wearing (CHAR_EQUIP slot 0),
+        or clears them if the slot is empty/invalid."""
+        if row_key not in self.union_weapon_vars:
+            return
+        wvar = self.union_weapon_vars[row_key]
+        stat_vars = self.union_weapon_stat_vars[row_key]
+        if self.dec_buffer is None or char_id is None or char_id == UNION_MEMBER_EMPTY_ID \
+                or not (0 <= char_id < len(self.chars_names)):
+            wvar.set("")
+            for var in stat_vars.values():
+                var.set("")
+            return
+        item_id = read_char_equip_item(self.dec_buffer, char_id, 0)
+        wvar.set(self._equip_display_name(item_id))
+        stats = read_char_equip_stats(self.dec_buffer, char_id, 0)
+        for key, val in zip(EQUIP_STAT_NAMES, stats):
+            stat_vars[key].set(str(val))
+
+    def _set_all_union_weapon_stats(self, value):
+        """Apply `value` to all 6 weapon stat fields, for every roster row
+        (leader + all member slots) at once."""
+        for row_key in self.union_weapon_stat_vars:
+            self._set_union_weapon_stats(row_key, value)
+
+    def _union_row_to_profile_dict(self, row_key, char_var):
+        """Snapshot one roster row (character + weapon + weapon stats) as
+        a plain dict, for JSON export."""
+        return {
+            "char": char_var.get(),
+            "weapon": self.union_weapon_vars[row_key].get(),
+            "stats": {k: v.get() for k, v in self.union_weapon_stat_vars[row_key].items()},
+        }
+
+    def _export_union_profile(self):
+        """Save the currently-displayed union roster (who's in each slot +
+        their weapon + weapon stats) to a JSON file, so the same loadout
+        can be re-applied to this or another save later without manually
+        re-entering everything."""
+        path = filedialog.asksaveasfilename(
+            defaultextension=".json", filetypes=[("JSON", "*.json")])
+        if not path:
+            return
+        profile = {
+            "leader": self._union_row_to_profile_dict("leader", self.union_leader_var),
+            "members": {
+                str(slot_pos): self._union_row_to_profile_dict(slot_pos, var)
+                for slot_pos, var in self.union_member_vars.items()
+            },
+        }
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(profile, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
+            return
+        messagebox.showinfo(self.t("done_title"), self.t("union_profile_saved_msg", path=path))
+
+    def _import_union_profile(self):
+        """Load a JSON profile saved by _export_union_profile() back into
+        the roster fields. Only fills the on-screen fields - Apply roster
+        still has to be clicked to actually write it into the save, same
+        as picking a character/weapon from the dropdowns by hand."""
+        path = filedialog.askopenfilename(filetypes=[("JSON", "*.json")])
+        if not path:
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                profile = json.load(f)
+        except (OSError, ValueError) as e:
+            messagebox.showerror(self.t("err_title"), self.t("union_profile_load_error", err=str(e)))
+            return
+
+        def _apply_row(row_key, char_var, data):
+            char_var.set(data.get("char", ""))
+            if row_key in self.union_weapon_vars:
+                self.union_weapon_vars[row_key].set(data.get("weapon", ""))
+            stat_vars = self.union_weapon_stat_vars.get(row_key, {})
+            for k, v in data.get("stats", {}).items():
+                if k in stat_vars:
+                    stat_vars[k].set(v)
+
+        leader_data = profile.get("leader")
+        if isinstance(leader_data, dict):
+            _apply_row("leader", self.union_leader_var, leader_data)
+        for slot_key, data in profile.get("members", {}).items():
+            if not isinstance(data, dict):
+                continue
+            try:
+                slot_pos = int(slot_key)
+            except ValueError:
+                continue
+            if slot_pos in self.union_member_vars:
+                _apply_row(slot_pos, self.union_member_vars[slot_pos], data)
+
+        messagebox.showinfo(self.t("done_title"), self.t("union_profile_loaded_msg"))
+
+    # ------------------------------------------------------------------
+    # Save diff tab: best-effort human labels for byte ranges, layered on
+    # top of find_save_diff_regions()/merge_diff_regions(). This is
+    # heuristic, not exhaustive - offsets that don't match a known single
+    # field or table are still shown, just without a friendly label.
+    # ------------------------------------------------------------------
+
+    def _describe_diff_offset(self, offset):
+        single_fields = [
+            (GOLD_OFFSET, 4, self.t("gold_label")),
+            (GOLD_LIFETIME_OFFSET, 4, self.t("gold_lifetime_label")),
+            (BR_OFFSET, 2, self.t("br_label")),
+            (BR_EXP_OFFSET, 2, self.t("diff_label_br_exp")),
+            (BR_DISPLAY_CACHE_OFFSET, 2, self.t("diff_label_br_cache")),
+            (PLAYTIME_OFFSET, 4, self.t("playtime_label")),
+            (MR_DIGGS_ATTEMPTS_OFFSET, 4, self.t("diggs_attempts_label")),
+            (MR_DIGGS_MAX_ATTEMPTS_OFFSET, 4, self.t("diggs_max_label")),
+            (MONSTER_KILLS_OFFSET, 2, self.t("monster_kills_label")),
+        ]
+        for base, size, label in single_fields:
+            if base <= offset < base + size:
+                return label
+
+        table_bases = [
+            (ACCESSORY_TABLE_BASE, "acc"),
+            (EQUIP_TABLE_BASE, "equip"),
+            (ITEMS_TABLE_BASE, "items"),
+            (RUSH_STRUCT_BASE, "union"),
+            (CHAR_EQUIP_TABLE_BASE, "charequip"),
+        ]
+        chosen = None
+        for base, kind in table_bases:
+            if offset >= base:
+                chosen = (base, kind)
+        if chosen is None:
+            return None
+        base, kind = chosen
+        rel = offset - base
+
+        if kind == "acc" and rel < ACCESSORY_SLOT_COUNT * ACCESSORY_RECORD_SIZE:
+            idx = rel // ACCESSORY_RECORD_SIZE
+            return self.t("diff_label_acc_slot", n=idx)
+        if kind == "equip" and rel < EQUIP_SLOT_COUNT * EQUIP_RECORD_SIZE:
+            idx = rel // EQUIP_RECORD_SIZE
+            return self.t("diff_label_equip_slot", n=idx)
+        if kind == "items" and self.items_catalog and rel < len(self.items_catalog) * ITEMS_RECORD_SIZE:
+            idx = rel // ITEMS_RECORD_SIZE
+            name = self.items_catalog[idx]["name"] if idx < len(self.items_catalog) else "?"
+            return self.t("diff_label_item_slot", n=idx, name=name)
+        if kind == "union" and rel < UNION_COUNT * UNION_RECORD_STRIDE:
+            idx = rel // UNION_RECORD_STRIDE
+            return self.t("diff_label_union", n=idx + 1)
+        if kind == "charequip":
+            idx = rel // CHAR_EQUIP_RECORD_SIZE
+            char_id = idx // CHAR_EQUIP_SLOTS_PER_CHAR
+            slot = idx % CHAR_EQUIP_SLOTS_PER_CHAR
+            char_name = (self.chars_names[char_id]
+                         if self.chars_names and char_id < len(self.chars_names)
+                         else f"id={char_id}")
+            return self.t("diff_label_charequip", char=char_name, slot=slot)
+        return None
+
+    def _describe_diff_block(self, dec_a, dec_b, s, e):
+        la, lb = dec_a[s:e], dec_b[s:e]
+        length = e - s
+        lines = [f"[{hex(s)}:{hex(e)}] len={length}"]
+        label = self._describe_diff_offset(s)
+        if label:
+            lines.append(f"  {label}")
+        decoded = False
+        for size, fmt in [(2, "<h"), (4, "<i")]:
+            if length == size:
+                va = struct.unpack(fmt, la)[0]
+                vb = struct.unpack(fmt, lb)[0]
+                lines.append(f"  {va} -> {vb}  (diff={vb - va})")
+                decoded = True
+        if not decoded:
+            lines.append(f"  before: {la.hex()}")
+            lines.append(f"  after : {lb.hex()}")
+        return "\n".join(lines)
+
+    # ------------------------------------------------------------------
+    # "Find saves" button: scan a remembered/picked folder for .sav files
+    # instead of always having to browse for the exact file by hand.
+    # ------------------------------------------------------------------
+
+    def _find_saves(self):
+        cfg = load_app_config()
+        search_dir = cfg.get("save_search_dir")
+        if not search_dir or not os.path.isdir(search_dir):
+            chosen = filedialog.askdirectory(title=self.t("find_saves_pick_dir_title"))
+            if not chosen:
+                return
+            search_dir = chosen
+            cfg["save_search_dir"] = search_dir
+            save_app_config(cfg)
+        self._scan_and_show_saves(search_dir)
+
+    def _scan_and_show_saves(self, search_dir):
+        results = scan_for_sav_files([search_dir])
+        self._show_save_picker(results, search_dir)
+
+    def _show_save_picker(self, results, search_dir):
+        win = tk.Toplevel(self.root)
+        win.title(self.t("find_saves_win_title"))
+        win.geometry("560x420")
+
+        info = ttk.Label(
+            win, text=self.t("find_saves_dir_label", dir=search_dir),
+            anchor="w", wraplength=540)
+        info.pack(fill="x", padx=8, pady=(8, 4))
+
+        list_frame = ttk.Frame(win)
+        list_frame.pack(fill="both", expand=True, padx=8, pady=4)
+        scroll = ttk.Scrollbar(list_frame)
+        scroll.pack(side="right", fill="y")
+        listbox = tk.Listbox(list_frame, yscrollcommand=scroll.set)
+        listbox.pack(side="left", fill="both", expand=True)
+        scroll.config(command=listbox.yview)
+
+        if not results:
+            listbox.insert("end", self.t("find_saves_none_found"))
+        else:
+            for p in results:
+                listbox.insert("end", os.path.relpath(p, search_dir))
+
+        btn_row = ttk.Frame(win)
+        btn_row.pack(fill="x", padx=8, pady=8)
+
+        def _open_selected(event=None):
+            sel = listbox.curselection()
+            if not sel or not results:
+                return
+            path = results[sel[0]]
+            win.destroy()
+            self.load_save_file(path)
+
+        open_btn = ttk.Button(btn_row, text=self.t("find_saves_open_btn"), command=_open_selected)
+        open_btn.pack(side="left")
+        listbox.bind("<Double-Button-1>", _open_selected)
+
+        def _change_folder():
+            chosen = filedialog.askdirectory(title=self.t("find_saves_pick_dir_title"))
+            if not chosen:
+                return
+            cfg = load_app_config()
+            cfg["save_search_dir"] = chosen
+            save_app_config(cfg)
+            win.destroy()
+            self._scan_and_show_saves(chosen)
+
+        change_btn = ttk.Button(
+            btn_row, text=self.t("find_saves_change_dir_btn"), command=_change_folder)
+        change_btn.pack(side="left", padx=(6, 0))
+
+        cancel_btn = ttk.Button(btn_row, text=self.t("cancel_btn"), command=win.destroy)
+        cancel_btn.pack(side="right")
+
+    def _on_union_roster_char_selected(self, row_key):
+        """When a character is picked/changed in a roster combo, refresh
+        that row's weapon fields to match what that character wears."""
+        name = (self.union_leader_var if row_key == "leader"
+                else self.union_member_vars[row_key]).get().strip()
+        char_id = None
+        if name and name != self.t("union_slot_empty") and name in list(self.chars_names):
+            char_id = list(self.chars_names).index(name)
+        self._load_union_weapon_fields_for_row(row_key, char_id)
+
+    def _set_union_weapon_stats(self, row_key, value):
+        """Sets all 6 stat fields for one roster row's weapon to a fixed
+        value (used by the 175/250 quick-fill buttons)."""
+        for var in self.union_weapon_stat_vars[row_key].values():
+            var.set(str(value))
+
+    def _on_union_weapon_selected(self, row_key):
+        """When a weapon name is picked from a roster row's dropdown,
+        pre-fill its stat fields with that item's real CSV stats."""
+        name = self.union_weapon_vars[row_key].get().strip()
+        item_id = self._equip_id_by_name(name)
+        stats = self.equip_stats.get(item_id, [0] * EQUIP_STAT_COUNT) if item_id is not None else [0] * EQUIP_STAT_COUNT
+        for key, val in zip(EQUIP_STAT_NAMES, stats):
+            self.union_weapon_stat_vars[row_key][key].set(str(val))
 
     def _load_chars_database(self):
         self.chars_names = load_chars_catalog()
@@ -2232,6 +2950,8 @@ class SaveEditorApp:
         for combo in self.union_member_combos.values():
             combo["values"] = combo_values
         self._load_union_members_into_fields()
+        if hasattr(self, "charequip_char_combo"):
+            self.charequip_char_combo["values"] = list(self.chars_names)
 
     def apply_union_members(self):
         if self.dec_buffer is None:
@@ -2281,6 +3001,31 @@ class SaveEditorApp:
             activate_union(buf, self.selected_union_index, new_leader)
         for slot_pos, char_id in new_ids.items():
             write_union_member(buf, self.selected_union_index, slot_pos, char_id)
+
+        # Also apply each row's weapon field (CHAR_EQUIP slot 0) for every
+        # non-empty character currently shown in the roster - lets you
+        # tweak a union member's weapon right from this tab instead of
+        # having to switch to the Character Equipment tab.
+        row_keys = ["leader"] + list(new_ids.keys())
+        row_char_ids = {"leader": new_leader, **new_ids}
+        for row_key in row_keys:
+            char_id = row_char_ids[row_key]
+            if char_id == UNION_MEMBER_EMPTY_ID:
+                continue
+            weapon_name = self.union_weapon_vars[row_key].get().strip()
+            if not weapon_name:
+                continue  # field left blank - leave that character's weapon untouched
+            if weapon_name == self.t("equip_empty_slot"):
+                clear_char_equip_slot(buf, char_id, 0)
+                continue
+            item_id = self._equip_id_by_name(weapon_name)
+            if item_id is None:
+                messagebox.showerror(self.t("err_title"), self.t("err_unknown_item", name=weapon_name))
+                return
+            stat_vars = self.union_weapon_stat_vars[row_key]
+            stats = self._read_equip_stat_overrides_from(stat_vars, self.equip_stats.get(item_id))
+            write_char_equip_slot(buf, char_id, 0, item_id, stats=stats)
+
         self.dec_buffer = bytes(buf)
         self._load_union_members_into_fields()
         messagebox.showinfo(self.t("done_title"), self.t("union_roster_applied_msg"))
@@ -2320,9 +3065,15 @@ class SaveEditorApp:
         """Reads the 6 stat entry fields, clamping each to 0-255. If a
         field is blank or not a number, falls back to the given default
         list (usually the item's CSV stats) for that one slot."""
+        return self._read_equip_stat_overrides_from(self.equip_stat_vars, fallback)
+
+    def _read_equip_stat_overrides_from(self, stat_vars, fallback):
+        """Same as _read_equip_stat_overrides(), but reads from an
+        arbitrary dict of StringVars (e.g. a union roster row's stat
+        fields) instead of the Inventory tab's self.equip_stat_vars."""
         result = []
         for i, key in enumerate(EQUIP_STAT_NAMES):
-            raw = self.equip_stat_vars[key].get().strip()
+            raw = stat_vars[key].get().strip()
             default = fallback[i] if fallback and i < len(fallback) else 0
             if not raw:
                 result.append(default)
@@ -2599,6 +3350,12 @@ class SaveEditorApp:
         grant_combo.pack(side="left", padx=6)
         self.items_grant_vars[category_key] = grant_var
         self.items_grant_combos[category_key] = grant_combo
+        self._make_combobox_searchable(
+            grant_combo,
+            lambda ck=category_key: sorted({
+                it["name"] for it in self.items_catalog
+                if it["type"] in ITEMS_CATEGORY_TYPES[ck]
+            }) if self.items_catalog else [])
         if ITEMS_CATEGORY_EDITABLE[category_key]:
             grant_qty_var = tk.StringVar(value="1")
             ttk.Entry(grant_row, textvariable=grant_qty_var, width=5).pack(side="left", padx=(0, 6))
@@ -2737,6 +3494,7 @@ class SaveEditorApp:
     def retranslate(self):
         self.root.title(self.t("title"))
         self.open_btn.config(text=self.t("open_button"))
+        self.find_saves_btn.config(text=self.t("find_saves_btn"))
         if not self.current_filename:
             self.file_label.config(text=self.t("no_file"))
         self.readme_btn.config(text=self.t("readme_button"))
@@ -2750,6 +3508,7 @@ class SaveEditorApp:
         self.notebook.tab(self.tab_gold, text=self.t("tab_gold"))
         self.notebook.tab(self.tab_union, text=self.t("tab_union"))
         self.notebook.tab(self.tab_inventory, text=self.t("tab_inventory"))
+        self.notebook.tab(self.tab_charequip, text=self.t("tab_charequip"))
         self.notebook.tab(self.tab_tools, text=self.t("tab_tools"))
 
         # --- Gold / BR tab ---
@@ -2775,12 +3534,24 @@ class SaveEditorApp:
         self.union_leader_label.config(text=self.t("union_leader_label"))
         for slot_pos, lbl in self.union_member_labels.items():
             lbl.config(text=self.t("union_slot_n", n=slot_pos + 2))
+        self.union_all_250_btn.config(text=self.t("union_all_250_btn"))
+        self.union_all_max_btn.config(text=self.t("union_all_max_btn"))
+        self.union_export_profile_btn.config(text=self.t("union_export_profile_btn"))
+        self.union_import_profile_btn.config(text=self.t("union_import_profile_btn"))
         self.union_roster_apply_btn.config(text=self.t("union_roster_apply_btn"))
         combo_values = [self.t("union_slot_empty")] + list(self.chars_names)
         self.union_leader_combo["values"] = combo_values
         for combo in self.union_member_combos.values():
             combo["values"] = combo_values
         self._load_union_members_into_fields()
+
+        # --- Character Equipment tab ---
+        self.charequip_char_label.config(text=self.t("charequip_char_label"))
+        slot_label_keys = ["charequip_slot_weapon", "charequip_slot_shield"]
+        for slot, lbl in self.charequip_slot_labels.items():
+            key = slot_label_keys[slot] if slot < len(slot_label_keys) else "charequip_slot_weapon"
+            lbl.config(text=self.t(key))
+        self.charequip_apply_btn.config(text=self.t("charequip_apply_btn"))
 
         # --- Tools tab ---
         self.search_frame.config(text=self.t("search_frame"))
@@ -2919,6 +3690,12 @@ class SaveEditorApp:
         )
         if not path:
             return
+        self.load_save_file(path)
+
+    def load_save_file(self, path):
+        """Load a .sav file given its path directly, without a file dialog.
+        Used both by open_file() and by startup auto-load (e.g. when the
+        app is launched by double-clicking a .sav file)."""
         try:
             dec = decompress_save(path)
         except Exception as e:
@@ -2963,6 +3740,7 @@ class SaveEditorApp:
         for key in self.items_trees:
             self._refresh_items_tree(key)
         self._refresh_info_text()
+        self._load_char_equip_into_fields()
 
     def save_new_file(self):
         if self.dec_buffer is None:
@@ -3072,20 +3850,25 @@ class SaveEditorApp:
 
         win = tk.Toplevel(self.root)
         win.title(self.t("diff_title", a=os.path.basename(self.current_path), b=os.path.basename(path2)))
-        win.geometry("600x500")
-        txt = tk.Text(win, wrap="none")
-        txt.pack(fill="both", expand=True)
+        win.geometry("680x560")
+        txt_frame = ttk.Frame(win)
+        txt_frame.pack(fill="both", expand=True)
+        scroll = ttk.Scrollbar(txt_frame)
+        scroll.pack(side="right", fill="y")
+        txt = tk.Text(txt_frame, wrap="none", yscrollcommand=scroll.set)
+        txt.pack(side="left", fill="both", expand=True)
+        scroll.config(command=txt.yview)
 
-        txt.insert("end", self.t("diff_found", n=len(merged)))
-        for s, e in merged[:300]:
-            before = self.dec_buffer[s:e]
-            after = dec2[s:e]
-            line = f"[{hex(s)}:{hex(e)}] len={e - s}\n  before: {before.hex()}\n  after : {after.hex()}\n"
-            if e - s == 4:
-                vb = struct.unpack("<i", before)[0]
-                va = struct.unpack("<i", after)[0]
-                line += f"  as int32: {vb} -> {va} (diff={va - vb})\n"
-            txt.insert("end", line + "\n")
+        # Each block gets a best-effort human label (gold, BR, union N,
+        # a character's equipped weapon slot, etc.) on top of the raw
+        # before/after bytes, via _describe_diff_block() - same field
+        # catalog used everywhere else in the app.
+        txt.insert("end", self.t("diff_found", n=len(merged)) + "\n")
+        max_print = 300
+        for s, e in merged[:max_print]:
+            txt.insert("end", "\n" + self._describe_diff_block(self.dec_buffer, dec2, s, e) + "\n")
+        if len(merged) > max_print:
+            txt.insert("end", "\n" + self.t("diff_more_hidden", n=len(merged) - max_print) + "\n")
 
     def show_readme(self):
         win = tk.Toplevel(self.root)
@@ -3108,6 +3891,16 @@ class SaveEditorApp:
 def main():
     root = tk.Tk()
     app = SaveEditorApp(root)
+
+    # If launched with a file path (e.g. double-clicked a .sav file, or
+    # dragged onto the app/script), auto-load it on startup instead of
+    # showing an empty window. Only argv[1] is used; any further args
+    # (macOS sometimes passes extra launch-services args) are ignored.
+    if len(sys.argv) > 1:
+        candidate = sys.argv[1]
+        if os.path.isfile(candidate) and not candidate.startswith("-"):
+            root.after(50, lambda: app.load_save_file(candidate))
+
     root.mainloop()
 
 
