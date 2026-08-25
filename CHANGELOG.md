@@ -5,6 +5,57 @@ versions before 0.21.0 weren't tracked in a dedicated changelog at the
 time, so the entry for them below is a general summary of what already
 existed by then, not a step-by-step list of changes.
 
+## 0.32.4
+- Union tab: gave up trying to color-match the scrollable canvas to the
+  themed frames around it (unreliable across platforms) - the content
+  frame now always stretches to cover the full visible area instead, so
+  there's no bare strip of canvas left showing through at all.
+
+## 0.32.3
+- Union tab: fixed the previous 0.32.2 attempt at the background-seam fix,
+  which silently did nothing on macOS (its native theme doesn't report a
+  plain background color the way the fix was checking for) - now uses the
+  actual macOS system background color on Mac, and still falls back to the
+  themed color on Windows/Linux.
+
+## 0.32.2
+- Tools tab: the Diff section no longer stretches to fill leftover window
+  space, so the Batch processing section below it sits right underneath
+  instead of leaving a large empty gap.
+- Union tab: the scrollable content area now matches the app's actual
+  background color instead of a plain default, removing the visible seam
+  where the two used to meet.
+
+## 0.32.1
+- Union tab: the stats grid (HP/AP/STR/etc.) is now 6 columns instead of
+  3, cutting its height roughly in half.
+- Union roster rows (character + weapon + 6 stats) are more compact -
+  narrower dropdowns and stat fields, so more fits without scrolling.
+- The still-unconfirmed stat fields (marked "(?)" - Stat #4, Stat #5,
+  INT, SPD) now show an explanatory tooltip on hover instead of just a
+  "?" in the label.
+- Added a "175" quick-fill button next to the existing "255" one on the
+  Inventory -> Equipment stats row.
+
+## 0.32.0
+- New "Undo" button next to Save: reverts the last Applied change in the
+  current session (union roster/stats, equipment, accessories, items,
+  character equipment, gold/BR/etc. via Save) without reloading the file
+  from disk. Session-only - has no effect on files already written.
+- New "Snapshot..." / "Snapshots..." buttons: save a timestamped, checksummed
+  copy of the current buffer (with an optional comment) into a
+  `snapshots` folder next to the program, and browse/restore past
+  snapshots from a list - independent of the automatic ".bak" backup and
+  the Undo button above.
+- New "Compare 3+ saves..." button on the Tools tab: pick three or more
+  `.sav` files and see every differing region (vs. the first file as the
+  base) with each file's value listed side by side, for tracking
+  progress across several checkpoints at once.
+- New "Batch processing" section on the Tools tab: set Gold and/or Battle
+  Rank across several selected `.sav` files in one action (each gets a
+  `.bak` backup and a recalculated checksum), instead of opening and
+  saving each file by hand.
+
 ## 0.31.1
 - The union profile library now saves into a `union_profiles` folder next
   to the program itself (not the user's home folder), so it's easy to find

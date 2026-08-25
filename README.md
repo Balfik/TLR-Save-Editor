@@ -1,6 +1,6 @@
 # TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-**Current version: 0.31.1** — see [CHANGELOG.md](CHANGELOG.md) for the full
+**Current version: 0.32.4** — see [CHANGELOG.md](CHANGELOG.md) for the full
 version history.
 
 A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
@@ -63,6 +63,14 @@ differently, please open an issue.
 - **Save report export** — export the Save Info summary to a text or CSV
   file, and get a confirmation prompt if a value you're about to save
   looks implausible (e.g. negative gold).
+- **Undo** — revert the last Applied change in the current session
+  without reloading the file.
+- **Snapshot history** — save timestamped, checksummed snapshots of the
+  current buffer with a comment, and restore any of them from a list.
+- **Compare 3+ saves** — see differing regions across several save
+  files at once, with each file's value shown side by side.
+- **Batch processing** — apply a Gold and/or Battle Rank value to
+  several save files in one action.
 
 ### Beyond the game's own UI limits
 

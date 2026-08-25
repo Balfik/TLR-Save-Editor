@@ -23,7 +23,7 @@ from tkinter import filedialog, messagebox, simpledialog, ttk
 
 AUTHOR_LINK_URL = "https://github.com/Balfik"
 
-APP_VERSION = "0.31.1"
+APP_VERSION = "0.32.4"
 
 GOLD_OFFSET = 0x1D978
 GOLD_LIFETIME_OFFSET = 0x25A5A
@@ -799,6 +799,56 @@ def library_profile_path(name):
     return os.path.join(PROFILES_DIR, name + ".json")
 
 
+# Snapshot history - separate from both the "Save As" .bak backup and the
+# union profile library above. A snapshot is a full, checksummed copy of
+# the CURRENT in-memory buffer (whatever's been Applied so far, even if
+# not yet saved to the original file), captured on demand with an optional
+# comment, so the user can go back to an earlier point without having to
+# have manually done a "Save As" at that moment. Stored in a "snapshots"
+# folder next to the program, same discovery rule as PROFILES_DIR.
+SNAPSHOTS_DIR = os.path.join(
+    _profiles_base_dirs[0] if _profiles_base_dirs else os.path.expanduser("~"),
+    "snapshots",
+)
+SNAPSHOT_META_SUFFIX = ".meta.json"
+
+
+def list_snapshots():
+    """Returns snapshot entries as a list of dicts (newest first):
+    {"sav_path", "meta_path", "filename", "comment", "timestamp",
+    "source_filename"}. Snapshots with a missing/corrupt sidecar are still
+    listed, just with blank comment/timestamp metadata."""
+    try:
+        filenames = [fn for fn in os.listdir(SNAPSHOTS_DIR) if fn.lower().endswith(".sav")]
+    except OSError:
+        return []
+    entries = []
+    for fn in filenames:
+        sav_path = os.path.join(SNAPSHOTS_DIR, fn)
+        meta_path = os.path.join(SNAPSHOTS_DIR, fn[:-4] + SNAPSHOT_META_SUFFIX)
+        comment = ""
+        timestamp = ""
+        source_filename = ""
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                meta = json.load(f)
+            comment = meta.get("comment", "")
+            timestamp = meta.get("timestamp", "")
+            source_filename = meta.get("source_filename", "")
+        except (OSError, ValueError):
+            pass
+        entries.append({
+            "sav_path": sav_path,
+            "meta_path": meta_path,
+            "filename": fn,
+            "comment": comment,
+            "timestamp": timestamp,
+            "source_filename": source_filename,
+        })
+    entries.sort(key=lambda e: e["filename"], reverse=True)
+    return entries
+
+
 def load_app_config():
     """Small persisted settings file (currently just remembers the last
     folder picked for 'Find saves'), stored in the user's home directory
@@ -1249,6 +1299,14 @@ STRINGS = {
         "rush_str_label": "STR:",
         "rush_int_label": "INT (?):",
         "rush_spd_label": "SPD (?):",
+        "tip_rush_f4": "Це поле ще не досліджено - невідомо, за що саме воно відповідає. "
+                        "Значення можна міняти, але наслідки в грі не перевірені.",
+        "tip_rush_f5": "Це поле ще не досліджено - невідомо, за що саме воно відповідає. "
+                        "Значення можна міняти, але наслідки в грі не перевірені.",
+        "tip_rush_int": "Позначення INT робоче, але не підтверджено контрольованим тестом "
+                         "(на відміну від HP/AP/STR) - можливо, це не точний інтелект.",
+        "tip_rush_spd": "Позначення SPD робоче, але не підтверджено контрольованим тестом "
+                         "(на відміну від HP/AP/STR) - можливо, це не точна швидкість.",
         "rush_uniq_label": "ATK:",
         "rush_f10_label": "MYS:",
         "rush_f11_label": "DEF:",
@@ -1258,6 +1316,19 @@ STRINGS = {
         "gold_lifetime_label": "Lifetime Gold:",
         "br_label": "Battle Rank:",
         "save_button": "Зберегти як новий .sav файл",
+        "undo_btn": "Відмінити останню зміну",
+        "undo_none_msg": "Немає змін для відміни.",
+        "undo_done_msg": "Останню зміну відмінено.",
+        "snapshot_btn": "Знімок...",
+        "snapshots_list_btn": "Знімки...",
+        "snapshot_comment_prompt": "Коментар до знімку (необов'язково):",
+        "snapshot_saved_msg": "Знімок збережено: {name}",
+        "snapshot_error": "Не вдалося зберегти знімок: {err}",
+        "snapshots_empty": "Ще немає збережених знімків.",
+        "snapshots_win_title": "Історія знімків",
+        "snapshot_restore_btn": "Відновити",
+        "snapshot_restored_msg": "Знімок відновлено як поточний сейв.",
+        "snapshot_no_source": "Спочатку відкрий сейв.",
         "preset_max_gold": "Max Gold",
         "preset_br_1": "BR 1",
         "preset_br_99": "BR 99",
@@ -1266,6 +1337,20 @@ STRINGS = {
         "search_number_label": "Число:",
         "search_button": "Знайти",
         "diff_frame": "Порівняти з іншим сейвом",
+        "diff_multi_btn": "Порівняти 3+ сейви...",
+        "diff_multi_title": "Порівняння {n} сейвів",
+        "diff_multi_pick_title": "Вибери 3 і більше файлів .sav для порівняння",
+        "diff_multi_need_more": "Вибери щонайменше 3 файли для порівняння.",
+        "diff_multi_found": "Знайдено {n} відмінних ділянок (порівняно з першим файлом як базовим).",
+        "batch_frame": "Пакетна обробка кількох сейвів",
+        "batch_gold_label": "Золото:",
+        "batch_br_label": "Battle Rank:",
+        "batch_apply_btn": "Застосувати до обраних сейвів...",
+        "batch_pick_title": "Вибери файли .sav для пакетної обробки",
+        "batch_no_fields": "Заповни хоча б одне поле (золото або Battle Rank).",
+        "batch_confirm": "Застосувати ці зміни до {n} файлів? Кожен файл буде перезаписано (зі створенням .bak копії).",
+        "batch_done_msg": "Оброблено файлів: {ok} з {total}.",
+        "batch_error_line": "{name}: помилка - {err}",
         "diff_button": "Обрати другий сейв і показати різницю...",
         "readme_button": "README",
         "select_sav_title": "Обери .sav файл",
@@ -1498,6 +1583,14 @@ STRINGS = {
         "rush_str_label": "STR:",
         "rush_int_label": "INT (?):",
         "rush_spd_label": "SPD (?):",
+        "tip_rush_f4": "Not identified yet - what this field actually controls is unknown. "
+                       "You can change it, but the in-game effect hasn't been verified.",
+        "tip_rush_f5": "Not identified yet - what this field actually controls is unknown. "
+                       "You can change it, but the in-game effect hasn't been verified.",
+        "tip_rush_int": "The INT label works, but hasn't been confirmed with a controlled "
+                        "test (unlike HP/AP/STR) - it may not be exact Intelligence.",
+        "tip_rush_spd": "The SPD label works, but hasn't been confirmed with a controlled "
+                        "test (unlike HP/AP/STR) - it may not be exact Speed.",
         "rush_uniq_label": "ATK:",
         "rush_f10_label": "MYS:",
         "rush_f11_label": "DEF:",
@@ -1507,6 +1600,19 @@ STRINGS = {
         "gold_lifetime_label": "Lifetime Gold:",
         "br_label": "Battle Rank:",
         "save_button": "Save as new .sav file",
+        "undo_btn": "Undo last change",
+        "undo_none_msg": "Nothing to undo.",
+        "undo_done_msg": "Last change undone.",
+        "snapshot_btn": "Snapshot...",
+        "snapshots_list_btn": "Snapshots...",
+        "snapshot_comment_prompt": "Snapshot comment (optional):",
+        "snapshot_saved_msg": "Snapshot saved: {name}",
+        "snapshot_error": "Could not save snapshot: {err}",
+        "snapshots_empty": "No snapshots saved yet.",
+        "snapshots_win_title": "Snapshot history",
+        "snapshot_restore_btn": "Restore",
+        "snapshot_restored_msg": "Snapshot restored as the current save.",
+        "snapshot_no_source": "Open a save first.",
         "preset_max_gold": "Max Gold",
         "preset_br_1": "BR 1",
         "preset_br_99": "BR 99",
@@ -1515,6 +1621,20 @@ STRINGS = {
         "search_number_label": "Number:",
         "search_button": "Search",
         "diff_frame": "Compare with another save",
+        "diff_multi_btn": "Compare 3+ saves...",
+        "diff_multi_title": "Comparing {n} saves",
+        "diff_multi_pick_title": "Pick 3 or more .sav files to compare",
+        "diff_multi_need_more": "Pick at least 3 files to compare.",
+        "diff_multi_found": "Found {n} differing regions (compared against the first file as the base).",
+        "batch_frame": "Batch processing across multiple saves",
+        "batch_gold_label": "Gold:",
+        "batch_br_label": "Battle Rank:",
+        "batch_apply_btn": "Apply to selected saves...",
+        "batch_pick_title": "Pick .sav files for batch processing",
+        "batch_no_fields": "Fill in at least one field (gold or Battle Rank).",
+        "batch_confirm": "Apply these changes to {n} files? Each file will be overwritten (a .bak copy is made first).",
+        "batch_done_msg": "Processed {ok} of {total} files.",
+        "batch_error_line": "{name}: error - {err}",
         "diff_button": "Choose a second save and show the difference...",
         "readme_button": "README",
         "select_sav_title": "Choose a .sav file",
@@ -1927,6 +2047,8 @@ class SaveEditorApp:
         self.original_gold1 = 0
         self.original_gold2 = 0
         self.updating_gold2 = False  # flag to prevent recursion
+        self._undo_stack = []
+        self.UNDO_STACK_LIMIT = 20
 
         self.root.geometry("960x700")
         self.root.minsize(680, 520)
@@ -1964,6 +2086,12 @@ class SaveEditorApp:
         action_bar.pack(fill="x", padx=10, pady=(0, 6))
         self.save_btn = ttk.Button(action_bar, command=self.save_new_file)
         self.save_btn.pack(side="left")
+        self.undo_btn = ttk.Button(action_bar, command=self._undo_last_change, state="disabled")
+        self.undo_btn.pack(side="left", padx=(6, 0))
+        self.snapshot_btn = ttk.Button(action_bar, command=self._save_snapshot)
+        self.snapshot_btn.pack(side="left", padx=(18, 0))
+        self.snapshots_list_btn = ttk.Button(action_bar, command=self._show_snapshots)
+        self.snapshots_list_btn.pack(side="left", padx=(6, 0))
 
         # --- Save info ---
         self.info_frame = ttk.LabelFrame(root)
@@ -2067,6 +2195,15 @@ class SaveEditorApp:
         # buttons) are wide, and there can be many rows, so the tab content
         # is wrapped in a scrollable canvas (both directions) - this way
         # nothing gets clipped regardless of window/screen size.
+        # Plain tk.Canvas doesn't pick up the ttk theme's background on its
+        # own (unlike ttk.Frame), so any strip of bare canvas left uncovered
+        # by the content frame shows up as a visibly different color.
+        # Trying to match that color exactly turned out unreliable across
+        # platforms/themes, so instead the content frame's window item is
+        # stretched to always cover the full canvas viewport (width AND
+        # height, whichever is larger: its own natural size or the canvas
+        # size) - that way the themed ttk.Frame background always covers
+        # 100% of the visible area and no bare canvas ever shows through.
         union_canvas = tk.Canvas(self.tab_union, highlightthickness=0)
         union_vscroll = ttk.Scrollbar(
             self.tab_union, orient="vertical", command=union_canvas.yview)
@@ -2079,11 +2216,22 @@ class SaveEditorApp:
         union_canvas.pack(side="left", fill="both", expand=True)
 
         union_content = ttk.Frame(union_canvas)
-        union_canvas.create_window((0, 0), window=union_content, anchor="nw")
+        union_content_window = union_canvas.create_window(
+            (0, 0), window=union_content, anchor="nw")
 
         def _on_union_content_configure(event):
+            content_w = union_content.winfo_reqwidth()
+            content_h = union_content.winfo_reqheight()
+            canvas_w = union_canvas.winfo_width()
+            canvas_h = union_canvas.winfo_height()
+            union_canvas.itemconfig(
+                union_content_window,
+                width=max(content_w, canvas_w),
+                height=max(content_h, canvas_h),
+            )
             union_canvas.configure(scrollregion=union_canvas.bbox("all"))
         union_content.bind("<Configure>", _on_union_content_configure)
+        union_canvas.bind("<Configure>", _on_union_content_configure)
 
         def _union_mousewheel(event):
             if event.state & 0x0001:  # Shift held -> scroll horizontally
@@ -2117,18 +2265,28 @@ class SaveEditorApp:
         self.rush_stat_vars = {}
         grid = ttk.Frame(union_content)
         grid.pack(fill="x", padx=6, pady=12)
-        cols = 3
+        cols = 6
+        # Stats whose exact meaning isn't confirmed yet (still labeled with
+        # a "(?)" in their translation) get an explanatory hover tooltip -
+        # same ToolTip pattern used everywhere else in the app.
+        unconfirmed_stat_tips = {
+            "f4": "tip_rush_f4", "f5": "tip_rush_f5",
+            "int": "tip_rush_int", "spd": "tip_rush_spd",
+        }
         for idx, (key, label_key, rel_off, size) in enumerate(RUSH_STATS):
             row = idx // cols
             col = idx % cols
             cell = ttk.Frame(grid)
             cell.grid(row=row, column=col, padx=6, pady=3, sticky="w")
-            lbl = ttk.Label(cell, width=12, anchor="w")
+            lbl = ttk.Label(cell, width=11, anchor="w")
             lbl.pack(side="left")
             var = tk.StringVar()
-            ttk.Entry(cell, textvariable=var, width=8).pack(side="left")
+            ttk.Entry(cell, textvariable=var, width=7).pack(side="left")
             self.rush_stat_labels[key] = lbl
             self.rush_stat_vars[key] = var
+            if key in unconfirmed_stat_tips:
+                tip_key = unconfirmed_stat_tips[key]
+                ToolTip(lbl, lambda k=tip_key: self.t(k))
 
         self.rush_max_stats_btn = ttk.Button(
             union_content, command=self._set_rush_stat_fields_max)
@@ -2150,7 +2308,7 @@ class SaveEditorApp:
         self.union_leader_label = ttk.Label(leader_row, width=10, anchor="w")
         self.union_leader_label.pack(side="left")
         self.union_leader_var = tk.StringVar()
-        self.union_leader_combo = ttk.Combobox(leader_row, textvariable=self.union_leader_var, width=24)
+        self.union_leader_combo = ttk.Combobox(leader_row, textvariable=self.union_leader_var, width=16)
         self.union_leader_combo.pack(side="left", padx=6)
         self.union_leader_combo.bind(
             "<<ComboboxSelected>>", lambda e: self._on_union_roster_char_selected("leader"))
@@ -2171,16 +2329,16 @@ class SaveEditorApp:
 
         def _add_weapon_widgets(parent, row_key):
             wvar = tk.StringVar()
-            wcombo = ttk.Combobox(parent, textvariable=wvar, width=22)
-            wcombo.pack(side="left", padx=(4, 4))
+            wcombo = ttk.Combobox(parent, textvariable=wvar, width=15)
+            wcombo.pack(side="left", padx=(4, 3))
             self.union_weapon_vars[row_key] = wvar
             self.union_weapon_combos[row_key] = wcombo
             stat_vars = {}
             for stat_key in EQUIP_STAT_NAMES:
                 ttk.Label(parent, text=stat_display_labels[stat_key],
-                          width=6, anchor="e").pack(side="left")
+                          width=5, anchor="e").pack(side="left")
                 svar = tk.StringVar()
-                ttk.Entry(parent, textvariable=svar, width=4).pack(side="left", padx=(2, 4))
+                ttk.Entry(parent, textvariable=svar, width=3).pack(side="left", padx=(1, 3))
                 stat_vars[stat_key] = svar
             self.union_weapon_stat_vars[row_key] = stat_vars
             wcombo.bind(
@@ -2189,11 +2347,11 @@ class SaveEditorApp:
             self._make_combobox_searchable(
                 wcombo, lambda: sorted(set(self.equip_names.values())))
             ttk.Button(
-                parent, width=4, text="175",
+                parent, width=3, text="175",
                 command=lambda rk=row_key: self._set_union_weapon_stats(rk, 175)
-            ).pack(side="left", padx=(4, 0))
+            ).pack(side="left", padx=(3, 0))
             ttk.Button(
-                parent, width=4, text="250",
+                parent, width=3, text="250",
                 command=lambda rk=row_key: self._set_union_weapon_stats(rk, 250)
             ).pack(side="left", padx=(2, 0))
 
@@ -2205,7 +2363,7 @@ class SaveEditorApp:
             lbl = ttk.Label(row, width=10, anchor="w")
             lbl.pack(side="left")
             var = tk.StringVar()
-            combo = ttk.Combobox(row, textvariable=var, width=24)
+            combo = ttk.Combobox(row, textvariable=var, width=16)
             combo.pack(side="left", padx=6)
             combo.bind(
                 "<<ComboboxSelected>>",
@@ -2324,6 +2482,10 @@ class SaveEditorApp:
             ttk.Entry(equip_stats_row, textvariable=var, width=5).pack(
                 side="left", padx=(2, 8))
             self.equip_stat_vars[stat_key] = var
+        self.equip_175_btn = ttk.Button(
+            equip_stats_row, width=4, text="175",
+            command=lambda: self._set_equip_stat_fields_max(175))
+        self.equip_175_btn.pack(side="left", padx=(4, 0))
         self.equip_max_stats_btn = ttk.Button(
             equip_stats_row, command=self._set_equip_stat_fields_max)
         self.equip_max_stats_btn.pack(side="left", padx=(4, 0))
@@ -2482,9 +2644,30 @@ class SaveEditorApp:
         self.search_result.pack(fill="both", padx=6, pady=(0, 6), expand=True)
 
         self.diff_frame = ttk.LabelFrame(self.tab_tools)
-        self.diff_frame.pack(fill="both", expand=True, padx=6, pady=(0, 6))
+        self.diff_frame.pack(fill="x", padx=6, pady=(0, 6))
         self.diff_btn = ttk.Button(self.diff_frame, command=self.diff_with_other)
         self.diff_btn.pack(anchor="w", padx=6, pady=6)
+        self.diff_multi_btn = ttk.Button(self.diff_frame, command=self.diff_multiple_saves)
+        self.diff_multi_btn.pack(anchor="w", padx=6, pady=(0, 6))
+
+        # --- Batch processing: apply the same Gold/Battle Rank value to
+        # several save files at once, instead of opening/editing/saving
+        # each one by hand. Leaving a field blank leaves that field
+        # untouched in every selected file. ---
+        self.batch_frame = ttk.LabelFrame(self.tab_tools)
+        self.batch_frame.pack(fill="x", padx=6, pady=(0, 6))
+        brow = ttk.Frame(self.batch_frame)
+        brow.pack(fill="x", padx=6, pady=6)
+        self.batch_gold_label = ttk.Label(brow)
+        self.batch_gold_label.pack(side="left")
+        self.batch_gold_var = tk.StringVar()
+        ttk.Entry(brow, textvariable=self.batch_gold_var, width=12).pack(side="left", padx=(4, 12))
+        self.batch_br_label = ttk.Label(brow)
+        self.batch_br_label.pack(side="left")
+        self.batch_br_var = tk.StringVar()
+        ttk.Entry(brow, textvariable=self.batch_br_var, width=8).pack(side="left", padx=(4, 12))
+        self.batch_apply_btn = ttk.Button(brow, command=self._batch_apply_to_saves)
+        self.batch_apply_btn.pack(side="left")
 
         # --- Tooltips on hover: former "hint" texts, now shown only when
         # hovering the relevant tab header instead of always taking space ---
@@ -2691,7 +2874,7 @@ class SaveEditorApp:
                 return
             stats = self.equip_stats.get(item_id, [0] * EQUIP_STAT_COUNT)
             write_char_equip_slot(buf, char_id, slot, item_id, stats=stats)
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._load_char_equip_into_fields()
         messagebox.showinfo(self.t("done_title"), self.t("charequip_applied_msg", name=name))
 
@@ -3231,7 +3414,7 @@ class SaveEditorApp:
             stats = self._read_equip_stat_overrides_from(stat_vars, self.equip_stats.get(item_id))
             write_char_equip_slot(buf, char_id, 0, item_id, stats=stats)
 
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._load_union_members_into_fields()
         messagebox.showinfo(self.t("done_title"), self.t("union_roster_applied_msg"))
 
@@ -3257,14 +3440,14 @@ class SaveEditorApp:
             return
         buf = bytearray(self.dec_buffer)
         write_union_stats(buf, self.selected_union_index, current_vals)
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
 
         self.selected_union_index = new_index
         self._load_union_stats_into_fields()
 
-    def _set_equip_stat_fields_max(self):
+    def _set_equip_stat_fields_max(self, value=255):
         for key in EQUIP_STAT_NAMES:
-            self.equip_stat_vars[key].set("255")
+            self.equip_stat_vars[key].set(str(value))
 
     def _read_equip_stat_overrides(self, fallback):
         """Reads the 6 stat entry fields, clamping each to 0-255. If a
@@ -3313,7 +3496,7 @@ class SaveEditorApp:
         for slot_str in sel:
             slot_index = int(slot_str)
             write_equip_slot(buf, slot_index, item_id, stats=stats)
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_equip_tree()
         for slot_str in sel:
             self.equip_tree.selection_add(slot_str)
@@ -3338,7 +3521,7 @@ class SaveEditorApp:
             if current_id == EQUIP_EMPTY_ID:
                 write_equip_slot(buf, slot_index, item_id, stats=stats)
                 filled += 1
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_equip_tree()
         messagebox.showinfo(self.t("done_title"), self.t("equip_filled_msg", n=filled))
 
@@ -3354,7 +3537,7 @@ class SaveEditorApp:
         for slot_str in sel:
             slot_index = int(slot_str)
             clear_equip_slot(buf, slot_index)
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_equip_tree()
         for slot_str in sel:
             self.equip_tree.selection_add(slot_str)
@@ -3440,7 +3623,7 @@ class SaveEditorApp:
             else:
                 order = next_accessory_order(bytes(buf))
             write_accessory_slot(buf, slot_index, item_id, order)
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_accessory_tree()
         for slot_str in sel:
             self.accessory_tree.selection_add(slot_str)
@@ -3465,7 +3648,7 @@ class SaveEditorApp:
                 order = next_accessory_order(bytes(buf))
                 write_accessory_slot(buf, slot_index, item_id, order)
                 filled += 1
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_accessory_tree()
         messagebox.showinfo(self.t("done_title"), self.t("equip_filled_msg", n=filled))
 
@@ -3488,7 +3671,7 @@ class SaveEditorApp:
         for slot_str in sel:
             slot_index = int(slot_str)
             clear_accessory_slot(buf, slot_index)
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_accessory_tree()
         for slot_str in sel:
             self.accessory_tree.selection_add(slot_str)
@@ -3649,7 +3832,7 @@ class SaveEditorApp:
                 # already-owned (qty > 0) items, but guard anyway.
                 messagebox.showerror(self.t("err_title"), self.t("err_grant_new_item"))
                 return
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_items_tree(category_key)
         for iid in sel:
             if tree.exists(iid):
@@ -3692,7 +3875,7 @@ class SaveEditorApp:
         except ValueError:
             messagebox.showerror(self.t("err_title"), self.t("err_already_owned"))
             return
-        self.dec_buffer = bytes(buf)
+        self._commit_buffer(buf)
         self._refresh_items_tree(category_key)
         messagebox.showinfo(self.t("done_title"), self.t("items_granted_msg", name=name, qty=qty))
 
@@ -3709,6 +3892,9 @@ class SaveEditorApp:
         self.info_frame.config(text=self.t("info_frame"))
         self.export_report_btn.config(text=self.t("export_report_btn"))
         self.save_btn.config(text=self.t("save_button"))
+        self.undo_btn.config(text=self.t("undo_btn"))
+        self.snapshot_btn.config(text=self.t("snapshot_btn"))
+        self.snapshots_list_btn.config(text=self.t("snapshots_list_btn"))
 
         # --- Main tabs ---
         self.notebook.tab(self.tab_gold, text=self.t("tab_gold"))
@@ -3769,6 +3955,11 @@ class SaveEditorApp:
 
         self.diff_frame.config(text=self.t("diff_frame"))
         self.diff_btn.config(text=self.t("diff_button"))
+        self.diff_multi_btn.config(text=self.t("diff_multi_btn"))
+        self.batch_frame.config(text=self.t("batch_frame"))
+        self.batch_gold_label.config(text=self.t("batch_gold_label"))
+        self.batch_br_label.config(text=self.t("batch_br_label"))
+        self.batch_apply_btn.config(text=self.t("batch_apply_btn"))
 
         # --- Inventory tab / Equipment sub-tab ---
         self.inv_notebook.tab(self.subtab_equipment, text=self.t("subtab_equipment"))
@@ -3948,6 +4139,132 @@ class SaveEditorApp:
 
         messagebox.showinfo(self.t("done_title"), self.t("export_report_saved_msg", path=path))
 
+    # ------------------------------------------------------------------
+    # Undo (session-level, in-memory only): every "Apply"-style action
+    # that commits a bytearray into self.dec_buffer goes through
+    # _commit_buffer() instead of assigning directly, so the buffer's
+    # previous state is always pushed onto a small stack first. Undo pops
+    # the stack and restores it, then refreshes every view that reads
+    # from the buffer. This does NOT touch disk - it has no effect on
+    # files already written via "Save as new .sav file".
+    # ------------------------------------------------------------------
+
+    def _commit_buffer(self, buf):
+        if self.dec_buffer is not None:
+            self._undo_stack.append(bytes(self.dec_buffer))
+            if len(self._undo_stack) > self.UNDO_STACK_LIMIT:
+                self._undo_stack.pop(0)
+        self.dec_buffer = bytes(buf)
+        self._update_undo_btn_state()
+
+    def _update_undo_btn_state(self):
+        try:
+            self.undo_btn.config(state="normal" if self._undo_stack else "disabled")
+        except Exception:
+            pass
+
+    def _refresh_after_buffer_change(self):
+        """Re-reads every GUI view from self.dec_buffer - used after undo
+        (and could be reused anywhere else the buffer changes without a
+        fresh file load)."""
+        self._load_union_stats_into_fields()
+        self._load_union_members_into_fields()
+        self._refresh_equip_tree()
+        self._refresh_accessory_tree()
+        for key in self.items_trees:
+            self._refresh_items_tree(key)
+        self._refresh_info_text()
+        self._load_char_equip_into_fields()
+
+    def _undo_last_change(self):
+        if not self._undo_stack:
+            messagebox.showinfo(self.t("done_title"), self.t("undo_none_msg"))
+            return
+        self.dec_buffer = self._undo_stack.pop()
+        self._update_undo_btn_state()
+        self._refresh_after_buffer_change()
+        messagebox.showinfo(self.t("done_title"), self.t("undo_done_msg"))
+
+    # ------------------------------------------------------------------
+    # Snapshot history: on-demand, timestamped copies of the CURRENT
+    # in-memory buffer (whatever's been Applied so far - not necessarily
+    # written to disk yet), stored in SNAPSHOTS_DIR with a small JSON
+    # sidecar for the comment/timestamp/source filename. Distinct from
+    # both the plain ".bak" made on every "Save as" and the undo stack
+    # above (which is in-memory only and lost on exit) - a snapshot is a
+    # real, checksummed .sav file the user can browse to or restore from
+    # a list, even after closing and reopening the app.
+    # ------------------------------------------------------------------
+
+    def _save_snapshot(self):
+        if self.dec_buffer is None:
+            messagebox.showwarning(self.t("warn_title"), self.t("snapshot_no_source"))
+            return
+        comment = simpledialog.askstring(
+            self.t("snapshot_btn"), self.t("snapshot_comment_prompt"), parent=self.root) or ""
+        try:
+            os.makedirs(SNAPSHOTS_DIR, exist_ok=True)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("snapshot_error", err=str(e)))
+            return
+
+        ts = time.strftime("%Y%m%d_%H%M%S")
+        base_name = os.path.splitext(self.current_filename or "save")[0]
+        safe_base = "".join(c if (c.isalnum() or c in "-_") else "_" for c in base_name)
+        name = f"{safe_base}_{ts}"
+        sav_path = os.path.join(SNAPSHOTS_DIR, name + ".sav")
+        meta_path = os.path.join(SNAPSHOTS_DIR, name + SNAPSHOT_META_SUFFIX)
+
+        try:
+            buf = recalc_checksum(self.dec_buffer)
+            with open(sav_path, "wb") as f:
+                f.write(compress_save(bytes(buf)))
+            with open(meta_path, "w", encoding="utf-8") as f:
+                json.dump({
+                    "comment": comment,
+                    "timestamp": ts,
+                    "source_filename": self.current_filename or "",
+                }, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("snapshot_error", err=str(e)))
+            return
+
+        messagebox.showinfo(self.t("done_title"), self.t("snapshot_saved_msg", name=name))
+
+    def _show_snapshots(self):
+        entries = list_snapshots()
+        if not entries:
+            messagebox.showinfo(self.t("done_title"), self.t("snapshots_empty"))
+            return
+
+        win = tk.Toplevel(self.root)
+        win.title(self.t("snapshots_win_title"))
+        win.geometry("560x360")
+
+        listbox = tk.Listbox(win)
+        listbox.pack(fill="both", expand=True, padx=8, pady=8)
+        for e in entries:
+            ts = e["timestamp"] or "?"
+            comment = f" - {e['comment']}" if e["comment"] else ""
+            src = f" ({e['source_filename']})" if e["source_filename"] else ""
+            listbox.insert("end", f"{ts}{src}{comment}")
+        listbox.selection_set(0)
+
+        def _restore_selected(event=None):
+            sel = listbox.curselection()
+            if not sel:
+                return
+            entry = entries[sel[0]]
+            self.load_save_file(entry["sav_path"])
+            win.destroy()
+            messagebox.showinfo(self.t("done_title"), self.t("snapshot_restored_msg"))
+
+        listbox.bind("<Double-Button-1>", _restore_selected)
+        btn_row = ttk.Frame(win)
+        btn_row.pack(fill="x", padx=8, pady=(0, 8))
+        ttk.Button(btn_row, text=self.t("snapshot_restore_btn"), command=_restore_selected).pack(side="left")
+        ttk.Button(btn_row, text=self.t("cancel_btn"), command=win.destroy).pack(side="left", padx=(6, 0))
+
     def open_file(self):
         path = filedialog.askopenfilename(
             title=self.t("select_sav_title"),
@@ -3968,6 +4285,8 @@ class SaveEditorApp:
             return
 
         self.dec_buffer = dec
+        self._undo_stack = []
+        self._update_undo_btn_state()
         self.current_path = path
         self.current_filename = os.path.basename(path)
         self.file_label.config(text=self.current_filename)
@@ -4176,6 +4495,127 @@ class SaveEditorApp:
             txt.insert("end", "\n" + self._describe_diff_block(self.dec_buffer, dec2, s, e) + "\n")
         if len(merged) > max_print:
             txt.insert("end", "\n" + self.t("diff_more_hidden", n=len(merged) - max_print) + "\n")
+
+    def diff_multiple_saves(self):
+        """Compares 3+ save files at once, for tracking progress across
+        several checkpoints in one view. The FIRST file picked is the
+        base: every other file's differing regions (vs the base) are
+        unioned together, then for each region the value from every
+        file is shown side by side - not just a pairwise before/after
+        like diff_with_other()."""
+        paths = filedialog.askopenfilenames(
+            title=self.t("diff_multi_pick_title"),
+            filetypes=[(self.t("filetype_sav"), "*.sav"), (self.t("filetype_all"), "*.*")]
+        )
+        if not paths or len(paths) < 3:
+            if paths:
+                messagebox.showwarning(self.t("warn_title"), self.t("diff_multi_need_more"))
+            return
+
+        decs = []
+        for p in paths:
+            try:
+                decs.append(decompress_save(p))
+            except Exception as e:
+                messagebox.showerror(self.t("err_title"), self.t("err_decompress", e=e))
+                return
+
+        base = decs[0]
+        all_regions = []
+        for other in decs[1:]:
+            all_regions.extend(find_diff_regions(base, other))
+        all_regions.sort()
+        merged = merge_regions(all_regions, gap=8)
+
+        win = tk.Toplevel(self.root)
+        win.title(self.t("diff_multi_title", n=len(paths)))
+        win.geometry("760x580")
+        txt_frame = ttk.Frame(win)
+        txt_frame.pack(fill="both", expand=True)
+        scroll = ttk.Scrollbar(txt_frame)
+        scroll.pack(side="right", fill="y")
+        txt = tk.Text(txt_frame, wrap="none", yscrollcommand=scroll.set)
+        txt.pack(side="left", fill="both", expand=True)
+        scroll.config(command=txt.yview)
+
+        names = [os.path.basename(p) for p in paths]
+        txt.insert("end", self.t("diff_multi_found", n=len(merged)) + "\n")
+        max_print = 200
+        for s, e in merged[:max_print]:
+            length = e - s
+            label = self._describe_diff_offset(s)
+            header = f"\n[{hex(s)}:{hex(e)}] len={length}"
+            if label:
+                header += f"\n  {label}"
+            txt.insert("end", header + "\n")
+            for name, dec in zip(names, decs):
+                chunk = dec[s:e]
+                decoded = None
+                for size, fmt in [(2, "<h"), (4, "<i")]:
+                    if length == size:
+                        decoded = struct.unpack(fmt, chunk)[0]
+                if decoded is not None:
+                    txt.insert("end", f"    {name}: {decoded}\n")
+                else:
+                    txt.insert("end", f"    {name}: {chunk.hex()}\n")
+        if len(merged) > max_print:
+            txt.insert("end", "\n" + self.t("diff_more_hidden", n=len(merged) - max_print) + "\n")
+
+    # ------------------------------------------------------------------
+    # Batch processing: apply the same Gold/Battle Rank value to several
+    # save files at once. Each selected file is decompressed, the
+    # non-blank fields are written in, the checksum is recalculated, a
+    # ".bak" backup is made of the original, and the result overwrites
+    # the original file path - the same per-file write path used by
+    # backup_if_exists()/recalc_checksum() elsewhere in the app.
+    # ------------------------------------------------------------------
+
+    def _batch_apply_to_saves(self):
+        gold_text = self.batch_gold_var.get().strip()
+        br_text = self.batch_br_var.get().strip()
+        if not gold_text and not br_text:
+            messagebox.showwarning(self.t("warn_title"), self.t("batch_no_fields"))
+            return
+        try:
+            new_gold = int(gold_text) if gold_text else None
+            new_br = int(br_text) if br_text else None
+        except ValueError:
+            messagebox.showerror(self.t("err_title"), self.t("err_int"))
+            return
+
+        paths = filedialog.askopenfilenames(
+            title=self.t("batch_pick_title"),
+            filetypes=[(self.t("filetype_sav"), "*.sav"), (self.t("filetype_all"), "*.*")]
+        )
+        if not paths:
+            return
+
+        if not messagebox.askyesno(self.t("warn_title"), self.t("batch_confirm", n=len(paths))):
+            return
+
+        ok_count = 0
+        error_lines = []
+        for p in paths:
+            try:
+                dec = decompress_save(p)
+                buf = bytearray(dec)
+                if new_gold is not None:
+                    buf[GOLD_OFFSET:GOLD_OFFSET + 4] = struct.pack("<i", new_gold)
+                if new_br is not None:
+                    buf[BR_OFFSET:BR_OFFSET + 2] = struct.pack("<h", new_br)
+                    buf[BR_DISPLAY_CACHE_OFFSET:BR_DISPLAY_CACHE_OFFSET + 2] = struct.pack("<h", new_br)
+                buf = recalc_checksum(buf)
+                backup_if_exists(p)
+                with open(p, "wb") as f:
+                    f.write(compress_save(bytes(buf)))
+                ok_count += 1
+            except Exception as e:
+                error_lines.append(self.t("batch_error_line", name=os.path.basename(p), err=str(e)))
+
+        msg = self.t("batch_done_msg", ok=ok_count, total=len(paths))
+        if error_lines:
+            msg += "\n\n" + "\n".join(error_lines)
+        messagebox.showinfo(self.t("done_title"), msg)
 
     def show_readme(self):
         win = tk.Toplevel(self.root)
