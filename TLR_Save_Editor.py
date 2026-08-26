@@ -23,7 +23,7 @@ from tkinter import filedialog, messagebox, simpledialog, ttk
 
 AUTHOR_LINK_URL = "https://github.com/Balfik"
 
-APP_VERSION = "0.32.4"
+APP_VERSION = "0.33.0"
 
 GOLD_OFFSET = 0x1D978
 GOLD_LIFETIME_OFFSET = 0x25A5A
@@ -799,6 +799,31 @@ def library_profile_path(name):
     return os.path.join(PROFILES_DIR, name + ".json")
 
 
+# Same idea as PROFILES_DIR/list_library_profiles() above, but for a single
+# character's worn equipment (Character Equipment tab) instead of a whole
+# union roster - kept in its own folder/namespace so the two pickers never
+# mix profiles meant for different tabs.
+CHAR_PROFILES_DIR = os.path.join(
+    _profiles_base_dirs[0] if _profiles_base_dirs else os.path.expanduser("~"),
+    "charequip_profiles",
+)
+
+
+def list_char_profiles():
+    try:
+        names = [
+            fn[:-5] for fn in os.listdir(CHAR_PROFILES_DIR)
+            if fn.lower().endswith(".json")
+        ]
+    except OSError:
+        return []
+    return sorted(names)
+
+
+def char_profile_path(name):
+    return os.path.join(CHAR_PROFILES_DIR, name + ".json")
+
+
 # Snapshot history - separate from both the "Save As" .bak backup and the
 # union profile library above. A snapshot is a full, checksummed copy of
 # the CURRENT in-memory buffer (whatever's been Applied so far, even if
@@ -847,6 +872,33 @@ def list_snapshots():
         })
     entries.sort(key=lambda e: e["filename"], reverse=True)
     return entries
+
+
+# How many snapshots to automatically keep after each new one is saved -
+# older ones beyond this count get deleted (.sav + its .meta.json sidecar)
+# so the snapshots folder doesn't grow without bound. The Snapshots... list
+# window also has a manual "Clean up..." button that reuses the same prune
+# logic with a user-chosen limit, for one-off cleanup independent of this
+# automatic cap.
+SNAPSHOT_AUTO_KEEP_LIMIT = 30
+
+
+def prune_snapshots(keep):
+    """Deletes the oldest snapshots beyond the newest `keep` entries (both
+    the .sav and its .meta.json sidecar, if present). Returns how many
+    snapshots were removed. Silently skips files it can't delete."""
+    entries = list_snapshots()
+    to_remove = entries[keep:] if keep >= 0 else []
+    removed = 0
+    for entry in to_remove:
+        for p in (entry["sav_path"], entry["meta_path"]):
+            try:
+                if os.path.exists(p):
+                    os.remove(p)
+            except OSError:
+                continue
+        removed += 1
+    return removed
 
 
 def load_app_config():
@@ -1550,6 +1602,33 @@ STRINGS = {
                              "безпечними. Обережно з персонажами, яких ще не\n"
                              "завербовано по сюжету (боси/унікальні валили екран\n"
                              "складу юніону в тестах, хоч у бою працювали).",
+        "snapshots_cleanup_btn": "Прибрати старі...",
+        "snapshots_cleanup_prompt": "Скільки останніх знімків лишити (решта буде видалена)?",
+        "snapshots_cleanup_done": "Видалено старих знімків: {n}",
+        "snapshots_cleanup_none": "Видаляти нічого - знімків не більше {limit}.",
+        "snapshot_auto_pruned_msg": "Автоматично прибрано старих знімків: {n} (лишається останні {limit}).",
+        "fixchecksum_frame": "Виправити чек-суму файлу",
+        "fixchecksum_btn": "Виправити чек-суму...",
+        "fixchecksum_pick_title": "Обери .sav файл для виправлення чек-суми",
+        "fixchecksum_already_ok": "Чек-сума вже правильна - виправляти нічого не потрібно.",
+        "fixchecksum_done_msg": "Чек-суму виправлено. Резервна копія збережена: {backup}",
+        "fixchecksum_no_backup_msg": "Чек-суму виправлено.",
+        "fixchecksum_error": "Не вдалося виправити чек-суму: {err}",
+        "batch_preset_label": "Пресет:",
+        "batch_preset_endgame": "Ендгейм-тест (Gold 999999, BR 99)",
+        "batch_preset_fresh": "Скидання (Gold 0, BR 1)",
+        "tip_multi_select": "Можна вибрати кілька рядків одразу (Ctrl/Cmd-клік або\n"
+                             "Shift-клік) і застосувати зміну до всіх обраних одним\n"
+                             "натисканням.",
+        "charequip_library_save_btn": "У бібліотеку...",
+        "charequip_library_load_btn": "З бібліотеки...",
+        "charequip_library_name_prompt": "Назва профілю:",
+        "charequip_library_empty": "У бібліотеці ще немає збережених профілів екіпіровки.",
+        "charequip_library_pick_title": "Профілі екіпіровки персонажа",
+        "charequip_profile_saved_msg": "Профіль екіпіровки збережено: {path}",
+        "charequip_profile_loaded_msg": "Профіль завантажено в поля. Натисни "
+                                         "\"Застосувати екіпіровку\", щоб записати в сейв.",
+        "charequip_profile_load_error": "Не вдалося завантажити профіль: {err}",
     },
     "en": {
         "title": "TLR Save Editor — The Last Remnant Remastered",
@@ -1832,6 +1911,33 @@ STRINGS = {
                              "(bosses/uniques crashed the union-board screen\n"
                              "specifically in testing, though they worked fine in\n"
                              "battle).",
+        "snapshots_cleanup_btn": "Clean up old...",
+        "snapshots_cleanup_prompt": "How many most recent snapshots to keep (the rest get removed)?",
+        "snapshots_cleanup_done": "Removed old snapshots: {n}",
+        "snapshots_cleanup_none": "Nothing to remove - {limit} or fewer snapshots exist.",
+        "snapshot_auto_pruned_msg": "Automatically removed old snapshots: {n} (keeping the newest {limit}).",
+        "fixchecksum_frame": "Fix file checksum",
+        "fixchecksum_btn": "Fix checksum...",
+        "fixchecksum_pick_title": "Pick a .sav file to fix its checksum",
+        "fixchecksum_already_ok": "Checksum is already valid - nothing to fix.",
+        "fixchecksum_done_msg": "Checksum fixed. Backup saved: {backup}",
+        "fixchecksum_no_backup_msg": "Checksum fixed.",
+        "fixchecksum_error": "Could not fix checksum: {err}",
+        "batch_preset_label": "Preset:",
+        "batch_preset_endgame": "Endgame test (Gold 999999, BR 99)",
+        "batch_preset_fresh": "Reset (Gold 0, BR 1)",
+        "tip_multi_select": "You can select multiple rows at once (Ctrl/Cmd-click or\n"
+                             "Shift-click) and apply a change to all of them with one\n"
+                             "click.",
+        "charequip_library_save_btn": "To library...",
+        "charequip_library_load_btn": "From library...",
+        "charequip_library_name_prompt": "Profile name:",
+        "charequip_library_empty": "No equipment profiles saved in the library yet.",
+        "charequip_library_pick_title": "Character equipment profiles",
+        "charequip_profile_saved_msg": "Equipment profile saved: {path}",
+        "charequip_profile_loaded_msg": "Profile loaded into the fields. Click "
+                                         "\"Apply equipment\" to write it to the save.",
+        "charequip_profile_load_error": "Could not load profile: {err}",
     },
 }
 
@@ -2437,6 +2543,7 @@ class SaveEditorApp:
         self.equip_tree.pack(side="left", fill="both", expand=True)
         equip_scroll.config(command=self.equip_tree.yview)
         self.equip_tree.bind("<<TreeviewSelect>>", self._on_equip_tree_select)
+        ToolTip(self.equip_tree, lambda: self.t("tip_multi_select"))
 
         equip_edit_row = ttk.Frame(self.subtab_equipment)
         equip_edit_row.pack(fill="x", padx=6, pady=(0, 4))
@@ -2522,6 +2629,7 @@ class SaveEditorApp:
         self.accessory_tree.column("name", width=380, anchor="w")
         self.accessory_tree.pack(side="left", fill="both", expand=True)
         acc_scroll.config(command=self.accessory_tree.yview)
+        ToolTip(self.accessory_tree, lambda: self.t("tip_multi_select"))
 
         acc_edit_row = ttk.Frame(self.subtab_accessories)
         acc_edit_row.pack(fill="x", padx=6, pady=(0, 4))
@@ -2622,8 +2730,20 @@ class SaveEditorApp:
 
         self.charequip_apply_btn = ttk.Button(
             self.tab_charequip, command=self.apply_char_equip)
-        self.charequip_apply_btn.pack(padx=6, pady=(6, 10), anchor="w")
+        self.charequip_apply_btn.pack(padx=6, pady=(6, 4), anchor="w")
         ToolTip(self.charequip_char_label, lambda: self.t("tip_charequip"))
+
+        # --- Equipment profile library: save/load what this character is
+        # wearing (both slots) under a name, same idea as the union profile
+        # library, but scoped to one character instead of a whole roster. ---
+        charequip_library_row = ttk.Frame(self.tab_charequip)
+        charequip_library_row.pack(fill="x", padx=6, pady=(0, 10), anchor="w")
+        self.charequip_library_save_btn = ttk.Button(
+            charequip_library_row, command=self._save_charequip_profile_to_library)
+        self.charequip_library_save_btn.pack(side="left")
+        self.charequip_library_load_btn = ttk.Button(
+            charequip_library_row, command=self._load_charequip_profile_from_library)
+        self.charequip_library_load_btn.pack(side="left", padx=(6, 0))
 
         # ===== Tab 4: Tools (number search + save diff) =====
         self.tab_tools = ttk.Frame(self.notebook)
@@ -2668,6 +2788,33 @@ class SaveEditorApp:
         ttk.Entry(brow, textvariable=self.batch_br_var, width=8).pack(side="left", padx=(4, 12))
         self.batch_apply_btn = ttk.Button(brow, command=self._batch_apply_to_saves)
         self.batch_apply_btn.pack(side="left")
+
+        # --- Preset templates: quick-fill the Gold/BR fields above with a
+        # ready-made combo for common testing scenarios, instead of typing
+        # both numbers by hand every time. Only fills the fields - the
+        # Apply button above still has to be clicked, same as typing the
+        # values manually, so nothing is written just from picking a preset. ---
+        preset_row = ttk.Frame(self.batch_frame)
+        preset_row.pack(fill="x", padx=6, pady=(0, 6))
+        self.batch_preset_label = ttk.Label(preset_row)
+        self.batch_preset_label.pack(side="left")
+        self.batch_preset_var = tk.StringVar()
+        self.batch_preset_combo = ttk.Combobox(
+            preset_row, textvariable=self.batch_preset_var, state="readonly", width=32)
+        self.batch_preset_combo.pack(side="left", padx=(4, 6))
+        self.batch_preset_combo.bind("<<ComboboxSelected>>", self._on_batch_preset_selected)
+
+        # --- Fix checksum: GUI wrapper around the same recalc_checksum()
+        # used everywhere else in the app, for a .sav file that's already
+        # broken/won't load (e.g. corrupted by a hex editor) rather than
+        # one currently open here. Picks a file directly, backs it up, and
+        # rewrites it in place with a valid checksum - equivalent to the
+        # CLI's `save_explorer.py fixchecksum`, without needing a terminal. ---
+        self.fixchecksum_frame = ttk.LabelFrame(self.tab_tools)
+        self.fixchecksum_frame.pack(fill="x", padx=6, pady=(0, 6))
+        self.fixchecksum_btn = ttk.Button(
+            self.fixchecksum_frame, command=self._fix_checksum_file)
+        self.fixchecksum_btn.pack(anchor="w", padx=6, pady=6)
 
         # --- Tooltips on hover: former "hint" texts, now shown only when
         # hovering the relevant tab header instead of always taking space ---
@@ -3701,6 +3848,7 @@ class SaveEditorApp:
         self.items_trees[category_key] = tree
 
         if ITEMS_CATEGORY_EDITABLE[category_key]:
+            ToolTip(tree, lambda: self.t("tip_multi_select"))
             edit_row = ttk.Frame(frame)
             edit_row.pack(fill="x", padx=6, pady=(0, 4))
             qty_label = ttk.Label(edit_row, width=16, anchor="w")
@@ -3947,6 +4095,8 @@ class SaveEditorApp:
             key = slot_label_keys[slot] if slot < len(slot_label_keys) else "charequip_slot_weapon"
             lbl.config(text=self.t(key))
         self.charequip_apply_btn.config(text=self.t("charequip_apply_btn"))
+        self.charequip_library_save_btn.config(text=self.t("charequip_library_save_btn"))
+        self.charequip_library_load_btn.config(text=self.t("charequip_library_load_btn"))
 
         # --- Tools tab ---
         self.search_frame.config(text=self.t("search_frame"))
@@ -3960,6 +4110,11 @@ class SaveEditorApp:
         self.batch_gold_label.config(text=self.t("batch_gold_label"))
         self.batch_br_label.config(text=self.t("batch_br_label"))
         self.batch_apply_btn.config(text=self.t("batch_apply_btn"))
+        self.batch_preset_label.config(text=self.t("batch_preset_label"))
+        preset_labels = [self.t(key) for key, _, _ in self.BATCH_PRESETS]
+        self.batch_preset_combo["values"] = preset_labels
+        self.fixchecksum_frame.config(text=self.t("fixchecksum_frame"))
+        self.fixchecksum_btn.config(text=self.t("fixchecksum_btn"))
 
         # --- Inventory tab / Equipment sub-tab ---
         self.inv_notebook.tab(self.subtab_equipment, text=self.t("subtab_equipment"))
@@ -4211,7 +4366,16 @@ class SaveEditorApp:
         ts = time.strftime("%Y%m%d_%H%M%S")
         base_name = os.path.splitext(self.current_filename or "save")[0]
         safe_base = "".join(c if (c.isalnum() or c in "-_") else "_" for c in base_name)
-        name = f"{safe_base}_{ts}"
+        base = f"{safe_base}_{ts}"
+        # Two snapshots taken within the same second would otherwise
+        # collide on this name (second-resolution timestamp) and silently
+        # overwrite each other - disambiguate with a numeric suffix if the
+        # plain name is already taken.
+        name = base
+        suffix = 2
+        while os.path.exists(os.path.join(SNAPSHOTS_DIR, name + ".sav")):
+            name = f"{base}_{suffix}"
+            suffix += 1
         sav_path = os.path.join(SNAPSHOTS_DIR, name + ".sav")
         meta_path = os.path.join(SNAPSHOTS_DIR, name + SNAPSHOT_META_SUFFIX)
 
@@ -4229,7 +4393,41 @@ class SaveEditorApp:
             messagebox.showerror(self.t("err_title"), self.t("snapshot_error", err=str(e)))
             return
 
-        messagebox.showinfo(self.t("done_title"), self.t("snapshot_saved_msg", name=name))
+        # Auto-prune: keep only the newest SNAPSHOT_AUTO_KEEP_LIMIT
+        # snapshots so this folder doesn't grow forever on its own. Silent
+        # unless something was actually removed, to avoid an extra dialog
+        # on every single snapshot.
+        pruned = prune_snapshots(SNAPSHOT_AUTO_KEEP_LIMIT)
+        msg = self.t("snapshot_saved_msg", name=name)
+        if pruned:
+            msg += "\n" + self.t("snapshot_auto_pruned_msg", n=pruned, limit=SNAPSHOT_AUTO_KEEP_LIMIT)
+        messagebox.showinfo(self.t("done_title"), msg)
+
+    def _cleanup_snapshots(self):
+        entries = list_snapshots()
+        if not entries:
+            messagebox.showinfo(self.t("done_title"), self.t("snapshots_empty"))
+            return
+        raw = simpledialog.askstring(
+            self.t("snapshots_cleanup_btn"),
+            self.t("snapshots_cleanup_prompt"),
+            initialvalue=str(SNAPSHOT_AUTO_KEEP_LIMIT),
+            parent=self.root,
+        )
+        if raw is None:
+            return
+        try:
+            keep = int(raw.strip())
+        except ValueError:
+            messagebox.showerror(self.t("err_title"), self.t("err_int_search"))
+            return
+        if keep < 0:
+            keep = 0
+        removed = prune_snapshots(keep)
+        if removed:
+            messagebox.showinfo(self.t("done_title"), self.t("snapshots_cleanup_done", n=removed))
+        else:
+            messagebox.showinfo(self.t("done_title"), self.t("snapshots_cleanup_none", limit=keep))
 
     def _show_snapshots(self):
         entries = list_snapshots()
@@ -4259,10 +4457,15 @@ class SaveEditorApp:
             win.destroy()
             messagebox.showinfo(self.t("done_title"), self.t("snapshot_restored_msg"))
 
+        def _cleanup_and_refresh():
+            win.destroy()
+            self._cleanup_snapshots()
+
         listbox.bind("<Double-Button-1>", _restore_selected)
         btn_row = ttk.Frame(win)
         btn_row.pack(fill="x", padx=8, pady=(0, 8))
         ttk.Button(btn_row, text=self.t("snapshot_restore_btn"), command=_restore_selected).pack(side="left")
+        ttk.Button(btn_row, text=self.t("snapshots_cleanup_btn"), command=_cleanup_and_refresh).pack(side="left", padx=(6, 0))
         ttk.Button(btn_row, text=self.t("cancel_btn"), command=win.destroy).pack(side="left", padx=(6, 0))
 
     def open_file(self):
@@ -4616,6 +4819,168 @@ class SaveEditorApp:
         if error_lines:
             msg += "\n\n" + "\n".join(error_lines)
         messagebox.showinfo(self.t("done_title"), msg)
+
+    # ------------------------------------------------------------------
+    # Preset templates for the batch Gold/BR fields above - just quick-fills
+    # the two entry boxes with a ready-made combo for common testing
+    # scenarios (e.g. "endgame" numbers, or resetting back to a fresh
+    # start), instead of typing both values by hand every time. Picking a
+    # preset never applies anything by itself - the existing Apply button
+    # still has to be clicked, same as if the numbers had been typed in.
+    # ------------------------------------------------------------------
+    BATCH_PRESETS = [
+        ("batch_preset_endgame", "999999", "99"),
+        ("batch_preset_fresh", "0", "1"),
+    ]
+
+    def _on_batch_preset_selected(self, event=None):
+        idx = self.batch_preset_combo.current()
+        if idx < 0 or idx >= len(self.BATCH_PRESETS):
+            return
+        _, gold, br = self.BATCH_PRESETS[idx]
+        self.batch_gold_var.set(gold)
+        self.batch_br_var.set(br)
+
+    # ------------------------------------------------------------------
+    # Fix checksum: GUI wrapper around recalc_checksum(), for a .sav file
+    # that's already broken (won't load in-game) rather than one open here
+    # right now - picks the file directly via a dialog, makes a .bak backup
+    # first (same as every other in-place write in this app), then rewrites
+    # it with a freshly-computed checksum. Equivalent to the CLI's
+    # `save_explorer.py fixchecksum`, without needing a terminal.
+    # ------------------------------------------------------------------
+    def _fix_checksum_file(self):
+        path = filedialog.askopenfilename(
+            title=self.t("fixchecksum_pick_title"),
+            filetypes=[(self.t("filetype_sav"), "*.sav"), (self.t("filetype_all"), "*.*")]
+        )
+        if not path:
+            return
+        try:
+            dec = decompress_save(path)
+        except Exception as e:
+            messagebox.showerror(self.t("err_title"), self.t("fixchecksum_error", err=str(e)))
+            return
+
+        if verify_checksum(dec):
+            messagebox.showinfo(self.t("done_title"), self.t("fixchecksum_already_ok"))
+            return
+
+        try:
+            buf = recalc_checksum(dec)
+            backup_path = backup_if_exists(path)
+            with open(path, "wb") as f:
+                f.write(compress_save(bytes(buf)))
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("fixchecksum_error", err=str(e)))
+            return
+
+        if backup_path:
+            messagebox.showinfo(self.t("done_title"), self.t("fixchecksum_done_msg", backup=backup_path))
+        else:
+            messagebox.showinfo(self.t("done_title"), self.t("fixchecksum_no_backup_msg"))
+
+    # ------------------------------------------------------------------
+    # Character Equipment profile library: same idea as the union profile
+    # library (_save_profile_to_library/_load_profile_from_library above),
+    # but scoped to a single character's worn weapon+shield instead of a
+    # whole union roster. Stored under CHAR_PROFILES_DIR by name.
+    # ------------------------------------------------------------------
+    def _charequip_profile_dict(self):
+        return {
+            "char": self.charequip_char_var.get().strip(),
+            "slots": {
+                str(slot): self.charequip_slot_vars[slot].get()
+                for slot in range(CHAR_EQUIP_SLOTS_PER_CHAR)
+            },
+        }
+
+    def _apply_charequip_profile_dict(self, profile):
+        char_name = profile.get("char", "")
+        if char_name:
+            self.charequip_char_var.set(char_name)
+        slots = profile.get("slots", {})
+        for slot_key, value in slots.items():
+            try:
+                slot = int(slot_key)
+            except ValueError:
+                continue
+            if slot in self.charequip_slot_vars:
+                self.charequip_slot_vars[slot].set(value)
+
+    def _save_charequip_profile_to_library(self):
+        default_name = self.charequip_char_var.get().strip() or self.t("charequip_char_label")
+        name = simpledialog.askstring(
+            self.t("charequip_library_save_btn"),
+            self.t("charequip_library_name_prompt"),
+            initialvalue=default_name,
+            parent=self.root,
+        )
+        if not name:
+            return
+        name = name.strip()
+        if not name:
+            return
+        try:
+            os.makedirs(CHAR_PROFILES_DIR, exist_ok=True)
+            with open(char_profile_path(name), "w", encoding="utf-8") as f:
+                json.dump(self._charequip_profile_dict(), f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("charequip_profile_load_error", err=str(e)))
+            return
+        messagebox.showinfo(self.t("done_title"), self.t("charequip_profile_saved_msg", path=name))
+
+    def _describe_charequip_profile(self, name):
+        try:
+            with open(char_profile_path(name), "r", encoding="utf-8") as f:
+                profile = json.load(f)
+        except (OSError, ValueError):
+            return name
+        char = (profile.get("char") or "").strip() or self.t("union_slot_empty")
+        slots = profile.get("slots", {})
+        items = [
+            (slots.get(str(s)) or "").strip() or self.t("equip_empty_slot")
+            for s in range(CHAR_EQUIP_SLOTS_PER_CHAR)
+        ]
+        return f"{name} — {char}: " + ", ".join(items)
+
+    def _load_charequip_profile_from_library(self):
+        names = list_char_profiles()
+        if not names:
+            messagebox.showinfo(self.t("done_title"), self.t("charequip_library_empty"))
+            return
+
+        win = tk.Toplevel(self.root)
+        win.title(self.t("charequip_library_pick_title"))
+        win.geometry("560x320")
+
+        listbox = tk.Listbox(win)
+        listbox.pack(fill="both", expand=True, padx=8, pady=8)
+        for n in names:
+            listbox.insert("end", self._describe_charequip_profile(n))
+        listbox.selection_set(0)
+
+        def _load_selected(event=None):
+            sel = listbox.curselection()
+            if not sel:
+                return
+            name = names[sel[0]]
+            try:
+                with open(char_profile_path(name), "r", encoding="utf-8") as f:
+                    profile = json.load(f)
+            except (OSError, ValueError) as e:
+                messagebox.showerror(
+                    self.t("err_title"), self.t("charequip_profile_load_error", err=str(e)))
+                return
+            self._apply_charequip_profile_dict(profile)
+            win.destroy()
+            messagebox.showinfo(self.t("done_title"), self.t("charequip_profile_loaded_msg"))
+
+        listbox.bind("<Double-Button-1>", _load_selected)
+        btn_row = ttk.Frame(win)
+        btn_row.pack(fill="x", padx=8, pady=(0, 8))
+        ttk.Button(btn_row, text=self.t("find_saves_open_btn"), command=_load_selected).pack(side="left")
+        ttk.Button(btn_row, text=self.t("cancel_btn"), command=win.destroy).pack(side="left", padx=(6, 0))
 
     def show_readme(self):
         win = tk.Toplevel(self.root)

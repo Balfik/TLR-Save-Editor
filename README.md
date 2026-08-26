@@ -1,6 +1,6 @@
 # TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-**Current version: 0.32.4** — see [CHANGELOG.md](CHANGELOG.md) for the full
+**Current version: 0.33.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
 version history.
 
 A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
@@ -70,7 +70,15 @@ differently, please open an issue.
 - **Compare 3+ saves** — see differing regions across several save
   files at once, with each file's value shown side by side.
 - **Batch processing** — apply a Gold and/or Battle Rank value to
-  several save files in one action.
+  several save files in one action, with ready-made presets to quick-fill
+  common test values.
+- **Snapshot cleanup** — snapshots are auto-pruned to the newest 30, with
+  a manual "Clean up old..." option to trim to any number.
+- **Fix checksum** — repair a broken checksum on any .sav file directly
+  from the GUI, without the command-line tool.
+- **Character equipment profile library** — save/load a single
+  character's weapon+shield loadout by name, like the union profile
+  library but scoped to one character.
 
 ### Beyond the game's own UI limits
 

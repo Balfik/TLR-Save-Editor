@@ -5,6 +5,28 @@ versions before 0.21.0 weren't tracked in a dedicated changelog at the
 time, so the entry for them below is a general summary of what already
 existed by then, not a step-by-step list of changes.
 
+## 0.33.0
+- New "Clean up old..." button in the Snapshots list: pick how many of the
+  most recent snapshots to keep and remove the rest. Snapshots are also
+  now auto-pruned to the newest 30 every time a new one is saved, so the
+  snapshots folder doesn't grow without bound on its own. Also fixed a bug
+  where two snapshots taken within the same second could silently
+  overwrite each other.
+- New "Fix checksum..." button on the Tools tab: repairs the checksum of
+  any .sav file that won't load due to a broken checksum (e.g. edited by
+  hand in another tool), without needing the command-line version.
+- New Gold/Battle Rank presets on the Tools tab's batch section: pick a
+  ready-made combo ("Endgame test" or "Reset") to quick-fill both fields
+  instead of typing the numbers by hand.
+- New equipment profile library on the Character Equipment tab ("To
+  library..." / "From library..."): save/load a single character's
+  weapon+shield loadout by name, same idea as the existing union profile
+  library but scoped to one character.
+- Added a hover tooltip on the Equipment/Accessories/item-quantity lists
+  noting that multiple rows can be selected at once (Ctrl/Cmd or
+  Shift-click) and edited together - this already worked, it just wasn't
+  obvious.
+
 ## 0.32.4
 - Union tab: gave up trying to color-match the scrollable canvas to the
   themed frames around it (unreliable across platforms) - the content
