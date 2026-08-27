@@ -1,6 +1,6 @@
 # TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-**Current version: 0.33.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
+**Current version: 0.34.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
 version history.
 
 A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
@@ -79,6 +79,17 @@ differently, please open an issue.
 - **Character equipment profile library** — save/load a single
   character's weapon+shield loadout by name, like the union profile
   library but scoped to one character.
+- **Startup update check** — quietly checks GitHub for a newer release on
+  launch and offers to open the release page if one exists.
+- **Global search (Ctrl/Cmd+F)** — jump straight to any tab or section by
+  typing part of its name.
+- **Item Catalog tab** — a searchable reference list of every known item
+  name across Equipment, Accessories, and the 4 Items.csv categories,
+  independent of what the current save owns.
+- **Persistent undo** — undo history now survives closing and reopening
+  the app for the same save file.
+- **Colored diff** — changed values in the Diff / Compare 3+ saves
+  results are now colored so they stand out.
 
 ### Beyond the game's own UI limits
 

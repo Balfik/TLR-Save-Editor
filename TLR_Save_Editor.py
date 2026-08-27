@@ -17,13 +17,18 @@ import zlib
 import hashlib
 import json
 import time
+import threading
+import urllib.request
+import urllib.error
 import webbrowser
 import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
 AUTHOR_LINK_URL = "https://github.com/Balfik"
+GITHUB_REPO = "Balfik/TLR-Save-Editor"
+GITHUB_LATEST_RELEASE_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 
-APP_VERSION = "0.33.0"
+APP_VERSION = "0.34.0"
 
 GOLD_OFFSET = 0x1D978
 GOLD_LIFETIME_OFFSET = 0x25A5A
@@ -824,6 +829,85 @@ def char_profile_path(name):
     return os.path.join(CHAR_PROFILES_DIR, name + ".json")
 
 
+# Persistent undo log: same idea as the in-memory _undo_stack (see
+# _commit_buffer()), but mirrored to disk so the undo history for a given
+# .sav file survives closing and reopening the app - not just the current
+# session. Kept separate per source file (keyed by a hash of its absolute
+# path) so undo history for one save never leaks into another's. Entries
+# are compressed with zlib (not the full .sav container format - these are
+# raw decompressed buffers, never loaded directly as a save file) to keep
+# the folder small since a full session's worth of edits can add up.
+UNDO_LOG_DIR = os.path.join(
+    _profiles_base_dirs[0] if _profiles_base_dirs else os.path.expanduser("~"),
+    "undo_log",
+)
+
+
+def _undo_log_dir_for(path):
+    key = hashlib.sha1(os.path.abspath(path).encode("utf-8")).hexdigest()
+    return os.path.join(UNDO_LOG_DIR, key)
+
+
+def load_persisted_undo_stack(path):
+    """Returns the persisted undo entries for this file, oldest first (same
+    order as the in-memory _undo_stack), or [] if none exist yet."""
+    d = _undo_log_dir_for(path)
+    try:
+        names = sorted(fn for fn in os.listdir(d) if fn.endswith(".z"))
+    except OSError:
+        return []
+    stack = []
+    for fn in names:
+        try:
+            with open(os.path.join(d, fn), "rb") as f:
+                stack.append(zlib.decompress(f.read()))
+        except (OSError, zlib.error):
+            continue
+    return stack
+
+
+def persist_undo_entry(path, data_bytes, limit):
+    """Appends one entry to the on-disk undo log for `path`, pruning the
+    oldest entries beyond `limit` - mirrors the in-memory stack's own cap."""
+    if not path:
+        return
+    d = _undo_log_dir_for(path)
+    try:
+        os.makedirs(d, exist_ok=True)
+        existing = sorted(fn for fn in os.listdir(d) if fn.endswith(".z"))
+        next_idx = int(existing[-1].split(".")[0]) + 1 if existing else 1
+        with open(os.path.join(d, f"{next_idx:06d}.z"), "wb") as f:
+            f.write(zlib.compress(data_bytes, 6))
+        existing.append(f"{next_idx:06d}.z")
+        while len(existing) > limit:
+            oldest = existing.pop(0)
+            try:
+                os.remove(os.path.join(d, oldest))
+            except OSError:
+                pass
+    except OSError:
+        pass
+
+
+def pop_persisted_undo_entry(path):
+    """Removes and discards the newest persisted entry for `path`, keeping
+    the on-disk log in sync after an in-memory undo. Silently does nothing
+    if there's no log or it's already empty."""
+    if not path:
+        return
+    d = _undo_log_dir_for(path)
+    try:
+        existing = sorted(fn for fn in os.listdir(d) if fn.endswith(".z"))
+    except OSError:
+        return
+    if not existing:
+        return
+    try:
+        os.remove(os.path.join(d, existing[-1]))
+    except OSError:
+        pass
+
+
 # Snapshot history - separate from both the "Save As" .bak backup and the
 # union profile library above. A snapshot is a full, checksummed copy of
 # the CURRENT in-memory buffer (whatever's been Applied so far, even if
@@ -1205,6 +1289,18 @@ def recalc_checksum(dec_bytes):
     new_hash = hashlib.sha1(bytes(buf[CHECKSUM_DATA_START:])).digest()
     buf[CHECKSUM_OFFSET:CHECKSUM_OFFSET + 20] = new_hash
     return buf
+
+
+def version_tuple(version_string):
+    """'0.33.0' -> (0, 33, 0); non-numeric or missing parts become 0, so
+    comparisons never raise even on an unexpected tag format."""
+    parts = []
+    for p in version_string.strip().lstrip("vV").split("."):
+        try:
+            parts.append(int(p))
+        except ValueError:
+            parts.append(0)
+    return tuple(parts)
 
 
 def verify_checksum(dec_bytes):
@@ -1629,6 +1725,15 @@ STRINGS = {
         "charequip_profile_loaded_msg": "Профіль завантажено в поля. Натисни "
                                          "\"Застосувати екіпіровку\", щоб записати в сейв.",
         "charequip_profile_load_error": "Не вдалося завантажити профіль: {err}",
+        "tab_catalog": "Каталог предметів",
+        "catalog_search_label": "Пошук:",
+        "catalog_col_type": "Категорія",
+        "catalog_count_label": "Показано {shown} з {total}",
+        "global_search_btn": "Пошук (Ctrl/Cmd+F)...",
+        "global_search_title": "Швидкий пошук",
+        "update_available_title": "Доступне оновлення",
+        "update_available_msg": "Встановлена версія: {current}\nДоступна версія: {latest}\n\n"
+                                 "Відкрити сторінку релізу на GitHub?",
     },
     "en": {
         "title": "TLR Save Editor — The Last Remnant Remastered",
@@ -1938,6 +2043,15 @@ STRINGS = {
         "charequip_profile_loaded_msg": "Profile loaded into the fields. Click "
                                          "\"Apply equipment\" to write it to the save.",
         "charequip_profile_load_error": "Could not load profile: {err}",
+        "tab_catalog": "Item Catalog",
+        "catalog_search_label": "Search:",
+        "catalog_col_type": "Category",
+        "catalog_count_label": "Showing {shown} of {total}",
+        "global_search_btn": "Search (Ctrl/Cmd+F)...",
+        "global_search_title": "Quick search",
+        "update_available_title": "Update available",
+        "update_available_msg": "Installed version: {current}\nAvailable version: {latest}\n\n"
+                                 "Open the release page on GitHub?",
     },
 }
 
@@ -2198,6 +2312,16 @@ class SaveEditorApp:
         self.snapshot_btn.pack(side="left", padx=(18, 0))
         self.snapshots_list_btn = ttk.Button(action_bar, command=self._show_snapshots)
         self.snapshots_list_btn.pack(side="left", padx=(6, 0))
+        self.global_search_btn = ttk.Button(action_bar, command=self._open_global_search)
+        self.global_search_btn.pack(side="left", padx=(18, 0))
+        # Cmd+F on macOS, Ctrl+F everywhere else - both are harmless no-ops
+        # on the "wrong" platform if bound, but binding only the relevant
+        # one keeps things simple and avoids any risk of shadowing a
+        # platform's own Ctrl/Cmd-F behavior inside text fields.
+        if sys.platform == "darwin":
+            self.root.bind_all("<Command-f>", self._open_global_search)
+        else:
+            self.root.bind_all("<Control-f>", self._open_global_search)
 
         # --- Save info ---
         self.info_frame = ttk.LabelFrame(root)
@@ -2816,6 +2940,47 @@ class SaveEditorApp:
             self.fixchecksum_frame, command=self._fix_checksum_file)
         self.fixchecksum_btn.pack(anchor="w", padx=6, pady=6)
 
+        # ===== Tab 5: Item Catalog (reference-only browser over every
+        # known item name, across Equipment/Accessories/the 4 Items.csv
+        # categories) - doesn't need a save loaded at all, just the CSV
+        # databases. Useful to look up an exact item name/category before
+        # granting it elsewhere, or just to browse what exists. =====
+        self.tab_catalog = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_catalog, text="")
+
+        catalog_search_row = ttk.Frame(self.tab_catalog)
+        catalog_search_row.pack(fill="x", padx=6, pady=(12, 6))
+        self.catalog_search_label = ttk.Label(catalog_search_row)
+        self.catalog_search_label.pack(side="left")
+        self.catalog_search_var = tk.StringVar()
+        catalog_search_entry = ttk.Entry(
+            catalog_search_row, textvariable=self.catalog_search_var, width=30)
+        catalog_search_entry.pack(side="left", padx=6)
+        catalog_search_entry.bind("<KeyRelease>", lambda e: self._refresh_catalog_tree())
+
+        catalog_tree_frame = ttk.Frame(self.tab_catalog)
+        catalog_tree_frame.pack(fill="both", expand=True, padx=6, pady=(0, 4))
+        catalog_scroll = ttk.Scrollbar(catalog_tree_frame)
+        catalog_scroll.pack(side="right", fill="y")
+        self.catalog_tree = ttk.Treeview(
+            catalog_tree_frame, columns=("name", "type"), show="headings",
+            height=20, yscrollcommand=catalog_scroll.set
+        )
+        self.catalog_tree.column("name", width=400, anchor="w")
+        self.catalog_tree.column("type", width=180, anchor="w")
+        self.catalog_tree.pack(side="left", fill="both", expand=True)
+        catalog_scroll.config(command=self.catalog_tree.yview)
+
+        self.catalog_count_label = ttk.Label(self.tab_catalog, anchor="w")
+        self.catalog_count_label.pack(fill="x", padx=6, pady=(0, 8))
+
+        # Refresh the catalog list whenever this tab becomes the active
+        # one, instead of maintaining it live in the background - cheap
+        # enough to just rebuild on selection, and it means item databases
+        # reloaded via the other tabs' "Reload database" buttons are
+        # automatically picked up next time the user looks at this tab.
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_main_tab_changed)
+
         # --- Tooltips on hover: former "hint" texts, now shown only when
         # hovering the relevant tab header instead of always taking space ---
         self.notebook_tooltip = NotebookTabTooltip(
@@ -2828,6 +2993,41 @@ class SaveEditorApp:
         )
 
         self.retranslate()
+        # Fire-and-forget startup update check - scheduled via .after()
+        # rather than run synchronously here so the window shows up
+        # immediately either way; the actual network call happens on a
+        # background thread so a slow/offline connection can never freeze
+        # the GUI. Silently does nothing if the request fails for any
+        # reason (offline, rate-limited, GitHub down, etc.) - this is a
+        # courtesy notice, never something that should interrupt the user.
+        self.root.after(1500, self._check_for_updates_async)
+
+    def _check_for_updates_async(self):
+        threading.Thread(target=self._check_for_updates, daemon=True).start()
+
+    def _check_for_updates(self):
+        try:
+            req = urllib.request.Request(
+                GITHUB_LATEST_RELEASE_API,
+                headers={"Accept": "application/vnd.github+json", "User-Agent": "TLR-Save-Editor"},
+            )
+            with urllib.request.urlopen(req, timeout=4) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except (OSError, urllib.error.URLError, ValueError):
+            return
+
+        latest_tag = (data.get("tag_name") or "").strip()
+        latest_version = latest_tag.lstrip("vV")
+        release_url = data.get("html_url") or f"https://github.com/{GITHUB_REPO}/releases"
+        if latest_version and version_tuple(latest_version) > version_tuple(APP_VERSION):
+            self.root.after(0, lambda: self._show_update_available(latest_version, release_url))
+
+    def _show_update_available(self, latest_version, release_url):
+        if messagebox.askyesno(
+            self.t("update_available_title"),
+            self.t("update_available_msg", current=APP_VERSION, latest=latest_version),
+        ):
+            webbrowser.open(release_url)
 
     # ------------------------------------------------------------------
     # Gold sync: when Gold changes, update Lifetime Gold by the same delta
@@ -3352,6 +3552,35 @@ class SaveEditorApp:
             lines.append(f"  before: {la.hex()}")
             lines.append(f"  after : {lb.hex()}")
         return "\n".join(lines)
+
+    def _insert_colored_diff_block(self, txt, dec_a, dec_b, s, e):
+        """Same content as _describe_diff_block(), but inserted directly
+        into a Text widget with the before/after value colored (red for the
+        old value, green for the new one) instead of a single plain-text
+        block - makes it easier to spot what actually changed at a glance
+        in a long diff list."""
+        la, lb = dec_a[s:e], dec_b[s:e]
+        length = e - s
+        txt.insert("end", f"[{hex(s)}:{hex(e)}] len={length}\n")
+        label = self._describe_diff_offset(s)
+        if label:
+            txt.insert("end", f"  {label}\n")
+        decoded = False
+        for size, fmt in [(2, "<h"), (4, "<i")]:
+            if length == size:
+                va = struct.unpack(fmt, la)[0]
+                vb = struct.unpack(fmt, lb)[0]
+                txt.insert("end", "  ")
+                txt.insert("end", str(va), ("diff_before",))
+                txt.insert("end", " -> ")
+                txt.insert("end", str(vb), ("diff_after",))
+                txt.insert("end", f"  (diff={vb - va})\n")
+                decoded = True
+        if not decoded:
+            txt.insert("end", "  before: ")
+            txt.insert("end", la.hex() + "\n", ("diff_before",))
+            txt.insert("end", "  after : ")
+            txt.insert("end", lb.hex() + "\n", ("diff_after",))
 
     # ------------------------------------------------------------------
     # "Find saves" button: scan a remembered/picked folder for .sav files
@@ -4043,6 +4272,7 @@ class SaveEditorApp:
         self.undo_btn.config(text=self.t("undo_btn"))
         self.snapshot_btn.config(text=self.t("snapshot_btn"))
         self.snapshots_list_btn.config(text=self.t("snapshots_list_btn"))
+        self.global_search_btn.config(text=self.t("global_search_btn"))
 
         # --- Main tabs ---
         self.notebook.tab(self.tab_gold, text=self.t("tab_gold"))
@@ -4115,6 +4345,13 @@ class SaveEditorApp:
         self.batch_preset_combo["values"] = preset_labels
         self.fixchecksum_frame.config(text=self.t("fixchecksum_frame"))
         self.fixchecksum_btn.config(text=self.t("fixchecksum_btn"))
+
+        # --- Item Catalog tab ---
+        self.notebook.tab(self.tab_catalog, text=self.t("tab_catalog"))
+        self.catalog_search_label.config(text=self.t("catalog_search_label"))
+        self.catalog_tree.heading("name", text=self.t("equip_col_name"))
+        self.catalog_tree.heading("type", text=self.t("catalog_col_type"))
+        self._refresh_catalog_tree()
 
         # --- Inventory tab / Equipment sub-tab ---
         self.inv_notebook.tab(self.subtab_equipment, text=self.t("subtab_equipment"))
@@ -4306,9 +4543,11 @@ class SaveEditorApp:
 
     def _commit_buffer(self, buf):
         if self.dec_buffer is not None:
-            self._undo_stack.append(bytes(self.dec_buffer))
+            previous = bytes(self.dec_buffer)
+            self._undo_stack.append(previous)
             if len(self._undo_stack) > self.UNDO_STACK_LIMIT:
                 self._undo_stack.pop(0)
+            persist_undo_entry(self.current_path, previous, self.UNDO_STACK_LIMIT)
         self.dec_buffer = bytes(buf)
         self._update_undo_btn_state()
 
@@ -4336,6 +4575,7 @@ class SaveEditorApp:
             messagebox.showinfo(self.t("done_title"), self.t("undo_none_msg"))
             return
         self.dec_buffer = self._undo_stack.pop()
+        pop_persisted_undo_entry(self.current_path)
         self._update_undo_btn_state()
         self._refresh_after_buffer_change()
         messagebox.showinfo(self.t("done_title"), self.t("undo_done_msg"))
@@ -4488,7 +4728,10 @@ class SaveEditorApp:
             return
 
         self.dec_buffer = dec
-        self._undo_stack = []
+        # Restore any persisted undo history for this exact file path
+        # (survives closing/reopening the app), instead of always starting
+        # empty - see UNDO_LOG_DIR / persist_undo_entry().
+        self._undo_stack = load_persisted_undo_stack(path)
         self._update_undo_btn_state()
         self.current_path = path
         self.current_filename = os.path.basename(path)
@@ -4687,15 +4930,19 @@ class SaveEditorApp:
         txt = tk.Text(txt_frame, wrap="none", yscrollcommand=scroll.set)
         txt.pack(side="left", fill="both", expand=True)
         scroll.config(command=txt.yview)
+        txt.tag_configure("diff_before", foreground="#c0392b")
+        txt.tag_configure("diff_after", foreground="#27ae60")
 
         # Each block gets a best-effort human label (gold, BR, union N,
         # a character's equipped weapon slot, etc.) on top of the raw
-        # before/after bytes, via _describe_diff_block() - same field
-        # catalog used everywhere else in the app.
+        # before/after bytes, via _insert_colored_diff_block() - same field
+        # catalog used everywhere else in the app, with the old value in
+        # red and the new value in green so changes stand out at a glance.
         txt.insert("end", self.t("diff_found", n=len(merged)) + "\n")
         max_print = 300
         for s, e in merged[:max_print]:
-            txt.insert("end", "\n" + self._describe_diff_block(self.dec_buffer, dec2, s, e) + "\n")
+            txt.insert("end", "\n")
+            self._insert_colored_diff_block(txt, self.dec_buffer, dec2, s, e)
         if len(merged) > max_print:
             txt.insert("end", "\n" + self.t("diff_more_hidden", n=len(merged) - max_print) + "\n")
 
@@ -4740,6 +4987,8 @@ class SaveEditorApp:
         txt = tk.Text(txt_frame, wrap="none", yscrollcommand=scroll.set)
         txt.pack(side="left", fill="both", expand=True)
         scroll.config(command=txt.yview)
+        txt.tag_configure("diff_base", foreground="#888888")
+        txt.tag_configure("diff_changed", foreground="#27ae60")
 
         names = [os.path.basename(p) for p in paths]
         txt.insert("end", self.t("diff_multi_found", n=len(merged)) + "\n")
@@ -4751,16 +5000,24 @@ class SaveEditorApp:
             if label:
                 header += f"\n  {label}"
             txt.insert("end", header + "\n")
-            for name, dec in zip(names, decs):
+            base_chunk = decs[0][s:e]
+            for i, (name, dec) in enumerate(zip(names, decs)):
                 chunk = dec[s:e]
                 decoded = None
                 for size, fmt in [(2, "<h"), (4, "<i")]:
                     if length == size:
                         decoded = struct.unpack(fmt, chunk)[0]
-                if decoded is not None:
-                    txt.insert("end", f"    {name}: {decoded}\n")
+                value_text = str(decoded) if decoded is not None else chunk.hex()
+                # First file is the comparison base (shown neutral); any
+                # other file whose value actually differs from it is
+                # highlighted, so the odd-one-out is easy to spot across
+                # several files at a glance.
+                tag = "diff_base" if i == 0 else ("diff_changed" if chunk != base_chunk else None)
+                txt.insert("end", f"    {name}: ")
+                if tag:
+                    txt.insert("end", value_text + "\n", (tag,))
                 else:
-                    txt.insert("end", f"    {name}: {chunk.hex()}\n")
+                    txt.insert("end", value_text + "\n")
         if len(merged) > max_print:
             txt.insert("end", "\n" + self.t("diff_more_hidden", n=len(merged) - max_print) + "\n")
 
@@ -4981,6 +5238,136 @@ class SaveEditorApp:
         btn_row.pack(fill="x", padx=8, pady=(0, 8))
         ttk.Button(btn_row, text=self.t("find_saves_open_btn"), command=_load_selected).pack(side="left")
         ttk.Button(btn_row, text=self.t("cancel_btn"), command=win.destroy).pack(side="left", padx=(6, 0))
+
+    # ------------------------------------------------------------------
+    # Item Catalog tab: reference-only browser over every known item name
+    # from all three CSV databases (Equipment, Accessories, Items), unlike
+    # the Inventory tabs' item lists which only show what the CURRENT save
+    # actually owns. Doesn't touch self.dec_buffer at all.
+    # ------------------------------------------------------------------
+
+    CATALOG_TYPE_TO_CATEGORY = {
+        t: cat for cat, types in ITEMS_CATEGORY_TYPES.items() for t in types
+    }
+    CATALOG_CATEGORY_LABEL_KEYS = {
+        "consumables": "subtab_consumables",
+        "components": "subtab_components",
+        "captured_monsters": "subtab_monsters",
+        "special_items": "subtab_special",
+    }
+
+    # ------------------------------------------------------------------
+    # Global search (Ctrl/Cmd+F): jumps straight to a tab (and inventory
+    # sub-tab, where relevant) by the field/section's translated label,
+    # instead of hunting for it by hand across 5 tabs and 6 sub-tabs.
+    # Each entry is (translation key for the label shown to the user, main
+    # notebook tab attribute name, inventory sub-tab attribute name or
+    # None). Labels are looked up live via self.t() so this also works
+    # correctly after a language switch.
+    # ------------------------------------------------------------------
+    SEARCH_REGISTRY = [
+        ("gold_label", "tab_gold", None),
+        ("gold_lifetime_label", "tab_gold", None),
+        ("br_label", "tab_gold", None),
+        ("playtime_label", "tab_gold", None),
+        ("diggs_attempts_label", "tab_gold", None),
+        ("diggs_max_label", "tab_gold", None),
+        ("monster_kills_label", "tab_gold", None),
+        ("tab_union", "tab_union", None),
+        ("subtab_equipment", "tab_inventory", "subtab_equipment"),
+        ("subtab_accessories", "tab_inventory", "subtab_accessories"),
+        ("subtab_consumables", "tab_inventory", "subtab_consumables"),
+        ("subtab_components", "tab_inventory", "subtab_components"),
+        ("subtab_monsters", "tab_inventory", "subtab_monsters"),
+        ("subtab_special", "tab_inventory", "subtab_special"),
+        ("tab_charequip", "tab_charequip", None),
+        ("search_frame", "tab_tools", None),
+        ("diff_frame", "tab_tools", None),
+        ("batch_frame", "tab_tools", None),
+        ("fixchecksum_frame", "tab_tools", None),
+        ("tab_catalog", "tab_catalog", None),
+    ]
+
+    def _open_global_search(self, event=None):
+        win = tk.Toplevel(self.root)
+        win.title(self.t("global_search_title"))
+        win.geometry("420x360")
+
+        entry_var = tk.StringVar()
+        entry = ttk.Entry(win, textvariable=entry_var)
+        entry.pack(fill="x", padx=8, pady=8)
+        listbox = tk.Listbox(win)
+        listbox.pack(fill="both", expand=True, padx=8, pady=(0, 8))
+        current_matches = []
+
+        def _refresh(event=None):
+            listbox.delete(0, "end")
+            query = entry_var.get().strip().lower()
+            current_matches.clear()
+            for key, tab_attr, subtab_attr in self.SEARCH_REGISTRY:
+                label = self.t(key)
+                if query and query not in label.lower():
+                    continue
+                current_matches.append((label, tab_attr, subtab_attr))
+                listbox.insert("end", label)
+
+        def _go(event=None):
+            sel = listbox.curselection()
+            if not sel:
+                return
+            _, tab_attr, subtab_attr = current_matches[sel[0]]
+            self.notebook.select(getattr(self, tab_attr))
+            if subtab_attr:
+                self.inv_notebook.select(getattr(self, subtab_attr))
+            win.destroy()
+
+        entry.bind("<KeyRelease>", _refresh)
+        entry.bind("<Return>", _go)
+        listbox.bind("<Double-Button-1>", _go)
+        _refresh()
+        entry.focus_set()
+
+    def _catalog_all_entries(self):
+        """Returns (name, type_label) pairs across all three item
+        databases, sorted by name - independent of whether a save is
+        currently loaded or what it happens to contain."""
+        entries = []
+        for name in set(self.equip_names.values()):
+            entries.append((name, self.t("subtab_equipment")))
+        for name in set(self.accessory_names.values()):
+            entries.append((name, self.t("subtab_accessories")))
+        for item in self.items_catalog:
+            category = self.CATALOG_TYPE_TO_CATEGORY.get(item["type"])
+            if category:
+                type_label = self.t(self.CATALOG_CATEGORY_LABEL_KEYS[category])
+            else:
+                type_label = item["type"]
+            entries.append((item["name"], type_label))
+        entries.sort(key=lambda pair: pair[0].lower())
+        return entries
+
+    def _refresh_catalog_tree(self):
+        tree = self.catalog_tree
+        tree.delete(*tree.get_children())
+        query = self.catalog_search_var.get().strip().lower()
+        entries = self._catalog_all_entries()
+        shown = 0
+        for name, type_label in entries:
+            if query and query not in name.lower():
+                continue
+            tree.insert("", "end", values=(name, type_label))
+            shown += 1
+        self.catalog_count_label.config(
+            text=self.t("catalog_count_label", shown=shown, total=len(entries)))
+
+    def _on_main_tab_changed(self, event=None):
+        try:
+            current = self.notebook.index(self.notebook.select())
+            catalog_index = self.notebook.index(self.tab_catalog)
+        except Exception:
+            return
+        if current == catalog_index:
+            self._refresh_catalog_tree()
 
     def show_readme(self):
         win = tk.Toplevel(self.root)

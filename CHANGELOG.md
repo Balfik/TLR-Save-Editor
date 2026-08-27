@@ -5,6 +5,24 @@ versions before 0.21.0 weren't tracked in a dedicated changelog at the
 time, so the entry for them below is a general summary of what already
 existed by then, not a step-by-step list of changes.
 
+## 0.34.0
+- New startup update check: on launch, the app quietly checks GitHub for a
+  newer release and offers to open the release page if one exists.
+  Silent and non-blocking if offline or the check fails for any reason.
+- New "Search (Ctrl/Cmd+F)..." global search: jump straight to any
+  tab/section (Gold, Union, Equipment, Accessories, Character Equipment,
+  Tools sections, Item Catalog, etc.) by typing part of its name, instead
+  of hunting for it by hand.
+- New "Item Catalog" tab: a reference-only, searchable list of every known
+  item name across Equipment, Accessories, and the 4 Items.csv categories
+  - independent of what the currently-loaded save actually owns.
+- New persistent undo history: undo now survives closing and reopening
+  the app for the same save file (previously session-only), mirrored to a
+  small on-disk log per file.
+- Diff results (both "Diff..." and "Compare 3+ saves...") now color the
+  changed values instead of showing everything in one plain color, so
+  what actually changed stands out at a glance.
+
 ## 0.33.0
 - New "Clean up old..." button in the Snapshots list: pick how many of the
   most recent snapshots to keep and remove the rest. Snapshots are also
