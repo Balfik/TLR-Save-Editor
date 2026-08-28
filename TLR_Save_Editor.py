@@ -28,7 +28,7 @@ AUTHOR_LINK_URL = "https://github.com/Balfik"
 GITHUB_REPO = "Balfik/TLR-Save-Editor"
 GITHUB_LATEST_RELEASE_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 
-APP_VERSION = "0.34.0"
+APP_VERSION = "0.35.0"
 
 GOLD_OFFSET = 0x1D978
 GOLD_LIFETIME_OFFSET = 0x25A5A
@@ -37,6 +37,13 @@ BR_OFFSET = 0x259DD              # REAL Battle Rank (int16 LE)
 BR_EXP_OFFSET = 0x259DF          # BR EXP counter, 0-499 (int16 LE)
 CHECKSUM_OFFSET = 0x0C
 CHECKSUM_DATA_START = 0x20
+
+# Every save examined so far decompresses to exactly this size - a quick,
+# cheap sanity check on open, alongside the magic signature and checksum,
+# to catch an obviously wrong/corrupted file before the user starts
+# editing it (rather than only finding out when the checksum write fails
+# to make the file loadable in-game later).
+EXPECTED_DECOMPRESSED_SIZE = 1719936
 
 # Playtime, in whole seconds, int32 LE. HYPOTHESIS, not confirmed against
 # an in-game display (the user couldn't check at the time), but found by
@@ -1432,6 +1439,10 @@ STRINGS = {
         "export_report_btn": "Експортувати звіт...",
         "export_report_saved_msg": "Звіт збережено: {path}",
         "export_report_error": "Не вдалося зберегти звіт: {err}",
+        "export_inventory_btn": "Експортувати інвентар (CSV)...",
+        "inv_csv_col_category": "Категорія",
+        "inv_csv_col_name": "Назва",
+        "inv_csv_col_qty": "Кількість",
         "value_range_warning": "Деякі значення виглядають нетиповими:\n{details}\n\nЗберегти все одно?",
         "char_frame": "Персонаж — Rush",
         "char_toggle_expand": "▶ Раш (розгорнути статы)",
@@ -1659,6 +1670,12 @@ STRINGS = {
         "union_roster_applied_msg": "Склад юніону оновлено. Стати юніону можуть виглядати "
                                      "застарілими, доки не зайдеш у бій чи формейшн-екран — "
                                      "гра сама перерахує їх.",
+        "union_clone_label": "Клонувати цей юніон у:",
+        "union_clone_btn": "Клонувати",
+        "union_clone_same_error": "Юніон-джерело і юніон-ціль не можуть бути однаковими.",
+        "union_clone_confirm": "Скопіювати склад і стати юніону {src} у юніон {dst}?\n"
+                                "Поточний вміст юніону {dst} буде перезаписано.",
+        "union_clone_done": "Юніон склоновано.",
         "union_all_250_btn": "Весь юніон: 250",
         "union_all_max_btn": "Весь юніон: MAX (255)",
         "union_export_profile_btn": "Зберегти профіль...",
@@ -1734,6 +1751,11 @@ STRINGS = {
         "update_available_title": "Доступне оновлення",
         "update_available_msg": "Встановлена версія: {current}\nДоступна версія: {latest}\n\n"
                                  "Відкрити сторінку релізу на GitHub?",
+        "integrity_warning_intro": "Цей файл виглядає нетипово:",
+        "integrity_bad_magic": "Немає очікуваного сигнатурного заголовка \"SAVE\" на початку файлу.",
+        "integrity_bad_size": "Розмір після розпакування {actual} байт (очікувалось {expected}).",
+        "integrity_bad_checksum": "SHA1 чек-сума не збігається із записаною в файлі.",
+        "integrity_warning_question": "Все одно відкрити файл?",
     },
     "en": {
         "title": "TLR Save Editor — The Last Remnant Remastered",
@@ -1751,6 +1773,10 @@ STRINGS = {
         "export_report_btn": "Export report...",
         "export_report_saved_msg": "Report saved: {path}",
         "export_report_error": "Could not save report: {err}",
+        "export_inventory_btn": "Export inventory (CSV)...",
+        "inv_csv_col_category": "Category",
+        "inv_csv_col_name": "Name",
+        "inv_csv_col_qty": "Quantity",
         "value_range_warning": "Some values look unusual:\n{details}\n\nSave anyway?",
         "char_frame": "Character — Rush",
         "char_toggle_expand": "▶ Rush (expand stats)",
@@ -1976,6 +2002,12 @@ STRINGS = {
         "union_roster_applied_msg": "Union roster updated. The union's stats may look stale "
                                      "until you enter a battle or the formation screen - the "
                                      "game recalculates them itself.",
+        "union_clone_label": "Clone this union into:",
+        "union_clone_btn": "Clone",
+        "union_clone_same_error": "The source and target union can't be the same.",
+        "union_clone_confirm": "Copy Union {src}'s roster and stats into Union {dst}?\n"
+                                "Union {dst}'s current contents will be overwritten.",
+        "union_clone_done": "Union cloned.",
         "union_all_250_btn": "Whole union: 250",
         "union_all_max_btn": "Whole union: MAX (255)",
         "union_export_profile_btn": "Save profile...",
@@ -2052,6 +2084,11 @@ STRINGS = {
         "update_available_title": "Update available",
         "update_available_msg": "Installed version: {current}\nAvailable version: {latest}\n\n"
                                  "Open the release page on GitHub?",
+        "integrity_warning_intro": "This file looks unusual:",
+        "integrity_bad_magic": "Missing the expected \"SAVE\" signature header at the start of the file.",
+        "integrity_bad_size": "Decompressed size is {actual} bytes (expected {expected}).",
+        "integrity_bad_checksum": "The SHA1 checksum doesn't match what's stored in the file.",
+        "integrity_warning_question": "Open it anyway?",
     },
 }
 
@@ -2329,9 +2366,14 @@ class SaveEditorApp:
         self.info_text = tk.Text(self.info_frame, height=6, wrap="word")
         self.info_text.pack(fill="x", padx=6, pady=(6, 0))
         self.info_text.configure(state="disabled")
+        info_export_row = ttk.Frame(self.info_frame)
+        info_export_row.pack(fill="x", padx=6, pady=6)
         self.export_report_btn = ttk.Button(
-            self.info_frame, command=self._export_save_report)
-        self.export_report_btn.pack(anchor="e", padx=6, pady=6)
+            info_export_row, command=self._export_save_report)
+        self.export_report_btn.pack(side="right")
+        self.export_inventory_btn = ttk.Button(
+            info_export_row, command=self._export_full_inventory_csv)
+        self.export_inventory_btn.pack(side="right", padx=(0, 6))
 
         # --- Main tabs: Gold/BR (default) -> Union -> Inventory -> Tools ---
         self.notebook = ttk.Notebook(root)
@@ -2625,6 +2667,24 @@ class SaveEditorApp:
             union_bulk_row, command=self._load_profile_from_library)
         self.union_library_load_btn.pack(side="left", padx=(6, 0))
 
+        # --- Quick clone: copy this union's full roster (leader + slots
+        # 2-5) and stat block straight into another union slot, without
+        # going through the profile library (export/name/import). Writes
+        # directly to the buffer like the other bulk buttons here - no
+        # separate "Apply" click needed. Activates the target union first
+        # if it's currently empty, same as setting a leader on it by hand. ---
+        union_clone_row = ttk.Frame(union_content)
+        union_clone_row.pack(fill="x", padx=6, pady=(0, 4), anchor="w")
+        self.union_clone_label = ttk.Label(union_clone_row)
+        self.union_clone_label.pack(side="left")
+        self.union_clone_target_var = tk.StringVar(value="2")
+        self.union_clone_target_combo = ttk.Combobox(
+            union_clone_row, textvariable=self.union_clone_target_var,
+            values=[str(i) for i in range(1, UNION_COUNT + 1)], width=4, state="readonly")
+        self.union_clone_target_combo.pack(side="left", padx=(4, 6))
+        self.union_clone_btn = ttk.Button(union_clone_row, command=self._clone_union)
+        self.union_clone_btn.pack(side="left")
+
         apply_row = ttk.Frame(union_content)
         apply_row.pack(fill="x", padx=6, pady=(0, 10), anchor="w")
         self.union_roster_apply_btn = ttk.Button(
@@ -2668,6 +2728,7 @@ class SaveEditorApp:
         equip_scroll.config(command=self.equip_tree.yview)
         self.equip_tree.bind("<<TreeviewSelect>>", self._on_equip_tree_select)
         ToolTip(self.equip_tree, lambda: self.t("tip_multi_select"))
+        self._make_tree_sortable(self.equip_tree, ("slot", "name"))
 
         equip_edit_row = ttk.Frame(self.subtab_equipment)
         equip_edit_row.pack(fill="x", padx=6, pady=(0, 4))
@@ -2754,6 +2815,7 @@ class SaveEditorApp:
         self.accessory_tree.pack(side="left", fill="both", expand=True)
         acc_scroll.config(command=self.accessory_tree.yview)
         ToolTip(self.accessory_tree, lambda: self.t("tip_multi_select"))
+        self._make_tree_sortable(self.accessory_tree, ("slot", "name"))
 
         acc_edit_row = ttk.Frame(self.subtab_accessories)
         acc_edit_row.pack(fill="x", padx=6, pady=(0, 4))
@@ -2970,6 +3032,7 @@ class SaveEditorApp:
         self.catalog_tree.column("type", width=180, anchor="w")
         self.catalog_tree.pack(side="left", fill="both", expand=True)
         catalog_scroll.config(command=self.catalog_tree.yview)
+        self._make_tree_sortable(self.catalog_tree, ("name", "type"))
 
         self.catalog_count_label = ttk.Label(self.tab_catalog, anchor="w")
         self.catalog_count_label.pack(fill="x", padx=6, pady=(0, 8))
@@ -3125,6 +3188,42 @@ class SaveEditorApp:
             if iname == name:
                 return iid
         return None
+
+    def _make_tree_sortable(self, tree, columns):
+        """Wires click-to-sort onto every given column of a Treeview:
+        clicking a heading sorts by that column (numeric if every visible
+        value parses as a number, otherwise case-insensitive text), and
+        clicking the same heading again reverses the order. State (which
+        column, which direction) is tracked per-tree via a small dict
+        stashed on the tree widget itself, so repeated calls/retranslate
+        don't need to know about it."""
+        if not isinstance(getattr(tree, "_sort_state", None), dict):
+            tree._sort_state = {"col": None, "reverse": False}
+
+        def sort_by(col):
+            state = tree._sort_state
+            reverse = (state["col"] == col) and not state["reverse"]
+            items = [(tree.set(iid, col), iid) for iid in tree.get_children("")]
+
+            def try_float(v):
+                try:
+                    return float(v)
+                except (TypeError, ValueError):
+                    return None
+
+            numeric_vals = [try_float(v) for v, _ in items]
+            if all(v is not None for v in numeric_vals):
+                items = [(numeric_vals[i], iid) for i, (_, iid) in enumerate(items)]
+            else:
+                items = [(v.lower(), iid) for v, iid in items]
+            items.sort(key=lambda pair: pair[0], reverse=reverse)
+            for pos, (_, iid) in enumerate(items):
+                tree.move(iid, "", pos)
+            state["col"] = col
+            state["reverse"] = reverse
+
+        for col in columns:
+            tree.heading(col, command=lambda c=col: sort_by(c))
 
     def _on_equip_tree_select(self, event=None):
         """When exactly one slot is selected in the list, pre-fill the
@@ -3794,6 +3893,42 @@ class SaveEditorApp:
         self._load_union_members_into_fields()
         messagebox.showinfo(self.t("done_title"), self.t("union_roster_applied_msg"))
 
+    def _clone_union(self):
+        if self.dec_buffer is None:
+            messagebox.showwarning(self.t("warn_title"), self.t("warn_open_first"))
+            return
+        try:
+            target_index = int(self.union_clone_target_var.get()) - 1
+        except ValueError:
+            return
+        source_index = self.selected_union_index
+        if target_index == source_index:
+            messagebox.showerror(self.t("err_title"), self.t("union_clone_same_error"))
+            return
+
+        if not messagebox.askyesno(
+                self.t("warn_title"),
+                self.t("union_clone_confirm", src=source_index + 1, dst=target_index + 1)):
+            return
+
+        buf = bytearray(self.dec_buffer)
+        leader_id = read_union_leader(buf, source_index)
+        members = read_union_members(buf, source_index)
+        stats = read_union_stats(buf, source_index)
+
+        if leader_id == UNION_MEMBER_EMPTY_ID:
+            deactivate_union(buf, target_index)
+        else:
+            activate_union(buf, target_index, leader_id)
+        for slot_pos, char_id in enumerate(members):
+            write_union_member(buf, target_index, slot_pos, char_id)
+        write_union_stats(buf, target_index, stats)
+
+        self._commit_buffer(buf)
+        if target_index == self.selected_union_index:
+            self._load_union_stats_into_fields()
+        messagebox.showinfo(self.t("done_title"), self.t("union_clone_done"))
+
     def _on_union_select_changed(self, event=None):
         try:
             new_index = int(self.union_select_var.get()) - 1
@@ -4075,6 +4210,7 @@ class SaveEditorApp:
         tree.pack(side="left", fill="both", expand=True)
         scroll.config(command=tree.yview)
         self.items_trees[category_key] = tree
+        self._make_tree_sortable(tree, ("name", "qty"))
 
         if ITEMS_CATEGORY_EDITABLE[category_key]:
             ToolTip(tree, lambda: self.t("tip_multi_select"))
@@ -4268,6 +4404,7 @@ class SaveEditorApp:
 
         self.info_frame.config(text=self.t("info_frame"))
         self.export_report_btn.config(text=self.t("export_report_btn"))
+        self.export_inventory_btn.config(text=self.t("export_inventory_btn"))
         self.save_btn.config(text=self.t("save_button"))
         self.undo_btn.config(text=self.t("undo_btn"))
         self.snapshot_btn.config(text=self.t("snapshot_btn"))
@@ -4312,6 +4449,8 @@ class SaveEditorApp:
         self.union_library_load_btn.config(text=self.t("union_library_load_btn"))
         self.union_warn_duplicates_check.config(text=self.t("union_warn_duplicates_check"))
         self.union_roster_apply_btn.config(text=self.t("union_roster_apply_btn"))
+        self.union_clone_label.config(text=self.t("union_clone_label"))
+        self.union_clone_btn.config(text=self.t("union_clone_btn"))
         combo_values = [self.t("union_slot_empty")] + list(self.chars_names)
         self.union_leader_combo["values"] = combo_values
         for combo in self.union_member_combos.values():
@@ -4531,6 +4670,64 @@ class SaveEditorApp:
 
         messagebox.showinfo(self.t("done_title"), self.t("export_report_saved_msg", path=path))
 
+    def _export_full_inventory_csv(self):
+        """Exports the full per-item inventory (category, name, quantity)
+        across Equipment, Accessories, and all 4 Items.csv categories to a
+        single CSV file. Unlike _export_save_report() above (which only
+        exports summary counts), this lists every individual item the
+        save currently owns - reads straight from the already-refreshed
+        Treeviews on the Inventory tab, so it always matches what's shown
+        there, category by category, without re-deriving the read logic."""
+        if self.dec_buffer is None:
+            messagebox.showwarning(self.t("warn_title"), self.t("warn_open_first"))
+            return
+
+        default_name = os.path.splitext(self.current_filename or "save")[0] + "_inventory"
+        path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            initialfile=default_name,
+            filetypes=[("CSV", "*.csv")],
+        )
+        if not path:
+            return
+
+        category_label_keys = {
+            "consumables": "subtab_consumables",
+            "components": "subtab_components",
+            "captured_monsters": "subtab_monsters",
+            "special_items": "subtab_special",
+        }
+        rows = []
+        for iid in self.equip_tree.get_children(""):
+            slot, name = self.equip_tree.item(iid, "values")
+            if name == self.t("equip_empty_slot"):
+                continue
+            rows.append((self.t("subtab_equipment"), name, 1))
+        for iid in self.accessory_tree.get_children(""):
+            slot, name = self.accessory_tree.item(iid, "values")
+            if name == self.t("equip_empty_slot"):
+                continue
+            rows.append((self.t("subtab_accessories"), name, 1))
+        for category_key, tree in self.items_trees.items():
+            label = self.t(category_label_keys[category_key])
+            for iid in tree.get_children(""):
+                name, qty = tree.item(iid, "values")
+                rows.append((label, name, qty))
+
+        try:
+            import csv
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow([self.t("inv_csv_col_category"),
+                                  self.t("inv_csv_col_name"),
+                                  self.t("inv_csv_col_qty")])
+                writer.writerows(rows)
+        except OSError as e:
+            messagebox.showerror(self.t("err_title"), self.t("export_report_error", err=str(e)))
+            return
+
+        messagebox.showinfo(self.t("done_title"), self.t("export_report_saved_msg", path=path))
+
     # ------------------------------------------------------------------
     # Undo (session-level, in-memory only): every "Apply"-style action
     # that commits a bytearray into self.dec_buffer goes through
@@ -4726,6 +4923,28 @@ class SaveEditorApp:
         except Exception as e:
             messagebox.showerror(self.t("err_title"), self.t("err_decompress", e=e))
             return
+
+        # Quick sanity check before touching anything else - catches an
+        # obviously wrong/corrupted file (wrong signature, unexpected
+        # decompressed size, or a checksum that doesn't match) up front,
+        # with a chance to back out, instead of only finding out once
+        # something looks broken mid-edit.
+        integrity_issues = []
+        if dec[0:4] != b"SAVE":
+            integrity_issues.append(self.t("integrity_bad_magic"))
+        if len(dec) != EXPECTED_DECOMPRESSED_SIZE:
+            integrity_issues.append(
+                self.t("integrity_bad_size", actual=len(dec), expected=EXPECTED_DECOMPRESSED_SIZE))
+        if not verify_checksum(dec):
+            integrity_issues.append(self.t("integrity_bad_checksum"))
+        if integrity_issues:
+            msg = (
+                self.t("integrity_warning_intro") + "\n\n"
+                + "\n".join("- " + line for line in integrity_issues)
+                + "\n\n" + self.t("integrity_warning_question")
+            )
+            if not messagebox.askyesno(self.t("warn_title"), msg):
+                return
 
         self.dec_buffer = dec
         # Restore any persisted undo history for this exact file path

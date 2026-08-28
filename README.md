@@ -1,6 +1,6 @@
 # TLR Save Editor — The Last Remnant / The Last Remnant Remastered Save File Editor
 
-**Current version: 0.34.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
+**Current version: 0.35.0** — see [CHANGELOG.md](CHANGELOG.md) for the full
 version history.
 
 A save editor for **The Last Remnant** and **The Last Remnant Remastered**,
@@ -90,6 +90,17 @@ differently, please open an issue.
   the app for the same save file.
 - **Colored diff** — changed values in the Diff / Compare 3+ saves
   results are now colored so they stand out.
+- **Integrity check on open** — verifies the magic signature,
+  decompressed size, and checksum before loading a save, and warns (with
+  a chance to cancel) if anything looks off.
+- **Quick union clone** — copy a union's full roster and stat block
+  straight into another union slot in one click.
+- **Sortable inventory columns** — click a column heading on the
+  Equipment, Accessories, or item-quantity lists to sort by it; click
+  again to reverse.
+- **Full inventory CSV export** — export every individually owned item
+  (not just summary counts) across Equipment, Accessories, and all 4
+  item categories to a single CSV file.
 
 ### Beyond the game's own UI limits
 

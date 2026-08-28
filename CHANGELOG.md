@@ -5,6 +5,23 @@ versions before 0.21.0 weren't tracked in a dedicated changelog at the
 time, so the entry for them below is a general summary of what already
 existed by then, not a step-by-step list of changes.
 
+## 0.35.0
+- New integrity check on open: before a save is loaded, the app now
+  verifies the magic signature, decompressed size, and checksum, and
+  warns (with a chance to cancel) if anything looks off - instead of
+  only finding out something's wrong once you're mid-edit.
+- New "Clone..." button on the Union tab: copies a union's full roster
+  (leader + slots 2-5) and stat block straight into another union slot
+  in one click, without going through the profile export/import flow.
+- Equipment, Accessories, and item-quantity lists (Consumables,
+  Components, Captured Monsters, Special Items) are now sortable by
+  clicking a column heading - click again to reverse the order.
+- New "Export inventory (CSV)..." button next to the Save Info panel:
+  exports every individually owned item (Equipment, Accessories, and
+  all 4 item categories) with its quantity to a single CSV file -
+  distinct from the existing "Export report..." button, which only
+  covers summary counts.
+
 ## 0.34.0
 - New startup update check: on launch, the app quietly checks GitHub for a
   newer release and offers to open the release page if one exists.
